@@ -565,6 +565,14 @@
       err.textContent='Enter a valid UTR (8–22 letters/numbers, no spaces)'; err.style.display='block'; return;
     }
     document.getElementById('err3').style.display='none';
+    if (!isFree) {
+      const { data: dup } = await sb.from('registrations').select('id').eq('utr', utr).maybeSingle();
+      if (dup) {
+        const err=document.getElementById('err3');
+        err.textContent='This UTR is already registered. Contact us if this is a mistake.';
+        err.style.display='block'; return;
+      }
+    }
     const btn=document.getElementById('submitBtn');
     btn.disabled=true;
     document.getElementById('submitTxt').textContent='Submitting…';

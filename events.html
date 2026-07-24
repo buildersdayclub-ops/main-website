@@ -339,8 +339,9 @@
       <div id="step3" style="display:none;">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">UTR Verification</p>
         <p style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:16px;">Enter the UTR / Transaction Reference from your UPI app</p>
-        <input id="regUTR" class="modal-input" type="text" placeholder="e.g. 426112345678" maxlength="22" style="font-family:monospace;letter-spacing:0.08em;">
-        <p style="font-size:11px;color:#4b5563;margin-top:8px;">UPI app → Transactions → tap payment → UTR No.</p>
+        <input id="regUTR" class="modal-input" type="text" placeholder="e.g. 426112345678" maxlength="22" style="font-family:monospace;letter-spacing:0.08em;" oninput="liveUTRCheck(this.value)">
+        <p id="utrHint" style="font-size:12px;margin-top:6px;display:none;"></p>
+        <p style="font-size:11px;color:#4b5563;margin-top:6px;">UPI app → Transactions → tap payment → UTR No.</p>
         <p id="err3" style="color:#f87171;font-size:12px;margin-top:8px;display:none;"></p>
         <button class="modal-btn" id="submitBtn" onclick="submitReg()" style="margin-top:16px;">
           <span id="submitTxt">Submit Registration</span>
@@ -536,12 +537,32 @@
     goStep(2);
   }
 
+  function validateUTR(utr) {
+    return /^[A-Za-z0-9]{8,22}$/.test(utr);
+  }
+
+  function liveUTRCheck(val) {
+    const hint = document.getElementById('utrHint');
+    const v = val.trim();
+    if (!v) { hint.textContent = ''; hint.style.display = 'none'; return; }
+    if (/[^A-Za-z0-9]/.test(v)) {
+      hint.textContent = '✗ Only letters and numbers — no spaces or symbols';
+      hint.style.color = '#f87171'; hint.style.display = 'block'; return;
+    }
+    if (v.length < 8) {
+      hint.textContent = v.length + ' / 8 minimum characters';
+      hint.style.color = '#f87171'; hint.style.display = 'block'; return;
+    }
+    hint.textContent = '✓ Looks good';
+    hint.style.color = '#86efac'; hint.style.display = 'block';
+  }
+
   async function submitReg() {
     const utr    = document.getElementById('regUTR')?.value.trim()||'FREE';
     const isFree = !currentEvent.price || currentEvent.price===0;
-    if (!isFree && utr.length < 8) {
+    if (!isFree && !validateUTR(utr)) {
       const err=document.getElementById('err3');
-      err.textContent='Enter a valid UTR / Transaction ID'; err.style.display='block'; return;
+      err.textContent='Enter a valid UTR (8–22 letters/numbers, no spaces)'; err.style.display='block'; return;
     }
     document.getElementById('err3').style.display='none';
     const btn=document.getElementById('submitBtn');

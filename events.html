@@ -852,6 +852,15 @@ sendEmail('confirmation', { ...payload, event_date: currentEvent.date, event_ven
   });
 
   loadAll();
+  async function sendEmail(type, reg) {
+  try {
+    await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, name: reg.name, email: reg.email, event_title: reg.event_title, event_date: reg.event_date, event_venue: reg.event_venue })
+    });
+  } catch(e) { console.warn('Email error:', e.message); }
+}
 </script>
 </body>
 </html>

@@ -550,9 +550,11 @@
             </div>
             <p class="text-gray-500 text-xs mb-1">${r.email} · ${r.phone}</p>
             <p class="text-gray-500 text-xs">Event: <span class="text-gray-300">${r.event_title||r.event_id}</span></p>
-            <div class="flex items-center gap-2 mt-2">
+            <div class="flex items-center gap-2 mt-2 flex-wrap">
               <span class="text-gray-600 text-xs">UTR:</span>
               <span class="font-mono text-xs text-white bg-white/[0.06] px-3 py-1 rounded-lg">${r.utr}</span>
+              <button onclick="copyUTR('${r.utr}', this)" class="text-xs px-2.5 py-1 rounded-lg transition-all" style="background:rgba(255,255,255,0.07);color:#9ca3af;border:none;cursor:pointer;">Copy</button>
+              <a href="https://www.google.com/search?q=${r.utr}+UPI+UTR+transaction" target="_blank" class="text-xs px-2.5 py-1 rounded-lg no-underline" style="background:rgba(59,130,246,0.12);color:#93c5fd;display:inline-block;">Search ↗</a>
             </div>
             ${r.created_at?`<p class="text-gray-600 text-xs mt-1">Submitted ${new Date(r.created_at).toLocaleString('en-IN')}</p>`:''}
           </div>
@@ -626,6 +628,18 @@
   }
 
   // ─── Utility ──────────────────────────────
+  function copyUTR(utr, btn) {
+    navigator.clipboard.writeText(utr).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.style.color = '#86efac';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = '#9ca3af'; }, 2000);
+    }).catch(() => {
+      btn.textContent = 'Failed';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    });
+  }
+
   function setLoading(btnId, txtId, spinId, label, loading) {
     document.getElementById(btnId).disabled = loading;
     document.getElementById(txtId).textContent = label;

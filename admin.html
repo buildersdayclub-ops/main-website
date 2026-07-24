@@ -624,10 +624,24 @@
       </div>`).join('');
   }
 
-  async function setStatus(id, status) {
-    await sb.from('registrations').update({ status, updated_at:new Date().toISOString() }).eq('id', id);
-    loadRegs(); loadOverview();
+ async function sendEmail(type, reg) {
+  try {
+    await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, name: reg.name, email: reg.email, event_title: reg.event_title, event_date: reg.event_date, event_venue: reg.venue })
+    });
+  } catch(e) { console.warn('Email error:', e.message); }
+}
+
+async function setStatus(id, status) {
+  await sb.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+  if (status === 'verified' || status === 'rejected') {
+    const { data: reg } = await sb.from('registrations').select('*').eq('id', id).single();
+    if (reg) sendEmail(status, reg);
   }
+  loadRegs(); loadOverview();
+}
 
   async function fillEvFilter() {
     const { data } = await sb.from('events').select('id, title');

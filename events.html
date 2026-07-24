@@ -828,6 +828,7 @@
     };
     try {
       await sb.from('registrations').insert(payload);
+sendEmail('confirmation', { ...payload, event_date: currentEvent.date, event_venue: currentEvent.venue });
       document.getElementById('sucEvent').textContent = currentEvent.title;
       document.getElementById('sucName').textContent  = '👤 ' + payload.name;
       document.getElementById('sucEmail').textContent = '✉️ ' + payload.email;

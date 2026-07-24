@@ -4,80 +4,169 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Events – Builders Day Club</title>
+
+  <!-- Same CSS as main site -->
+  <link rel="stylesheet" href="./base.css">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Tailwind for events-specific card/modal styles -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    * { font-family: 'Inter', sans-serif; }
+    /* ── Events-specific styles ── */
+    * { font-family: inherit; }
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 24px 48px rgba(249,115,22,0.12); }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(249,115,22,0.10); }
     .modal-blur { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #111; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     .step-dot { transition: background 0.3s, transform 0.3s; }
     .step-dot.active { transform: scale(1.3); }
     .shimmer { background: linear-gradient(90deg, #1a1a1a 25%, #242424 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    .tag-meetup    { background:rgba(59,130,246,.15); color:#93c5fd; }
+    .tag-meetup    { background:rgba(59,130,246,.15);  color:#93c5fd; }
     .tag-workshop  { background:rgba(168,85,247,.15);  color:#d8b4fe; }
     .tag-hackathon { background:rgba(34,197,94,.15);   color:#86efac; }
     .tag-talk      { background:rgba(249,115,22,.15);  color:#fdba74; }
     .tag-other     { background:rgba(255,255,255,.08); color:#d1d5db; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; }
+
+    /* Events page layout — content sits next to sidebar */
+    .events-page-wrapper {
+      margin-left: 240px;
+      min-height: 100vh;
+      background: #0a0a0a;
+    }
+    @media (max-width: 768px) {
+      .events-page-wrapper { margin-left: 0; padding-top: 64px; }
+    }
+
+    /* Make Events nav link active */
+    .nav-link.events-active {
+      color: #f97316 !important;
+      background: rgba(249,115,22,0.08);
+      border-left: 3px solid #f97316;
+    }
+
+    /* Filter buttons */
+    .filter-btn { transition: all 0.15s; }
+    .filter-btn.active { background: #f97316 !important; color: #fff !important; }
   </style>
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen">
+<body>
 
-  <!-- ─── NAV ───────────────────────────── -->
-  <nav class="sticky top-0 z-40 border-b border-white/[0.06] bg-[#0a0a0a]/90 modal-blur">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center font-bold text-base shadow-lg shadow-orange-500/30">B</div>
-        <span class="font-semibold text-base tracking-tight">Builders Day Club</span>
-      </div>
-      <div class="flex items-center gap-6">
-        <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">Community</a>
-        <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">About</a>
-        <a href="admin.html" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">Admin →</a>
-      </div>
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo">
+      <img src="./assets/logo.jpg" alt="Builders Day Club Logo" class="logo-img">
     </div>
-  </nav>
+    <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
+      <a href="index.html#home" class="nav-link" data-section="home">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <a href="index.html#why" class="nav-link" data-section="why">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Why Join
+      </a>
+      <a href="index.html#inside" class="nav-link" data-section="inside">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Inside
+      </a>
+      <a href="index.html#process" class="nav-link" data-section="process">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Process
+      </a>
+      <a href="index.html#testimonials" class="nav-link" data-section="stories">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Stories
+      </a>
+      <a href="index.html#faq" class="nav-link" data-section="faq">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        FAQ
+      </a>
+      <a href="events.html" class="nav-link events-active" data-section="events">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Events
+      </a>
+    </nav>
+  </div>
+  <div class="sidebar-bottom">
+    <a href="https://tally.so/r/VLlrNg" target="_blank" rel="noopener noreferrer" class="cta-btn sidebar-cta">Apply to Join</a>
+    <a href="index.html" class="member-login">← Back to Home</a>
+  </div>
+</aside>
 
-  <!-- ─── HERO ──────────────────────────── -->
-  <div class="max-w-7xl mx-auto px-6 pt-16 pb-4">
-    <div class="text-center mb-14">
-      <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-5">
-        <span class="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></span>
-        Events & Community
+<!-- ═══════════════════════════ MOBILE HEADER ════════════════════════════ -->
+<header class="mobile-header" id="mobileHeader">
+  <img src="./assets/logo.jpg" alt="Builders Day Club" class="mobile-logo">
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<!-- ═══════════════════════════ MOBILE NAV ════════════════════════════════ -->
+<div class="mobile-nav-overlay" id="mobileNav">
+  <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <nav class="mobile-nav-links">
+    <a href="index.html#home" class="mobile-nav-link">Home</a>
+    <a href="index.html#why" class="mobile-nav-link">Why Join</a>
+    <a href="index.html#inside" class="mobile-nav-link">Inside</a>
+    <a href="index.html#process" class="mobile-nav-link">Process</a>
+    <a href="index.html#testimonials" class="mobile-nav-link">Stories</a>
+    <a href="index.html#faq" class="mobile-nav-link">FAQ</a>
+    <a href="events.html" class="mobile-nav-link" style="color:#f97316;font-weight:600;">Events</a>
+    <a href="https://tally.so/r/VLlrNg" target="_blank" rel="noopener noreferrer" class="mobile-nav-link cta-mobile">Apply to Join</a>
+  </nav>
+</div>
+
+<!-- ════════════════════════ EVENTS PAGE CONTENT ══════════════════════════ -->
+<div class="events-page-wrapper">
+
+  <!-- HERO -->
+  <div class="max-w-6xl mx-auto px-6 pt-14 pb-4">
+    <div class="mb-12">
+      <div class="inline-flex items-center gap-2 mb-4" style="background:rgba(249,115,22,0.10);border:1px solid rgba(249,115,22,0.20);color:#fb923c;font-size:11px;font-weight:700;padding:6px 14px;border-radius:99px;letter-spacing:0.05em;">
+        <span style="width:6px;height:6px;background:#f97316;border-radius:50%;animation:pulse 2s infinite;display:inline-block;"></span>
+        UPCOMING EVENTS
       </div>
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-        Build. Connect.<br><span class="text-orange-500">Grow together.</span>
+      <h1 style="font-size:clamp(2rem,5vw,3.5rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:12px;">
+        Build. Connect.<br><span style="color:#f97316;">Grow together.</span>
       </h1>
-      <p class="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
-        Join hands-on workshops, hackathons, and meetups crafted for builders across India.
+      <p style="color:#9ca3af;font-size:1rem;max-width:480px;line-height:1.7;">
+        Hands-on workshops, hackathons, and meetups crafted for builders across India.
       </p>
     </div>
 
-    <!-- ─── FILTERS ──────────────────────── -->
+    <!-- FILTERS -->
     <div class="flex items-center gap-2 flex-wrap mb-10">
       <button onclick="filterEvents('all')" data-filter="all"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-orange-500 text-white transition-all">All Events</button>
+        class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:#f97316;color:#fff;">All Events</button>
       <button onclick="filterEvents('upcoming')" data-filter="upcoming"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-white/[0.07] text-gray-300 hover:bg-white/[0.12] transition-all">Upcoming</button>
+        class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:rgba(255,255,255,0.07);color:#d1d5db;">Upcoming</button>
       <button onclick="filterEvents('past')" data-filter="past"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-white/[0.07] text-gray-300 hover:bg-white/[0.12] transition-all">Past Events</button>
+        class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:rgba(255,255,255,0.07);color:#d1d5db;">Past</button>
       <button onclick="filterEvents('workshop')" data-filter="workshop"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-white/[0.07] text-gray-300 hover:bg-white/[0.12] transition-all">Workshops</button>
+        class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:rgba(255,255,255,0.07);color:#d1d5db;">Workshops</button>
       <button onclick="filterEvents('meetup')" data-filter="meetup"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-white/[0.07] text-gray-300 hover:bg-white/[0.12] transition-all">Meetups</button>
+        class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:rgba(255,255,255,0.07);color:#d1d5db;">Meetups</button>
       <button onclick="filterEvents('hackathon')" data-filter="hackathon"
-        class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-white/[0.07] text-gray-300 hover:bg-white/[0.12] transition-all">Hackathons</button>
+        class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all"
+        style="background:rgba(255,255,255,0.07);color:#d1d5db;">Hackathons</button>
     </div>
 
-    <!-- ─── EVENTS GRID ──────────────────── -->
+    <!-- EVENTS GRID -->
     <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <div class="shimmer rounded-2xl h-80"></div>
       <div class="shimmer rounded-2xl h-80"></div>
@@ -90,314 +179,341 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-6 py-12 text-center text-gray-700 text-sm">
+  <div class="max-w-6xl mx-auto px-6 py-12 text-center" style="color:#374151;font-size:13px;">
     © 2026 Builders Day Club
   </div>
+</div>
 
-  <!-- ═══════════════════════════════════════ -->
-  <!-- REGISTRATION MODAL                      -->
-  <!-- ═══════════════════════════════════════ -->
-  <div id="regModal" class="hidden fixed inset-0 z-50 modal-blur bg-black/75 flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-[#161616] rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md max-h-[95vh] overflow-y-auto border border-white/[0.07] shadow-2xl">
+<!-- ════════════════════════ REGISTRATION MODAL ══════════════════════════ -->
+<div id="regModal" class="hidden fixed inset-0 z-50 modal-blur flex items-end sm:items-center justify-center p-0 sm:p-4" style="background:rgba(0,0,0,0.80);">
+  <div class="rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md max-h-[95vh] overflow-y-auto border shadow-2xl" style="background:#161616;border-color:rgba(255,255,255,0.07);">
 
-      <!-- Event banner image -->
-      <div class="relative h-52 sm:h-56 overflow-hidden rounded-t-3xl flex-shrink-0">
-        <img id="modalImg" src="" alt="" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent"></div>
-        <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 hover:bg-black/80 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all">✕</button>
-        <div class="absolute bottom-3 left-4 flex items-center gap-2">
-          <span id="modalType" class="text-xs font-bold px-3 py-1 rounded-full uppercase"></span>
-          <span id="modalPriceBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-black/50 text-white backdrop-blur-sm"></span>
-        </div>
-      </div>
-
-      <div class="p-6">
-        <h2 id="modalTitle" class="text-xl font-bold leading-snug mb-1"></h2>
-        <div class="flex flex-wrap gap-3 text-xs text-gray-400 mb-3">
-          <span id="modalDate">📅</span>
-          <span id="modalVenue">📍</span>
-        </div>
-        <p id="modalDesc" class="text-gray-400 text-sm leading-relaxed mb-6"></p>
-
-        <!-- Step progress dots -->
-        <div id="stepBar" class="flex items-center gap-2 mb-6">
-          <div class="step-dot active w-2.5 h-2.5 rounded-full bg-orange-500" id="dot1"></div>
-          <div class="h-px flex-1 bg-white/10"></div>
-          <div class="step-dot w-2.5 h-2.5 rounded-full bg-white/15" id="dot2"></div>
-          <div class="h-px flex-1 bg-white/10"></div>
-          <div class="step-dot w-2.5 h-2.5 rounded-full bg-white/15" id="dot3"></div>
-        </div>
-
-        <!-- Step 1: Details -->
-        <div id="step1">
-          <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">Your Details</p>
-          <div class="space-y-3">
-            <input id="regName" type="text" placeholder="Full name *"
-              class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500/60 transition-colors">
-            <input id="regEmail" type="email" placeholder="Email address *"
-              class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500/60 transition-colors">
-            <input id="regPhone" type="tel" placeholder="Phone number *"
-              class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500/60 transition-colors">
-          </div>
-          <p id="err1" class="text-red-400 text-xs mt-2 hidden"></p>
-          <button onclick="goStep2()" class="mt-4 w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm">Continue →</button>
-        </div>
-
-        <!-- Step 2: Payment -->
-        <div id="step2" class="hidden">
-          <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-4">Payment</p>
-          <div class="bg-white/[0.04] border border-white/[0.07] rounded-2xl p-5 text-center mb-4">
-            <p class="text-gray-400 text-xs mb-3 font-medium">SCAN & PAY</p>
-            <div class="flex justify-center mb-3">
-              <div class="bg-white p-2 rounded-xl inline-block">
-                <img id="modalQR" src="" alt="UPI QR" class="w-40 h-40 object-contain">
-              </div>
-            </div>
-            <p class="text-3xl font-extrabold text-orange-500 mb-0.5" id="modalPriceText"></p>
-            <p class="text-gray-500 text-xs" id="modalUpi"></p>
-          </div>
-          <div class="bg-white/[0.03] rounded-xl p-3 text-xs text-gray-400 mb-4 space-y-1">
-            <p>1. Open any UPI app (GPay, PhonePe, Paytm…)</p>
-            <p>2. Scan the QR code above</p>
-            <p>3. Pay <strong class="text-white" id="payAmtLabel"></strong> and note your UTR / Transaction ID</p>
-          </div>
-          <button onclick="goStep(3)" class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm">I've Paid — Enter UTR →</button>
-          <button onclick="goStep(1)" class="mt-2 w-full text-gray-500 hover:text-white text-sm py-2 transition-colors">← Back</button>
-        </div>
-
-        <!-- Step 3: UTR -->
-        <div id="step3" class="hidden">
-          <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-2">UTR Verification</p>
-          <p class="text-gray-400 text-sm mb-4">Enter the UTR / Transaction Reference from your UPI app</p>
-          <input id="regUTR" type="text" placeholder="e.g. 426112345678" maxlength="22"
-            class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500/60 transition-colors font-mono tracking-wider">
-          <p class="text-gray-600 text-xs mt-2">UPI app → Transactions → tap payment → UTR No.</p>
-          <p id="err3" class="text-red-400 text-xs mt-2 hidden"></p>
-          <button onclick="submitReg()" id="submitBtn"
-            class="mt-4 w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
-            <span id="submitTxt">Submit Registration</span>
-            <span id="submitSpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
-          </button>
-          <button onclick="goStep(2)" class="mt-2 w-full text-gray-500 hover:text-white text-sm py-2 transition-colors">← Back</button>
-        </div>
-
-        <!-- Step 4: Success -->
-        <div id="step4" class="hidden text-center py-4">
-          <div class="text-6xl mb-4">🎉</div>
-          <h3 class="text-xl font-bold mb-2">You're registered!</h3>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">Your spot is pending payment verification.<br>We'll confirm once it's checked.</p>
-          <div class="bg-white/[0.04] rounded-xl p-4 text-left text-sm mb-5 space-y-2">
-            <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Booking Summary</p>
-            <p class="text-white font-medium" id="sucEvent"></p>
-            <p class="text-gray-400" id="sucName"></p>
-            <p class="text-gray-400" id="sucEmail"></p>
-            <p class="flex items-center gap-2 text-yellow-400 text-xs mt-2"><span>⏳</span> Verification usually takes 2–4 hours</p>
-          </div>
-          <button onclick="closeModal()" class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm">Done ✓</button>
-        </div>
-
+    <!-- Banner image -->
+    <div class="relative overflow-hidden rounded-t-3xl flex-shrink-0" style="height:210px;">
+      <img id="modalImg" src="" alt="" class="w-full h-full object-cover">
+      <div class="absolute inset-0" style="background:linear-gradient(to top, #161616, transparent)"></div>
+      <button onclick="closeModal()" class="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full text-sm text-white transition-all" style="background:rgba(0,0,0,0.50);">✕</button>
+      <div class="absolute bottom-3 left-4 flex items-center gap-2">
+        <span id="modalType" class="text-xs font-bold px-3 py-1 rounded-full uppercase"></span>
+        <span id="modalPriceBadge" class="text-xs font-bold px-3 py-1 rounded-full text-white" style="background:rgba(0,0,0,0.50);backdrop-filter:blur(4px);"></span>
       </div>
     </div>
+
+    <div class="p-6">
+      <h2 id="modalTitle" class="text-xl font-bold leading-snug mb-1 text-white"></h2>
+      <div class="flex flex-wrap gap-3 text-xs mb-3" style="color:#9ca3af;">
+        <span id="modalDate">📅</span>
+        <span id="modalVenue">📍</span>
+      </div>
+      <p id="modalDesc" class="text-sm leading-relaxed mb-6" style="color:#9ca3af;"></p>
+
+      <!-- Step dots -->
+      <div id="stepBar" class="flex items-center gap-2 mb-6">
+        <div class="step-dot active w-2.5 h-2.5 rounded-full" id="dot1" style="background:#f97316;"></div>
+        <div class="h-px flex-1" style="background:rgba(255,255,255,0.10);"></div>
+        <div class="step-dot w-2.5 h-2.5 rounded-full" id="dot2" style="background:rgba(255,255,255,0.15);"></div>
+        <div class="h-px flex-1" style="background:rgba(255,255,255,0.10);"></div>
+        <div class="step-dot w-2.5 h-2.5 rounded-full" id="dot3" style="background:rgba(255,255,255,0.15);"></div>
+      </div>
+
+      <!-- Step 1: Details -->
+      <div id="step1">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:#fb923c;">Your Details</p>
+        <div class="space-y-3">
+          <input id="regName" type="text" placeholder="Full name *"
+            class="w-full rounded-xl px-4 py-3 text-sm text-white transition-colors focus:outline-none"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+          <input id="regEmail" type="email" placeholder="Email address *"
+            class="w-full rounded-xl px-4 py-3 text-sm text-white transition-colors focus:outline-none"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+          <input id="regPhone" type="tel" placeholder="Phone number *"
+            class="w-full rounded-xl px-4 py-3 text-sm text-white transition-colors focus:outline-none"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+        </div>
+        <p id="err1" class="text-xs mt-2 hidden" style="color:#f87171;"></p>
+        <button onclick="goStep2()" class="mt-4 w-full font-semibold py-3 rounded-xl transition-all text-sm text-white active:scale-95"
+          style="background:#f97316;">Continue →</button>
+      </div>
+
+      <!-- Step 2: Payment -->
+      <div id="step2" class="hidden">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:#fb923c;">Payment</p>
+        <div class="rounded-2xl p-5 text-center mb-4" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);">
+          <p class="text-xs mb-3 font-medium" style="color:#9ca3af;">SCAN & PAY</p>
+          <div class="flex justify-center mb-3">
+            <div class="bg-white p-2 rounded-xl inline-block">
+              <img id="modalQR" src="" alt="UPI QR" class="w-40 h-40 object-contain">
+            </div>
+          </div>
+          <p class="text-3xl font-extrabold mb-0.5" id="modalPriceText" style="color:#f97316;"></p>
+          <p class="text-xs" id="modalUpi" style="color:#6b7280;"></p>
+        </div>
+        <div class="rounded-xl p-3 text-xs mb-4 space-y-1" style="background:rgba(255,255,255,0.03);color:#9ca3af;">
+          <p>1. Open any UPI app (GPay, PhonePe, Paytm…)</p>
+          <p>2. Scan the QR code above</p>
+          <p>3. Pay <strong class="text-white" id="payAmtLabel"></strong> and note your UTR / Transaction ID</p>
+        </div>
+        <button onclick="goStep(3)" class="w-full font-semibold py-3 rounded-xl transition-all text-sm text-white active:scale-95"
+          style="background:#f97316;">I've Paid — Enter UTR →</button>
+        <button onclick="goStep(1)" class="mt-2 w-full text-sm py-2 transition-colors" style="color:#6b7280;">← Back</button>
+      </div>
+
+      <!-- Step 3: UTR -->
+      <div id="step3" class="hidden">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:#fb923c;">UTR Verification</p>
+        <p class="text-sm leading-relaxed mb-4" style="color:#9ca3af;">Enter the UTR / Transaction Reference from your UPI app</p>
+        <input id="regUTR" type="text" placeholder="e.g. 426112345678" maxlength="22"
+          class="w-full rounded-xl px-4 py-3 text-sm text-white font-mono tracking-wider focus:outline-none"
+          style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+        <p class="text-xs mt-2" style="color:#4b5563;">UPI app → Transactions → tap payment → UTR No.</p>
+        <p id="err3" class="text-xs mt-2 hidden" style="color:#f87171;"></p>
+        <button onclick="submitReg()" id="submitBtn"
+          class="mt-4 w-full font-semibold py-3 rounded-xl transition-all text-sm text-white flex items-center justify-center gap-2 active:scale-95"
+          style="background:#f97316;">
+          <span id="submitTxt">Submit Registration</span>
+          <span id="submitSpin" class="hidden w-4 h-4 border-2 border-t-white rounded-full spin" style="border-color:rgba(255,255,255,0.30);border-top-color:#fff;"></span>
+        </button>
+        <button onclick="goStep(2)" class="mt-2 w-full text-sm py-2 transition-colors" style="color:#6b7280;">← Back</button>
+      </div>
+
+      <!-- Step 4: Success -->
+      <div id="step4" class="hidden text-center py-4">
+        <div class="text-6xl mb-4">🎉</div>
+        <h3 class="text-xl font-bold mb-2 text-white">You're registered!</h3>
+        <p class="text-sm leading-relaxed mb-6" style="color:#9ca3af;">Your spot is pending payment verification.<br>We'll confirm once it's checked.</p>
+        <div class="rounded-xl p-4 text-left text-sm mb-5 space-y-2" style="background:rgba(255,255,255,0.04);">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:#6b7280;">Booking Summary</p>
+          <p class="text-white font-medium" id="sucEvent"></p>
+          <p id="sucName" style="color:#9ca3af;"></p>
+          <p id="sucEmail" style="color:#9ca3af;"></p>
+          <p class="flex items-center gap-2 text-xs mt-2" style="color:#facc15;">⏳ Verification usually takes 2–4 hours</p>
+        </div>
+        <button onclick="closeModal()" class="w-full font-semibold py-3 rounded-xl transition-all text-sm text-white active:scale-95"
+          style="background:#f97316;">Done ✓</button>
+      </div>
+
+    </div>
   </div>
+</div>
 
-  <!-- ─── SUPABASE + APP LOGIC ────────────── -->
-  <script>
-    // ════════════════════════════════════════════
-    // SUPABASE CONFIG  ← Paste your config here
-    // ════════════════════════════════════════════
-    const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFhaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
-    // ════════════════════════════════════════════
+<!-- ════════════════════════════ SCRIPTS ══════════════════════════════════ -->
 
-    const { createClient } = supabase;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+<!-- Mobile menu toggle (same as index.html) -->
+<script>
+  const menuBtn   = document.getElementById('mobileMenuBtn');
+  const closeBtn  = document.getElementById('mobileNavClose');
+  const mobileNav = document.getElementById('mobileNav');
+  if (menuBtn)  menuBtn.addEventListener('click',  () => mobileNav.classList.add('active'));
+  if (closeBtn) closeBtn.addEventListener('click', () => mobileNav.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-link').forEach(l => {
+    l.addEventListener('click', () => mobileNav.classList.remove('active'));
+  });
+</script>
 
-    let allEvents = [], settings = {}, currentEvent = null;
-    const isDemo = SUPABASE_URL.includes('YOUR_PROJECT');
+<!-- Supabase + Events logic -->
+<script>
+  const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
 
-    // ─── Load ────────────────────────────────
-    async function loadAll() {
-      if (isDemo) { allEvents = demoEvents(); renderEvents(allEvents); return; }
-      try {
-        const [{ data: evs }, { data: cfg }] = await Promise.all([
-          sb.from('events').select('*').eq('is_active', true).order('date', { ascending: true }),
-          sb.from('settings').select('*').eq('id', 'payment').single()
-        ]);
-        allEvents = evs || [];
-        settings  = cfg || {};
-        renderEvents(allEvents);
-      } catch(e) {
-        console.warn('Supabase error, using demo:', e.message);
-        allEvents = demoEvents();
-        renderEvents(allEvents);
-      }
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  let allEvents = [], settings = {}, currentEvent = null;
+  const isDemo = SUPABASE_URL.includes('YOUR_PROJECT');
+
+  // ── Load ──────────────────────────────────────
+  async function loadAll() {
+    if (isDemo) { allEvents = demoEvents(); renderEvents(allEvents); return; }
+    try {
+      const [{ data: evs }, { data: cfg }] = await Promise.all([
+        sb.from('events').select('*').eq('is_active', true).order('date', { ascending: true }),
+        sb.from('settings').select('*').eq('id', 'payment').single()
+      ]);
+      allEvents = evs || [];
+      settings  = cfg  || {};
+      renderEvents(allEvents);
+    } catch(e) {
+      console.warn('Supabase error, using demo data:', e.message);
+      allEvents = demoEvents();
+      renderEvents(allEvents);
     }
+  }
 
-    function demoEvents() {
-      return [
-        { id:'d1', title:'Build in Public: Founders Meetup', type:'meetup', description:"An evening of raw conversations, live demos, and real talk about building startups from zero. Share what you're working on, get feedback, and grow your network.", date:'2026-08-10', time:'6:00 PM', venue:'Koramangala, Bengaluru', image_url:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', price:299, is_active:true, tags:['Networking','Founders','In-person'] },
-        { id:'d2', title:'AI Buildathon — 24 Hours', type:'hackathon', description:'Ship something real with AI in 24 hours. Solo or team, beginner or pro. Best project takes home ₹50,000 in prizes and a chance to demo to top investors.', date:'2026-08-17', time:'9:00 AM', venue:'HSR Layout, Bengaluru', image_url:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80', price:499, is_active:true, tags:['AI','Hackathon','�2550K Prize'] },
-        { id:'d3', title:'Product Thinking Workshop', type:'workshop', description:'A 4-hour hands-on workshop on user discovery, product strategy, and prioritisation frameworks. Walk away with a real product spec you can start building.', date:'2026-09-05', time:'10:00 AM', venue:'Indiranagar, Bengaluru', image_url:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80', price:799, is_active:true, tags:['Product','Workshop','Certificate'] },
-        { id:'d4', title:'No-Code Demo Night', type:'talk', description:'Watch builders ship their no-code projects live. Pitch your idea, get voted, win prizes.', date:'2026-07-15', time:'7:00 PM', venue:'Whitefield, Bengaluru', image_url:'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80', price:0, is_active:true, tags:['No-Code','Demo','Free'] }
-      ];
-    }
+  function demoEvents() {
+    return [
+      { id:'d1', title:'Build in Public: Founders Meetup', type:'meetup', description:"An evening of raw conversations, live demos, and real talk about building startups from zero. Share what you're working on, get feedback, and grow your network.", date:'2026-08-10', time:'6:00 PM', venue:'Koramangala, Bengaluru', image_url:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', price:299, is_active:true, tags:['Networking','Founders','In-person'] },
+      { id:'d2', title:'AI Buildathon — 24 Hours', type:'hackathon', description:'Ship something real with AI in 24 hours. Solo or team, beginner or pro. Best project takes home ₹50,000 in prizes and a chance to demo to top investors.', date:'2026-08-17', time:'9:00 AM', venue:'HSR Layout, Bengaluru', image_url:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80', price:499, is_active:true, tags:['AI','Hackathon','₹50K Prize'] },
+      { id:'d3', title:'Product Thinking Workshop', type:'workshop', description:'A 4-hour hands-on workshop on user discovery, product strategy, and prioritisation frameworks. Walk away with a real product spec you can start building.', date:'2026-09-05', time:'10:00 AM', venue:'Indiranagar, Bengaluru', image_url:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80', price:799, is_active:true, tags:['Product','Workshop','Certificate'] },
+      { id:'d4', title:'No-Code Demo Night', type:'talk', description:'Watch builders ship their no-code projects live. Pitch your idea, get voted, win prizes.', date:'2026-07-15', time:'7:00 PM', venue:'Whitefield, Bengaluru', image_url:'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80', price:0, is_active:true, tags:['No-Code','Demo','Free'] }
+    ];
+  }
 
-    // ─── Render ──────────────────────────────
-    function renderEvents(events) {
-      const grid  = document.getElementById('eventsGrid');
-      const empty = document.getElementById('emptyState');
-      const now   = new Date();
-      if (!events.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
-      empty.classList.add('hidden');
-      grid.innerHTML = events.map(ev => {
-        const d      = new Date(ev.date);
-        const isPast = d < now;
-        const dStr   = d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
-        const tags   = Array.isArray(ev.tags) ? ev.tags : (ev.tags ? JSON.parse(ev.tags) : []);
-        return `
-        <div class="card-hover bg-[#161616] border border-white/[0.06] hover:border-orange-500/25 rounded-2xl overflow-hidden cursor-pointer ${isPast?'opacity-50':''}"
-             onclick="openEvent('${ev.id}')">
-          <div class="relative h-48 overflow-hidden">
-            <img src="${ev.image_url||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'}"
-                 class="w-full h-full object-cover"
-                 onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'" alt="">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            ${isPast?`<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="bg-white/10 backdrop-blur-sm text-white text-xs font-semibold px-4 py-1.5 rounded-full border border-white/20">Past Event</span></div>`:''}
-            <div class="absolute top-3 left-3">
-              <span class="text-xs font-bold px-3 py-1 rounded-full uppercase tag-${ev.type||'other'}">${(ev.type||'event').toUpperCase()}</span>
-            </div>
-            <div class="absolute top-3 right-3">
-              ${ev.price>0?`<span class="bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">₹${ev.price}</span>`:`<span class="bg-green-500/80 text-white text-xs font-bold px-3 py-1 rounded-full">FREE</span>`}
-            </div>
+  // ── Render ────────────────────────────────────
+  function renderEvents(events) {
+    const grid  = document.getElementById('eventsGrid');
+    const empty = document.getElementById('emptyState');
+    const now   = new Date();
+    if (!events.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    grid.innerHTML = events.map(ev => {
+      const d      = new Date(ev.date);
+      const isPast = d < now;
+      const dStr   = d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+      const tags   = Array.isArray(ev.tags) ? ev.tags : (ev.tags ? JSON.parse(ev.tags) : []);
+      return `
+      <div class="card-hover border rounded-2xl overflow-hidden cursor-pointer ${isPast?'opacity-50':''}"
+           style="background:#161616;border-color:rgba(255,255,255,0.06);"
+           onclick="openEvent('${ev.id}')"
+           onmouseenter="this.style.borderColor='rgba(249,115,22,0.25)'"
+           onmouseleave="this.style.borderColor='rgba(255,255,255,0.06)'">
+        <div class="relative overflow-hidden" style="height:192px;">
+          <img src="${ev.image_url||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'}"
+               class="w-full h-full object-cover"
+               onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'" alt="">
+          <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.6),transparent)"></div>
+          ${isPast?`<div class="absolute inset-0 flex items-center justify-center" style="background:rgba(0,0,0,0.50);"><span class="text-white text-xs font-semibold px-4 py-1.5 rounded-full" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);">Past Event</span></div>`:''}
+          <div class="absolute top-3 left-3">
+            <span class="text-xs font-bold px-3 py-1 rounded-full uppercase tag-${ev.type||'other'}">${(ev.type||'event').toUpperCase()}</span>
           </div>
-          <div class="p-5">
-            <h3 class="font-bold text-base leading-snug mb-2">${ev.title}</h3>
-            <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">${ev.description}</p>
-            <div class="flex items-center gap-1 text-gray-500 text-xs mb-1">📅 ${dStr}${ev.time?' • '+ev.time:''}</div>
-            <div class="flex items-center gap-1 text-gray-500 text-xs mb-4">📍 ${ev.venue}</div>
-            ${tags.length?`<div class="flex flex-wrap gap-1.5">${tags.slice(0,3).map(t=>`<span class="text-xs bg-white/[0.05] text-gray-400 px-2.5 py-0.5 rounded-full">${t}</span>`).join('')}</div>`:''}
+          <div class="absolute top-3 right-3">
+            ${ev.price>0
+              ? `<span class="text-xs font-semibold px-3 py-1 rounded-full text-white" style="background:rgba(0,0,0,0.60);">₹${ev.price}</span>`
+              : `<span class="text-xs font-bold px-3 py-1 rounded-full text-white" style="background:rgba(34,197,94,0.80);">FREE</span>`}
           </div>
-        </div>`;
-      }).join('');
-    }
+        </div>
+        <div class="p-5">
+          <h3 class="font-bold text-base leading-snug mb-2 text-white">${ev.title}</h3>
+          <p class="text-xs leading-relaxed mb-4 line-clamp-2" style="color:#6b7280;">${ev.description}</p>
+          <div class="flex items-center gap-1 text-xs mb-1" style="color:#6b7280;">📅 ${dStr}${ev.time?' · '+ev.time:''}</div>
+          <div class="flex items-center gap-1 text-xs mb-4" style="color:#6b7280;">📍 ${ev.venue}</div>
+          ${tags.length?`<div class="flex flex-wrap gap-1.5">${tags.slice(0,3).map(t=>`<span class="text-xs px-2.5 py-0.5 rounded-full" style="background:rgba(255,255,255,0.05);color:#9ca3af;">${t}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
 
-    // ─── Filter ──────────────────────────────
-    function filterEvents(f) {
-      document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('bg-orange-500','text-white');
-        b.classList.add('bg-white/[0.07]','text-gray-300');
-      });
-      const a = document.querySelector(`[data-filter="${f}"]`);
-      if(a){ a.classList.add('bg-orange-500','text-white'); a.classList.remove('bg-white/[0.07]','text-gray-300'); }
-      const now = new Date();
-      const types = ['workshop','meetup','hackathon','talk'];
-      let filtered = allEvents;
-      if (f==='upcoming') filtered = allEvents.filter(e=>new Date(e.date)>=now);
-      else if (f==='past') filtered = allEvents.filter(e=>new Date(e.date)<now);
-      else if (types.includes(f)) filtered = allEvents.filter(e=>e.type===f);
-      renderEvents(filtered);
-    }
+  // ── Filter ────────────────────────────────────
+  function filterEvents(f) {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'rgba(255,255,255,0.07)';
+      b.style.color = '#d1d5db';
+    });
+    const a = document.querySelector(`[data-filter="${f}"]`);
+    if (a) { a.classList.add('active'); a.style.background='#f97316'; a.style.color='#fff'; }
+    const now = new Date();
+    const types = ['workshop','meetup','hackathon','talk'];
+    let filtered = allEvents;
+    if (f==='upcoming') filtered = allEvents.filter(e=>new Date(e.date)>=now);
+    else if (f==='past') filtered = allEvents.filter(e=>new Date(e.date)<now);
+    else if (types.includes(f)) filtered = allEvents.filter(e=>e.type===f);
+    renderEvents(filtered);
+  }
 
-    // ─── Modal ───────────────────────────────
-    function openEvent(id) {
-      currentEvent = allEvents.find(e=>e.id===id);
-      if (!currentEvent) return;
-      const ev = currentEvent;
-      document.getElementById('modalImg').src = ev.image_url||'';
-      document.getElementById('modalTitle').textContent = ev.title;
-      const typeEl = document.getElementById('modalType');
-      typeEl.className = `text-xs font-bold px-3 py-1 rounded-full uppercase tag-${ev.type||'other'}`;
-      typeEl.textContent = (ev.type||'event').toUpperCase();
-      document.getElementById('modalPriceBadge').textContent = ev.price>0?`₹${ev.price}`:'FREE';
-      const d = new Date(ev.date);
-      document.getElementById('modalDate').textContent = '📅 '+d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(ev.time?' • '+ev.time:'');
-      document.getElementById('modalVenue').textContent = '📍 '+ev.venue;
-      document.getElementById('modalDesc').textContent = ev.description;
-      document.getElementById('modalPriceText').textContent = ev.price>0?`₹${ev.price}`:'FREE';
-      document.getElementById('payAmtLabel').textContent = ev.price>0?`₹${ev.price}`:"nothing (it's free!)";
-      document.getElementById('modalUpi').textContent = settings.upi_id||'';
-      document.getElementById('modalQR').src = settings.qr_code_url||'';
-      document.getElementById('stepBar').style.display = (!ev.price||ev.price===0)?'none':'flex';
-      resetModal();
-      goStep(1);
-      document.getElementById('regModal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    }
+  // ── Modal ─────────────────────────────────────
+  function openEvent(id) {
+    currentEvent = allEvents.find(e=>e.id===id);
+    if (!currentEvent) return;
+    const ev = currentEvent;
+    document.getElementById('modalImg').src = ev.image_url||'';
+    document.getElementById('modalTitle').textContent = ev.title;
+    const typeEl = document.getElementById('modalType');
+    typeEl.className = `text-xs font-bold px-3 py-1 rounded-full uppercase tag-${ev.type||'other'}`;
+    typeEl.textContent = (ev.type||'event').toUpperCase();
+    document.getElementById('modalPriceBadge').textContent = ev.price>0?`₹${ev.price}`:'FREE';
+    const d = new Date(ev.date);
+    document.getElementById('modalDate').textContent = '📅 '+d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(ev.time?' · '+ev.time:'');
+    document.getElementById('modalVenue').textContent = '📍 '+ev.venue;
+    document.getElementById('modalDesc').textContent = ev.description;
+    document.getElementById('modalPriceText').textContent = ev.price>0?`₹${ev.price}`:'FREE';
+    document.getElementById('payAmtLabel').textContent = ev.price>0?`₹${ev.price}`:"nothing (it's free!)";
+    document.getElementById('modalUpi').textContent = settings.upi_id||'';
+    document.getElementById('modalQR').src = settings.qr_code_url||'';
+    document.getElementById('stepBar').style.display = (!ev.price||ev.price===0)?'none':'flex';
+    resetModal();
+    goStep(1);
+    document.getElementById('regModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
 
-    function closeModal() {
-      document.getElementById('regModal').classList.add('hidden');
-      document.body.style.overflow = '';
-    }
+  function closeModal() {
+    document.getElementById('regModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
 
-    function resetModal() {
-      ['regName','regEmail','regPhone','regUTR'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
-      ['err1','err3'].forEach(i=>document.getElementById(i).classList.add('hidden'));
-      document.getElementById('submitBtn').disabled = false;
+  function resetModal() {
+    ['regName','regEmail','regPhone','regUTR'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+    ['err1','err3'].forEach(i=>document.getElementById(i).classList.add('hidden'));
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitTxt').textContent = 'Submit Registration';
+    document.getElementById('submitSpin').classList.add('hidden');
+  }
+
+  function goStep(n) {
+    [1,2,3,4].forEach(i=>{ const el=document.getElementById('step'+i); if(el) el.classList.toggle('hidden',i!==n); });
+    [1,2,3].forEach(i=>{
+      const dot=document.getElementById('dot'+i);
+      if(!dot) return;
+      dot.style.background = i<=n ? '#f97316' : 'rgba(255,255,255,0.15)';
+      dot.classList.toggle('active', i<=n);
+    });
+  }
+
+  function goStep2() {
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const err   = document.getElementById('err1');
+    if (!name||!email||!phone) { err.textContent='Please fill all fields'; err.classList.remove('hidden'); return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { err.textContent='Enter a valid email'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    if (!currentEvent.price || currentEvent.price===0) { submitReg(); return; }
+    goStep(2);
+  }
+
+  async function submitReg() {
+    const utr    = document.getElementById('regUTR')?.value.trim() || 'FREE';
+    const isFree = !currentEvent.price || currentEvent.price===0;
+    if (!isFree && utr.length < 8) {
+      const err = document.getElementById('err3');
+      err.textContent = 'Enter a valid UTR / Transaction ID';
+      err.classList.remove('hidden'); return;
+    }
+    document.getElementById('err3')?.classList.add('hidden');
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    document.getElementById('submitTxt').textContent = 'Submitting…';
+    document.getElementById('submitSpin').classList.remove('hidden');
+
+    const payload = {
+      event_id:    currentEvent.id,
+      event_title: currentEvent.title,
+      name:        document.getElementById('regName').value.trim(),
+      email:       document.getElementById('regEmail').value.trim(),
+      phone:       document.getElementById('regPhone').value.trim(),
+      utr,
+      status: isFree ? 'verified' : 'pending'
+    };
+
+    try {
+      if (!isDemo) await sb.from('registrations').insert(payload);
+      document.getElementById('sucEvent').textContent = currentEvent.title;
+      document.getElementById('sucName').textContent  = '👤 '+payload.name;
+      document.getElementById('sucEmail').textContent = '✉️ '+payload.email;
+      goStep(4);
+    } catch(e) {
+      const err = document.getElementById('err3');
+      err.textContent = 'Error submitting. Please try again.';
+      err.classList.remove('hidden');
+      btn.disabled = false;
       document.getElementById('submitTxt').textContent = 'Submit Registration';
       document.getElementById('submitSpin').classList.add('hidden');
     }
+  }
 
-    function goStep(n) {
-      [1,2,3,4].forEach(i=>{ const el=document.getElementById('step'+i); if(el) el.classList.toggle('hidden',i!==n); });
-      [1,2,3].forEach(i=>{ const dot=document.getElementById('dot'+i); if(!dot) return; dot.classList.toggle('bg-orange-500',i<=n); dot.classList.toggle('active',i<=n); dot.classList.toggle('bg-white/15',i>n); });
-    }
+  document.getElementById('regModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+  loadAll();
+</script>
 
-    function goStep2() {
-      const name  = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const phone = document.getElementById('regPhone').value.trim();
-      const err   = document.getElementById('err1');
-      if (!name||!email||!phone) { err.textContent='Please fill all fields'; err.classList.remove('hidden'); return; }
-      if (!/\S+@\S+\.\S+/.test(email)) { err.textContent='Enter a valid email'; err.classList.remove('hidden'); return; }
-      err.classList.add('hidden');
-      const isFree = !currentEvent.price || currentEvent.price===0;
-      if (isFree) { submitReg(); return; }
-      goStep(2);
-    }
-
-    async function submitReg() {
-      const utr   = document.getElementById('regUTR')?.value.trim() || 'FREE';
-      const isFree = !currentEvent.price || currentEvent.price===0;
-      if (!isFree && utr.length < 8) {
-        const err = document.getElementById('err3');
-        err.textContent = 'Enter a valid UTR / Transaction ID';
-        err.classList.remove('hidden'); return;
-      }
-      document.getElementById('err3')?.classList.add('hidden');
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      document.getElementById('submitTxt').textContent = 'Submitting…';
-      document.getElementById('submitSpin').classList.remove('hidden');
-
-      const payload = {
-        event_id:    currentEvent.id,
-        event_title: currentEvent.title,
-        name:        document.getElementById('regName').value.trim(),
-        email:       document.getElementById('regEmail').value.trim(),
-        phone:       document.getElementById('regPhone').value.trim(),
-        utr,
-        status:      isFree ? 'verified' : 'pending'
-      };
-
-      try {
-        if (!isDemo) await sb.from('registrations').insert(payload);
-        document.getElementById('sucEvent').textContent = currentEvent.title;
-        document.getElementById('sucName').textContent  = '👤 '+payload.name;
-        document.getElementById('sucEmail').textContent = '✉️ '+payload.email;
-        goStep(4);
-      } catch(e) {
-        const err = document.getElementById('err3');
-        err.textContent = 'Error submitting. Please try again.';
-        err.classList.remove('hidden');
-        btn.disabled = false;
-        document.getElementById('submitTxt').textContent = 'Submit Registration';
-        document.getElementById('submitSpin').classList.add('hidden');
-      }
-    }
-
-    document.getElementById('regModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
-
-    loadAll();
-  </script>
 </body>
 </html>

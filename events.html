@@ -590,13 +590,18 @@
       document.getElementById('sucName').textContent  = '👤 '+payload.name;
       document.getElementById('sucEmail').textContent = '✉️ '+payload.email;
       goStep(4);
-    } catch(e) {
-      const err=document.getElementById('err3');
-      err.textContent='Error: '+e.message; err.style.display='block';
-      btn.disabled=false;
-      document.getElementById('submitTxt').textContent='Submit Registration';
-      document.getElementById('submitSpin').style.display='none';
-    }
+} catch(e) {
+  const err=document.getElementById('err3');
+  if (e.message && e.message.includes('unique')) {
+    err.textContent='This UTR is already registered. Contact us if this is a mistake.';
+  } else {
+    err.textContent='Error: '+e.message;
+  }
+  err.style.display='block';
+  btn.disabled=false;
+  document.getElementById('submitTxt').textContent='Submit Registration';
+  document.getElementById('submitSpin').style.display='none';
+}
   }
 
   document.getElementById('regModal').addEventListener('click', e=>{if(e.target===e.currentTarget) closeModal();});

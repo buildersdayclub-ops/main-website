@@ -5,73 +5,141 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Events – Builders Day Club</title>
 
-  <!-- Exact same CSS as landing page -->
   <link rel="stylesheet" href="./base.css">
   <link rel="stylesheet" href="./style.css">
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* ── Events grid & card styles ── */
-    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(249,115,22,0.10); }
-    .modal-blur { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .step-dot { transition: background 0.3s, transform 0.3s; }
-    .step-dot.active { transform: scale(1.3); }
-    .shimmer { background: linear-gradient(90deg, #1a1a1a 25%, #242424 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    .tag-meetup    { background:rgba(59,130,246,.15);  color:#93c5fd; }
-    .tag-workshop  { background:rgba(168,85,247,.15);  color:#d8b4fe; }
-    .tag-hackathon { background:rgba(34,197,94,.15);   color:#86efac; }
-    .tag-talk      { background:rgba(249,115,22,.15);  color:#fdba74; }
-    .tag-other     { background:rgba(255,255,255,.08); color:#d1d5db; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin 0.8s linear infinite; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes spin    { to { transform: rotate(360deg); } }
+    @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-    /* Main content pushed right of sidebar — same offset as landing page */
+    .shimmer { background:linear-gradient(90deg,#1a1a1a 25%,#242424 50%,#1a1a1a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite; }
+    .spin { animation:spin 0.8s linear infinite; display:inline-block; }
+    .fade-in { animation:fadeIn 0.3s ease forwards; }
+
+    /* ── Main layout ── */
     .events-main {
       margin-left: 240px;
       min-height: 100vh;
-      background: #0a0a0a;
+      background: #080808;
       color: #fff;
       font-family: inherit;
     }
-    @media (max-width: 900px) {
-      .events-main { margin-left: 0; padding-top: 64px; }
+    @media (max-width: 900px) { .events-main { margin-left:0; padding-top:64px; } }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      position: relative;
+      max-width: 560px;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px 18px 14px 48px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+      box-sizing: border-box;
+    }
+    .search-input::placeholder { color: #4b5563; }
+    .search-input:focus {
+      border-color: rgba(249,115,22,0.4);
+      background: rgba(255,255,255,0.07);
     }
 
-    /* Filters */
+    /* ── Cities scroll ── */
+    .cities-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .cities-scroll::-webkit-scrollbar { display: none; }
+    .city-card {
+      flex-shrink: 0;
+      width: 140px;
+      height: 96px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .city-card:hover { transform: translateY(-2px); }
+    .city-card.active { border-color: #f97316; }
+    .city-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .city-card:hover img { transform: scale(1.05); }
+    .city-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%);
+    }
+    .city-card-name {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+    .city-card-icon {
+      position: absolute;
+      bottom: 28px;
+      left: 12px;
+      opacity: 0.7;
+    }
+
+    /* ── Filter pills ── */
     .filter-btn {
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 99px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       border: none;
       transition: all 0.15s;
-      background: rgba(255,255,255,0.07);
-      color: #d1d5db;
+      background: rgba(255,255,255,0.06);
+      color: #9ca3af;
+      font-family: inherit;
     }
-    .filter-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .filter-btn.active { background: #f97316; color: #fff; }
+    .filter-btn:hover { background:rgba(255,255,255,0.10); color:#fff; }
+    .filter-btn.active { background:#f97316; color:#fff; }
 
-    /* Events grid */
+    /* ── Event cards ── */
     .events-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
     }
-    @media (max-width: 640px) {
-      .events-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width:640px) { .events-grid { grid-template-columns:1fr; } }
 
-    /* Card */
     .ev-card {
-      background: #161616;
+      background: #111;
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
@@ -79,76 +147,179 @@
     .ev-card:hover {
       transform: translateY(-4px);
       border-color: rgba(249,115,22,0.25);
-      box-shadow: 0 20px 40px rgba(249,115,22,0.08);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .ev-card-img {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    .ev-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .ev-card:hover .ev-card-img img { transform: scale(1.04); }
+    .ev-card-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+    }
+    .ev-sold-out {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+    }
+    .ev-type-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .ev-price-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+    .ev-card-title {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      right: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.3;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+    }
+    .ev-card-body {
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .ev-organizer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .ev-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #222;
+      flex-shrink: 0;
+    }
+    .ev-avatar-fallback {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(249,115,22,0.2);
+      border: 1px solid rgba(249,115,22,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fb923c;
+      flex-shrink: 0;
+    }
+    .ev-organizer-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #d1d5db;
+    }
+    .ev-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ev-meta-item {
+      font-size: 12px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    /* Modal */
+    /* Type tag colours */
+    .tag-meetup    { background:rgba(59,130,246,.18);  color:#93c5fd; }
+    .tag-workshop  { background:rgba(168,85,247,.18);  color:#d8b4fe; }
+    .tag-hackathon { background:rgba(34,197,94,.18);   color:#86efac; }
+    .tag-talk      { background:rgba(249,115,22,.18);  color:#fdba74; }
+    .tag-other     { background:rgba(255,255,255,.10); color:#d1d5db; }
+
+    /* ── Modals ── */
     .modal-overlay {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.82);
-      backdrop-filter: blur(10px);
-      display: flex; align-items: flex-end; justify-content: center;
-      padding: 0;
+      position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,0.85);
+      backdrop-filter:blur(10px);
+      display:flex; align-items:flex-end; justify-content:center;
+      padding:0;
     }
-    @media (min-width: 640px) {
-      .modal-overlay { align-items: center; padding: 16px; }
-    }
+    @media(min-width:640px){ .modal-overlay{align-items:center;padding:16px;} }
     .modal-box {
-      background: #161616;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-width: 440px;
-      max-height: 95vh;
-      overflow-y: auto;
+      background:#161616;
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:24px 24px 0 0;
+      width:100%; max-width:440px;
+      max-height:95vh; overflow-y:auto;
     }
-    @media (min-width: 640px) {
-      .modal-box { border-radius: 24px; }
-    }
+    @media(min-width:640px){ .modal-box{border-radius:24px;} }
     .modal-input {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 14px;
-      color: #fff;
-      outline: none;
-      font-family: inherit;
-      transition: border-color 0.2s;
-      box-sizing: border-box;
+      width:100%;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:14px; color:#fff;
+      outline:none; font-family:inherit;
+      transition:border-color 0.2s;
+      box-sizing:border-box;
     }
-    .modal-input:focus { border-color: rgba(249,115,22,0.6); }
+    .modal-input:focus { border-color:rgba(249,115,22,0.6); }
     .modal-btn {
-      width: 100%;
-      background: #f97316;
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 13px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width:100%; background:#f97316; color:#fff;
+      font-weight:600; font-size:14px; padding:13px;
+      border:none; border-radius:12px; cursor:pointer;
+      transition:all 0.15s; font-family:inherit;
+      display:flex; align-items:center; justify-content:center; gap:8px;
     }
-    .modal-btn:hover { background: #ea6c0a; }
-    .modal-btn:active { transform: scale(0.97); }
-    .modal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .modal-btn:hover { background:#ea6c0a; }
+    .modal-btn:active { transform:scale(0.97); }
+    .modal-btn:disabled { opacity:0.6; cursor:not-allowed; }
     .modal-back {
-      width: 100%; background: none; border: none;
-      color: #6b7280; font-size: 14px; padding: 8px;
-      cursor: pointer; font-family: inherit; transition: color 0.15s;
+      width:100%; background:none; border:none;
+      color:#6b7280; font-size:14px; padding:8px;
+      cursor:pointer; font-family:inherit; transition:color 0.15s;
     }
-    .modal-back:hover { color: #fff; }
+    .modal-back:hover { color:#fff; }
+    .step-dot { transition:background 0.3s, transform 0.3s; }
+    .step-dot.active { transform:scale(1.3); }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     SIDEBAR — exact same as index.html (Events link added)
-════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-top">
     <div class="sidebar-logo">
@@ -179,7 +350,6 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         FAQ
       </a>
-      <!-- Events — active on this page -->
       <a href="events.html" class="nav-link active" data-section="events">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Events
@@ -192,9 +362,7 @@
   </div>
 </aside>
 
-<!-- ══════════════════════════════════════════════════════════
-     MOBILE HEADER — exact same as index.html
-════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════ MOBILE HEADER ═══════════════════ -->
 <header class="mobile-header" id="mobileHeader">
   <img src="./assets/logo.jpg" alt="Builders Day Club" class="mobile-logo">
   <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
@@ -202,7 +370,6 @@
   </button>
 </header>
 
-<!-- MOBILE NAV OVERLAY — exact same as index.html + Events -->
 <div class="mobile-nav-overlay" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -215,65 +382,64 @@
     <a href="index.html#testimonials" class="mobile-nav-link">Stories</a>
     <a href="index.html#faq"          class="mobile-nav-link">FAQ</a>
     <a href="events.html"             class="mobile-nav-link" style="color:#f97316;font-weight:700;">Events</a>
-    <a href="https://tally.so/r/VLlrNg" target="_blank" rel="noopener noreferrer" class="mobile-nav-link cta-mobile">Apply to Join</a>
+    <a href="https://tally.so/r/VLlrNg" target="_blank" class="mobile-nav-link cta-mobile">Apply to Join</a>
   </nav>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MAIN CONTENT
-════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
 <div class="events-main">
-  <div style="max-width:1100px;margin:0 auto;padding:56px 32px 24px;">
+  <div style="max-width:1100px;margin:0 auto;padding:52px 32px 48px;">
 
-    <!-- Hero -->
-    <div style="margin-bottom:40px;">
-      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(249,115,22,0.10);border:1px solid rgba(249,115,22,0.20);color:#fb923c;font-size:11px;font-weight:700;padding:6px 14px;border-radius:99px;letter-spacing:0.06em;margin-bottom:16px;">
-        <span style="width:6px;height:6px;background:#f97316;border-radius:50%;display:inline-block;animation:pulse 2s ease-in-out infinite;"></span>
-        UPCOMING EVENTS
+    <!-- Search -->
+    <div class="search-wrap" style="margin-bottom:40px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search for events..." oninput="searchEvents(this.value)">
+    </div>
+
+    <!-- Cities -->
+    <div style="margin-bottom:40px;" id="citiesSection">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:#6b7280;margin-bottom:16px;">CITIES</p>
+      <div class="cities-scroll" id="citiesList">
+        <div class="shimmer" style="width:140px;height:96px;border-radius:16px;flex-shrink:0;"></div>
+        <div class="shimmer" style="width:140px;height:96px;border-radius:16px;flex-shrink:0;"></div>
+        <div class="shimmer" style="width:140px;height:96px;border-radius:16px;flex-shrink:0;"></div>
+        <div class="shimmer" style="width:140px;height:96px;border-radius:16px;flex-shrink:0;"></div>
       </div>
-      <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;line-height:1.1;margin:0 0 12px;">
-        Build. Connect.<br><span style="color:#f97316;">Grow together.</span>
-      </h1>
-      <p style="color:#9ca3af;font-size:15px;max-width:460px;line-height:1.7;margin:0;">
-        Hands-on workshops, hackathons, and meetups crafted for builders across India.
-      </p>
     </div>
 
     <!-- Filters -->
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;">
-      <button class="filter-btn active" onclick="filterEvents('all')"       data-filter="all">All Events</button>
-      <button class="filter-btn"        onclick="filterEvents('upcoming')"  data-filter="upcoming">Upcoming</button>
-      <button class="filter-btn"        onclick="filterEvents('past')"      data-filter="past">Past</button>
-      <button class="filter-btn"        onclick="filterEvents('workshop')"  data-filter="workshop">Workshops</button>
-      <button class="filter-btn"        onclick="filterEvents('meetup')"    data-filter="meetup">Meetups</button>
-      <button class="filter-btn"        onclick="filterEvents('hackathon')" data-filter="hackathon">Hackathons</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;">
+      <button class="filter-btn active" onclick="setFilter('all')"       data-filter="all">All</button>
+      <button class="filter-btn"        onclick="setFilter('upcoming')"  data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn"        onclick="setFilter('past')"      data-filter="past">Past</button>
+      <button class="filter-btn"        onclick="setFilter('workshop')"  data-filter="workshop">Workshops</button>
+      <button class="filter-btn"        onclick="setFilter('meetup')"    data-filter="meetup">Meetups</button>
+      <button class="filter-btn"        onclick="setFilter('hackathon')" data-filter="hackathon">Hackathons</button>
     </div>
 
-    <!-- Grid -->
+    <!-- Events grid -->
     <div id="eventsGrid" class="events-grid">
-      <div class="shimmer" style="border-radius:16px;height:320px;"></div>
-      <div class="shimmer" style="border-radius:16px;height:320px;"></div>
-      <div class="shimmer" style="border-radius:16px;height:320px;"></div>
+      <div class="shimmer" style="border-radius:18px;height:320px;"></div>
+      <div class="shimmer" style="border-radius:18px;height:320px;"></div>
+      <div class="shimmer" style="border-radius:18px;height:320px;"></div>
     </div>
     <div id="emptyState" style="display:none;text-align:center;padding:80px 0;">
       <p style="font-size:3rem;margin-bottom:12px;">🗓️</p>
-      <p style="color:#6b7280;font-size:16px;font-weight:500;">No events found</p>
-      <p style="color:#4b5563;font-size:13px;margin-top:4px;">Check back soon for new events</p>
+      <p style="color:#6b7280;font-size:16px;font-weight:600;">No events found</p>
+      <p style="color:#374151;font-size:13px;margin-top:4px;">Try a different search or city</p>
     </div>
   </div>
 
-  <div style="text-align:center;padding:32px;color:#374151;font-size:13px;">
+  <div style="text-align:center;padding:32px;color:#374151;font-size:12px;">
     © 2026 Builders Day Club
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     REGISTRATION MODAL
-════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════ REGISTRATION MODAL ═══════════════════ -->
 <div id="regModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
 
-    <!-- Banner -->
+    <!-- Banner image -->
     <div style="position:relative;height:210px;overflow:hidden;border-radius:24px 24px 0 0;flex-shrink:0;">
       <img id="modalImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,#161616,transparent);"></div>
@@ -286,9 +452,13 @@
 
     <div style="padding:24px;">
       <h2 id="modalTitle" style="font-size:18px;font-weight:700;color:#fff;line-height:1.3;margin:0 0 8px;"></h2>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#9ca3af;margin-bottom:12px;">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#9ca3af;margin-bottom:6px;">
         <span id="modalDate"></span>
         <span id="modalVenue"></span>
+      </div>
+      <div id="modalOrganizerRow" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <img id="modalOrgAvatar" src="" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1);display:none;">
+        <span id="modalOrgName" style="font-size:12px;color:#9ca3af;"></span>
       </div>
       <p id="modalDesc" style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:24px;"></p>
 
@@ -301,7 +471,7 @@
         <div class="step-dot" id="dot3" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.15);flex-shrink:0;"></div>
       </div>
 
-      <!-- Step 1: Details -->
+      <!-- Step 1 -->
       <div id="step1">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:12px;">Your Details</p>
         <div style="display:flex;flex-direction:column;gap:10px;">
@@ -313,7 +483,7 @@
         <button class="modal-btn" onclick="goStep2()" style="margin-top:16px;">Continue →</button>
       </div>
 
-      <!-- Step 2: Payment -->
+      <!-- Step 2 -->
       <div id="step2" style="display:none;">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:16px;">Payment</p>
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">
@@ -335,7 +505,7 @@
         <button class="modal-back" onclick="goStep(1)">← Back</button>
       </div>
 
-      <!-- Step 3: UTR -->
+      <!-- Step 3 -->
       <div id="step3" style="display:none;">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">UTR Verification</p>
         <p style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:16px;">Enter the UTR / Transaction Reference from your UPI app</p>
@@ -345,12 +515,12 @@
         <p id="err3" style="color:#f87171;font-size:12px;margin-top:8px;display:none;"></p>
         <button class="modal-btn" id="submitBtn" onclick="submitReg()" style="margin-top:16px;">
           <span id="submitTxt">Submit Registration</span>
-          <span id="submitSpin" style="display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.30);border-top-color:#fff;border-radius:50;" class="spin"></span>
+          <span id="submitSpin" style="display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.30);border-top-color:#fff;border-radius:50%;" class="spin"></span>
         </button>
         <button class="modal-back" onclick="goStep(2)">← Back</button>
       </div>
 
-      <!-- Step 4: Success -->
+      <!-- Step 4 -->
       <div id="step4" style="display:none;text-align:center;padding:16px 0;">
         <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
         <h3 style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">You're registered!</h3>
@@ -364,16 +534,11 @@
         </div>
         <button class="modal-btn" onclick="closeModal()">Done ✓</button>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     SCRIPTS
-════════════════════════════════════════════════════════════ -->
-
-<!-- Mobile menu (same logic as index.html) -->
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
 <script>
   const _menuBtn   = document.getElementById('mobileMenuBtn');
   const _closeBtn  = document.getElementById('mobileNavClose');
@@ -385,40 +550,108 @@
   });
 </script>
 
-<!-- Supabase + Events logic -->
 <script>
   const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
-
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-  let allEvents = [], settings = {}, currentEvent = null;
 
+  let allEvents = [], settings = {}, currentEvent = null;
+  let activeFilter = 'all', activeCity = null, searchQuery = '';
+
+  // ── Load everything ──
   async function loadAll() {
     try {
-      const [{ data: evs }, { data: cfg }] = await Promise.all([
+      const [{ data: evs }, { data: cfg }, { data: cities }] = await Promise.all([
         sb.from('events').select('*').eq('is_active', true).order('date', { ascending: true }),
-        sb.from('settings').select('*').eq('id', 'payment').single()
+        sb.from('settings').select('*').eq('id', 'payment').single(),
+        sb.from('cities').select('*').order('display_order', { ascending: true })
       ]);
       allEvents = evs || [];
       settings  = cfg  || {};
-      renderEvents(allEvents);
+      renderCities(cities || []);
+      applyFilters();
     } catch(e) {
-      console.warn('Supabase error, using demo data:', e.message);
-      allEvents = demoEvents();
-      renderEvents(allEvents);
+      console.warn('Load error:', e.message);
+      renderCities([]);
+      applyFilters();
     }
   }
 
-  function demoEvents() {
-    return [
-      { id:'d1', title:'Build in Public: Founders Meetup', type:'meetup', description:"An evening of raw conversations, live demos, and real talk about building startups from zero.", date:'2026-08-10', time:'6:00 PM', venue:'Koramangala, Bengaluru', image_url:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', price:299, is_active:true, tags:['Networking','Founders','In-person'] },
-      { id:'d2', title:'AI Buildathon — 24 Hours', type:'hackathon', description:'Ship something real with AI in 24 hours. Solo or team, beginner or pro. Best project takes home ₹50,000 in prizes.', date:'2026-08-17', time:'9:00 AM', venue:'HSR Layout, Bengaluru', image_url:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80', price:499, is_active:true, tags:['AI','Hackathon','₹50K Prize'] },
-      { id:'d3', title:'Product Thinking Workshop', type:'workshop', description:'A 4-hour hands-on workshop on user discovery, product strategy, and prioritisation frameworks.', date:'2026-09-05', time:'10:00 AM', venue:'Indiranagar, Bengaluru', image_url:'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80', price:799, is_active:true, tags:['Product','Workshop','Certificate'] },
-      { id:'d4', title:'No-Code Demo Night', type:'talk', description:'Watch builders ship their no-code projects live. Pitch your idea, get voted, win prizes.', date:'2026-07-15', time:'7:00 PM', venue:'Whitefield, Bengaluru', image_url:'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80', price:0, is_active:true, tags:['No-Code','Demo','Free'] }
-    ];
+  // ── Cities ──
+  function renderCities(cities) {
+    const list = document.getElementById('citiesList');
+    if (!cities.length) {
+      document.getElementById('citiesSection').style.display = 'none';
+      return;
+    }
+    list.innerHTML = cities.map(c => `
+      <div class="city-card" onclick="filterByCity('${c.name}')" id="city-${c.name.replace(/\s/g,'_')}">
+        <img src="${c.image_url}" alt="${c.name}" onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=300&q=80'">
+        <div class="city-card-overlay"></div>
+        <div class="city-card-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="city-card-name">${c.name}</div>
+      </div>`).join('');
   }
 
+  function filterByCity(name) {
+    if (activeCity === name) {
+      activeCity = null;
+      document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active'));
+    } else {
+      activeCity = name;
+      document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active'));
+      const el = document.getElementById('city-' + name.replace(/\s/g,'_'));
+      if (el) el.classList.add('active');
+    }
+    applyFilters();
+  }
+
+  // ── Search ──
+  function searchEvents(val) {
+    searchQuery = val.trim().toLowerCase();
+    applyFilters();
+  }
+
+  // ── Filter pills ──
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`[data-filter="${f}"]`);
+    if (btn) btn.classList.add('active');
+    applyFilters();
+  }
+
+  // ── Master filter ──
+  function applyFilters() {
+    const now  = new Date();
+    const types = ['workshop','meetup','hackathon','talk'];
+    let filtered = allEvents;
+
+    // filter pill
+    if (activeFilter === 'upcoming') filtered = filtered.filter(e => new Date(e.date) >= now);
+    else if (activeFilter === 'past') filtered = filtered.filter(e => new Date(e.date) < now);
+    else if (types.includes(activeFilter)) filtered = filtered.filter(e => e.type === activeFilter);
+
+    // city
+    if (activeCity) filtered = filtered.filter(e =>
+      (e.city || e.venue || '').toLowerCase().includes(activeCity.toLowerCase())
+    );
+
+    // search
+    if (searchQuery) filtered = filtered.filter(e =>
+      e.title.toLowerCase().includes(searchQuery) ||
+      (e.description||'').toLowerCase().includes(searchQuery) ||
+      (e.venue||'').toLowerCase().includes(searchQuery) ||
+      (e.organizer_name||'').toLowerCase().includes(searchQuery)
+    );
+
+    renderEvents(filtered);
+  }
+
+  // ── Render event cards ──
   function renderEvents(events) {
     const grid  = document.getElementById('eventsGrid');
     const empty = document.getElementById('emptyState');
@@ -429,70 +662,80 @@
       const d      = new Date(ev.date);
       const isPast = d < now;
       const dStr   = d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
-      const tags   = Array.isArray(ev.tags) ? ev.tags : (ev.tags ? JSON.parse(ev.tags) : []);
+      const orgName   = ev.organizer_name || '';
+      const orgAvatar = ev.organizer_avatar || '';
+      const initials  = orgName ? orgName.trim().split(' ').map(w=>w[0]).slice(0,2).join('') : '';
+      const avatarHTML = orgAvatar
+        ? `<img src="${orgAvatar}" class="ev-avatar" alt="${orgName}" onerror="this.style.display='none'">`
+        : initials
+          ? `<div class="ev-avatar-fallback">${initials}</div>`
+          : '';
       return `
-      <div class="ev-card${isPast?' ev-past':''}" onclick="openEvent('${ev.id}')" style="${isPast?'opacity:0.5;':''}">
-        <div style="position:relative;height:192px;overflow:hidden;">
-          <img src="${ev.image_url||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'}"
-               style="width:100%;height:100%;object-fit:cover;"
-               onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'" alt="">
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.65),transparent);"></div>
-          ${isPast?`<div style="position:absolute;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;"><span style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:#fff;font-size:12px;font-weight:600;padding:6px 16px;border-radius:99px;">Past Event</span></div>`:''}
-          <div style="position:absolute;top:12px;left:12px;">
-            <span class="tag-${ev.type||'other'}" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;">${(ev.type||'event').toUpperCase()}</span>
-          </div>
-          <div style="position:absolute;top:12px;right:12px;">
-            ${ev.price>0
-              ? `<span style="background:rgba(0,0,0,0.65);color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;">₹${ev.price}</span>`
-              : `<span style="background:rgba(34,197,94,0.85);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px;">FREE</span>`}
-          </div>
+      <div class="ev-card fade-in" onclick="openEvent('${ev.id}')" style="${isPast?'opacity:0.55;':''}">
+        <div class="ev-card-img">
+          <img src="${ev.image_url||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'}"
+               alt="${ev.title}"
+               onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'">
+          <div class="ev-card-gradient"></div>
+          <span class="ev-type-badge tag-${ev.type||'other'}">${(ev.type||'event').toUpperCase()}</span>
+          <span class="ev-price-badge" style="${ev.price>0?'background:rgba(0,0,0,0.65);color:#fff;':'background:rgba(34,197,94,0.85);color:#fff;'}">
+            ${ev.price>0 ? '₹'+ev.price : 'FREE'}
+          </span>
+          ${isPast ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;"><span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:600;padding:5px 14px;border-radius:99px;backdrop-filter:blur(4px);">Past Event</span></div>' : ''}
+          <div class="ev-card-title">${ev.title}</div>
         </div>
-        <div style="padding:20px;">
-          <h3 style="font-weight:700;font-size:15px;color:#fff;line-height:1.3;margin:0 0 8px;">${ev.title}</h3>
-          <p style="font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${ev.description}</p>
-          <p style="font-size:12px;color:#6b7280;margin-bottom:4px;">📅 ${dStr}${ev.time?' · '+ev.time:''}</p>
-          <p style="font-size:12px;color:#6b7280;margin-bottom:${tags.length?'16px':'0'};">📍 ${ev.venue}</p>
-          ${tags.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;">${tags.slice(0,3).map(t=>`<span style="font-size:11px;background:rgba(255,255,255,0.05);color:#9ca3af;padding:3px 10px;border-radius:99px;">${t}</span>`).join('')}</div>`:''}
+        <div class="ev-card-body">
+          ${orgName ? `
+          <div class="ev-organizer-row">
+            ${avatarHTML}
+            <span class="ev-organizer-name">${orgName}</span>
+          </div>` : ''}
+          <div class="ev-meta-row">
+            <span class="ev-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              ${dStr}${ev.time ? ' · ' + ev.time : ''}
+            </span>
+            ${ev.venue ? `<span class="ev-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${ev.venue}
+            </span>` : ''}
+          </div>
         </div>
       </div>`;
     }).join('');
   }
 
-  function filterEvents(f) {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-      b.classList.remove('active');
-    });
-    const a = document.querySelector(`[data-filter="${f}"]`);
-    if (a) a.classList.add('active');
-    const now   = new Date();
-    const types = ['workshop','meetup','hackathon','talk'];
-    let filtered = allEvents;
-    if (f==='upcoming') filtered = allEvents.filter(e=>new Date(e.date)>=now);
-    else if (f==='past') filtered = allEvents.filter(e=>new Date(e.date)<now);
-    else if (types.includes(f)) filtered = allEvents.filter(e=>e.type===f);
-    renderEvents(filtered);
-  }
-
+  // ── Open event modal ──
   function openEvent(id) {
-    currentEvent = allEvents.find(e=>e.id===id);
+    currentEvent = allEvents.find(e => e.id === id);
     if (!currentEvent) return;
     const ev = currentEvent;
-    document.getElementById('modalImg').src           = ev.image_url||'';
+    document.getElementById('modalImg').src           = ev.image_url || '';
     document.getElementById('modalTitle').textContent = ev.title;
     const typeEl = document.getElementById('modalType');
     typeEl.className = `tag-${ev.type||'other'}`;
     typeEl.style.cssText = 'font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;';
     typeEl.textContent = (ev.type||'event').toUpperCase();
-    document.getElementById('modalPriceBadge').textContent = ev.price>0?`₹${ev.price}`:'FREE';
+    document.getElementById('modalPriceBadge').textContent = ev.price > 0 ? `₹${ev.price}` : 'FREE';
     const d = new Date(ev.date);
-    document.getElementById('modalDate').textContent  = '📅 '+d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(ev.time?' · '+ev.time:'');
-    document.getElementById('modalVenue').textContent = '📍 '+ev.venue;
+    document.getElementById('modalDate').textContent  = '📅 ' + d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + (ev.time?' · '+ev.time:'');
+    document.getElementById('modalVenue').textContent = ev.venue ? '📍 ' + ev.venue : '';
     document.getElementById('modalDesc').textContent  = ev.description;
-    document.getElementById('modalPriceText').textContent = ev.price>0?`₹${ev.price}`:'FREE';
-    document.getElementById('payAmtLabel').textContent    = ev.price>0?`₹${ev.price}`:"nothing (it's free!)";
-    document.getElementById('modalUpi').textContent       = settings.upi_id||'';
-    document.getElementById('modalQR').src                = settings.qr_code_url||'';
-    document.getElementById('stepBar').style.display      = (!ev.price||ev.price===0)?'none':'flex';
+    // organizer
+    const orgAvatar = document.getElementById('modalOrgAvatar');
+    const orgName   = document.getElementById('modalOrgName');
+    if (ev.organizer_name) {
+      orgName.textContent = '🎤 ' + ev.organizer_name;
+      if (ev.organizer_avatar) { orgAvatar.src = ev.organizer_avatar; orgAvatar.style.display = 'inline-block'; }
+      else orgAvatar.style.display = 'none';
+    } else {
+      document.getElementById('modalOrganizerRow').style.display = 'none';
+    }
+    document.getElementById('modalPriceText').textContent = ev.price > 0 ? `₹${ev.price}` : 'FREE';
+    document.getElementById('payAmtLabel').textContent    = ev.price > 0 ? `₹${ev.price}` : "nothing (it's free!)";
+    document.getElementById('modalUpi').textContent       = settings.upi_id || '';
+    document.getElementById('modalQR').src                = settings.qr_code_url || '';
+    document.getElementById('stepBar').style.display      = (!ev.price || ev.price === 0) ? 'none' : 'flex';
     resetModal(); goStep(1);
     document.getElementById('regModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -500,28 +743,32 @@
 
   function closeModal() {
     document.getElementById('regModal').style.display = 'none';
+    document.getElementById('modalOrganizerRow').style.display = 'flex';
     document.body.style.overflow = '';
   }
 
   function resetModal() {
-    ['regName','regEmail','regPhone','regUTR'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
-    document.getElementById('err1').style.display='none';
-    document.getElementById('err3').style.display='none';
-    document.getElementById('submitBtn').disabled=false;
-    document.getElementById('submitTxt').textContent='Submit Registration';
-    document.getElementById('submitSpin').style.display='none';
+    ['regName','regEmail','regPhone','regUTR'].forEach(i => {
+      const el = document.getElementById(i); if (el) el.value = '';
+    });
+    document.getElementById('err1').style.display = 'none';
+    document.getElementById('err3').style.display = 'none';
+    document.getElementById('utrHint').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitTxt').textContent = 'Submit Registration';
+    document.getElementById('submitSpin').style.display = 'none';
   }
 
   function goStep(n) {
-    [1,2,3,4].forEach(i=>{
-      const el=document.getElementById('step'+i);
-      if(el) el.style.display = i===n?'block':'none';
+    [1,2,3,4].forEach(i => {
+      const el = document.getElementById('step'+i);
+      if (el) el.style.display = i === n ? 'block' : 'none';
     });
-    [1,2,3].forEach(i=>{
-      const dot=document.getElementById('dot'+i);
-      if(!dot) return;
-      dot.style.background = i<=n?'#f97316':'rgba(255,255,255,0.15)';
-      dot.classList.toggle('active', i<=n);
+    [1,2,3].forEach(i => {
+      const dot = document.getElementById('dot'+i);
+      if (!dot) return;
+      dot.style.background = i <= n ? '#f97316' : 'rgba(255,255,255,0.15)';
+      dot.classList.toggle('active', i <= n);
     });
   }
 
@@ -532,8 +779,8 @@
     const err   = document.getElementById('err1');
     if (!name||!email||!phone) { err.textContent='Please fill all fields'; err.style.display='block'; return; }
     if (!/\S+@\S+\.\S+/.test(email)) { err.textContent='Enter a valid email'; err.style.display='block'; return; }
-    err.style.display='none';
-    if (!currentEvent.price || currentEvent.price===0) { submitReg(); return; }
+    err.style.display = 'none';
+    if (!currentEvent.price || currentEvent.price === 0) { submitReg(); return; }
     goStep(2);
   }
 
@@ -544,7 +791,7 @@
   function liveUTRCheck(val) {
     const hint = document.getElementById('utrHint');
     const v = val.trim();
-    if (!v) { hint.textContent = ''; hint.style.display = 'none'; return; }
+    if (!v) { hint.style.display = 'none'; return; }
     if (/[^A-Za-z0-9]/.test(v)) {
       hint.textContent = '✗ Only letters and numbers — no spaces or symbols';
       hint.style.color = '#f87171'; hint.style.display = 'block'; return;
@@ -558,55 +805,52 @@
   }
 
   async function submitReg() {
-    const utr    = document.getElementById('regUTR')?.value.trim()||'FREE';
-    const isFree = !currentEvent.price || currentEvent.price===0;
+    const utr    = document.getElementById('regUTR')?.value.trim() || 'FREE';
+    const isFree = !currentEvent.price || currentEvent.price === 0;
     if (!isFree && !validateUTR(utr)) {
-      const err=document.getElementById('err3');
-      err.textContent='Enter a valid UTR (8–22 letters/numbers, no spaces)'; err.style.display='block'; return;
+      const err = document.getElementById('err3');
+      err.textContent = 'Enter a valid UTR (8–22 letters/numbers, no spaces)';
+      err.style.display = 'block'; return;
     }
-    document.getElementById('err3').style.display='none';
-    if (!isFree) {
-      const { data: dup } = await sb.from('registrations').select('id').eq('utr', utr).maybeSingle();
-      if (dup) {
-        const err=document.getElementById('err3');
-        err.textContent='This UTR is already registered. Contact us if this is a mistake.';
-        err.style.display='block'; return;
-      }
-    }
-    const btn=document.getElementById('submitBtn');
-    btn.disabled=true;
-    document.getElementById('submitTxt').textContent='Submitting…';
-    document.getElementById('submitSpin').style.display='inline-block';
+    document.getElementById('err3').style.display = 'none';
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    document.getElementById('submitTxt').textContent = 'Submitting…';
+    document.getElementById('submitSpin').style.display = 'inline-block';
     const payload = {
-      event_id: currentEvent.id, event_title: currentEvent.title,
-      name: document.getElementById('regName').value.trim(),
-      email: document.getElementById('regEmail').value.trim(),
-      phone: document.getElementById('regPhone').value.trim(),
-      utr, status: isFree?'verified':'pending'
+      event_id:    currentEvent.id,
+      event_title: currentEvent.title,
+      name:        document.getElementById('regName').value.trim(),
+      email:       document.getElementById('regEmail').value.trim(),
+      phone:       document.getElementById('regPhone').value.trim(),
+      utr,
+      status: isFree ? 'verified' : 'pending'
     };
     try {
       await sb.from('registrations').insert(payload);
       document.getElementById('sucEvent').textContent = currentEvent.title;
-      document.getElementById('sucName').textContent  = '👤 '+payload.name;
-      document.getElementById('sucEmail').textContent = '✉️ '+payload.email;
+      document.getElementById('sucName').textContent  = '👤 ' + payload.name;
+      document.getElementById('sucEmail').textContent = '✉️ ' + payload.email;
       goStep(4);
-} catch(e) {
-  const err=document.getElementById('err3');
-  if (e.message && e.message.includes('unique')) {
-    err.textContent='This UTR is already registered. Contact us if this is a mistake.';
-  } else {
-    err.textContent='Error: '+e.message;
-  }
-  err.style.display='block';
-  btn.disabled=false;
-  document.getElementById('submitTxt').textContent='Submit Registration';
-  document.getElementById('submitSpin').style.display='none';
-}
+    } catch(e) {
+      const err = document.getElementById('err3');
+      if (e.message && e.message.includes('unique')) {
+        err.textContent = 'This UTR is already registered. Contact us if this is a mistake.';
+      } else {
+        err.textContent = 'Error: ' + e.message;
+      }
+      err.style.display = 'block';
+      btn.disabled = false;
+      document.getElementById('submitTxt').textContent = 'Submit Registration';
+      document.getElementById('submitSpin').style.display = 'none';
+    }
   }
 
-  document.getElementById('regModal').addEventListener('click', e=>{if(e.target===e.currentTarget) closeModal();});
+  document.getElementById('regModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
   loadAll();
 </script>
-
 </body>
 </html>

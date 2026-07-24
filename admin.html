@@ -29,13 +29,15 @@
     @keyframes spin { to { transform:rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; }
     textarea { resize: none; }
+    .inp { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:10px 14px; font-size:13px; color:#fff; outline:none; font-family:'Inter',sans-serif; transition:border-color 0.2s; box-sizing:border-box; }
+    .inp:focus { border-color:rgba(249,115,22,0.5); }
+    .inp option { background:#1a1a1a; }
+    .lbl { display:block; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#6b7280; text-transform:uppercase; margin-bottom:6px; }
   </style>
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen">
 
-<!-- ══════════════════════════════════════════ -->
-<!-- LOGIN                                       -->
-<!-- ══════════════════════════════════════════ -->
+<!-- ══ LOGIN ══ -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-sm">
     <div class="text-center mb-8">
@@ -61,13 +63,11 @@
         <span id="loginSpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
       </button>
     </div>
-    <p class="text-gray-600 text-xs text-center mt-5">See <span class="text-gray-400">SETUP.md</span> to create your admin account in Supabase.</p>
+    <p class="text-gray-600 text-xs text-center mt-5">See <span class="text-gray-400">SETUP.md</span> to create your admin account.</p>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════ -->
-<!-- DASHBOARD                                  -->
-<!-- ══════════════════════════════════════════ -->
+<!-- ══ DASHBOARD ══ -->
 <div id="dashboard" class="hidden min-h-screen flex">
 
   <!-- Sidebar -->
@@ -82,13 +82,14 @@
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <button onclick="show('overview')" data-sec="overview" class="nav-item active w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>📊</span><span>Overview</span></button>
-      <button onclick="show('events')" data-sec="events" class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🗓️</span><span>Events</span></button>
-      <button onclick="show('registrations')" data-sec="registrations" class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3">
+      <button onclick="show('overview')"       data-sec="overview"       class="nav-item active w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>📊</span><span>Overview</span></button>
+      <button onclick="show('events')"         data-sec="events"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🗓️</span><span>Events</span></button>
+      <button onclick="show('registrations')"  data-sec="registrations"  class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3">
         <span>👥</span><span>Registrations</span>
         <span id="pendingBadge" class="hidden ml-auto bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">0</span>
       </button>
-      <button onclick="show('payment')" data-sec="payment" class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>💳</span><span>Payment Settings</span></button>
+      <button onclick="show('cities')"         data-sec="cities"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🌆</span><span>Cities</span></button>
+      <button onclick="show('payment')"        data-sec="payment"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>💳</span><span>Payment Settings</span></button>
     </nav>
     <div class="p-4 border-t border-white/[0.05] space-y-1">
       <a href="events.html" target="_blank" class="block text-center text-gray-500 hover:text-white text-xs py-2 rounded-xl hover:bg-white/[0.05] transition-all">View Events Page ↗</a>
@@ -163,13 +164,32 @@
             <input id="fVenue" type="text" placeholder="e.g. Koramangala, Bengaluru" class="inp">
           </div>
           <div>
+            <label class="lbl">City (for filter)</label>
+            <input id="fCity" type="text" placeholder="e.g. Bengaluru" class="inp">
+          </div>
+          <div>
+            <label class="lbl">Organizer Name</label>
+            <input id="fOrgName" type="text" placeholder="e.g. Amit Pandey" class="inp">
+          </div>
+          <div>
+            <label class="lbl">Organizer Photo URL</label>
+            <input id="fOrgAvatar" type="url" placeholder="https://..." class="inp">
+          </div>
+          <div>
             <label class="lbl">Event Type</label>
-            <select id="fType" class="inp bg-[#0f0f0f]">
+            <select id="fType" class="inp">
               <option value="meetup">Meetup</option>
               <option value="workshop">Workshop</option>
               <option value="hackathon">Hackathon</option>
               <option value="talk">Talk / Panel</option>
               <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Visibility</label>
+            <select id="fActive" class="inp">
+              <option value="true">Active (visible)</option>
+              <option value="false">Hidden (draft)</option>
             </select>
           </div>
           <div>
@@ -180,21 +200,14 @@
             <label class="lbl">Capacity</label>
             <input id="fCap" type="number" placeholder="50" min="1" class="inp">
           </div>
-          <div>
+          <div class="md:col-span-2">
             <label class="lbl">Tags (comma separated)</label>
             <input id="fTags" type="text" placeholder="AI, Networking, Free Food" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Visibility</label>
-            <select id="fActive" class="inp bg-[#0f0f0f]">
-              <option value="true">Active (visible on events page)</option>
-              <option value="false">Hidden (draft)</option>
-            </select>
           </div>
 
           <!-- Image upload -->
           <div class="md:col-span-2">
-            <label class="lbl">Event Image</label>
+            <label class="lbl">Event Cover Image</label>
             <div id="imgZone"
               class="border-2 border-dashed border-white/[0.10] rounded-2xl p-8 text-center cursor-pointer hover:border-orange-500/40 transition-all"
               onclick="document.getElementById('imgInput').click()"
@@ -230,19 +243,19 @@
 
     <!-- ── REGISTRATIONS ── -->
     <div id="sec-registrations" class="sec hidden">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 class="text-2xl font-bold">Registrations</h2>
         <div class="flex gap-2 flex-wrap">
-          <select id="regEvF" onchange="loadRegs()" class="bg-[#161616] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500/60">
+          <select id="regEvF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
             <option value="all">All Events</option>
           </select>
-          <select id="regStF" onchange="loadRegs()" class="bg-[#161616] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500/60">
+          <select id="regStF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="verified">Verified</option>
             <option value="rejected">Rejected</option>
           </select>
-          <button onclick="loadRegs()" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-xs px-4 py-2 rounded-xl transition-all">↺ Refresh</button>
+          <button onclick="loadRegs()" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm px-4 py-2 rounded-xl transition-all">Refresh</button>
         </div>
       </div>
       <div id="regList" class="space-y-3">
@@ -250,143 +263,163 @@
       </div>
     </div>
 
+    <!-- ── CITIES ── -->
+    <div id="sec-cities" class="sec hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">Cities</h2>
+      </div>
+
+      <!-- Add city form -->
+      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] mb-6">
+        <h3 class="text-sm font-semibold text-gray-300 mb-4">Add New City</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="lbl">City Name *</label>
+            <input id="cName" type="text" placeholder="e.g. Bengaluru" class="inp">
+          </div>
+          <div>
+            <label class="lbl">Display Order</label>
+            <input id="cOrder" type="number" placeholder="0" min="0" class="inp">
+          </div>
+          <div class="md:col-span-1">
+            <label class="lbl">Image URL *</label>
+            <input id="cImg" type="url" placeholder="https://images.unsplash.com/..." class="inp">
+          </div>
+        </div>
+        <p class="text-gray-600 text-xs mt-3 mb-4">Tip: Use Unsplash photos — right-click an image → Copy image address</p>
+        <p id="cityErr" class="text-red-400 text-xs mb-3 hidden"></p>
+        <button onclick="saveCity()" id="cityBtn"
+          class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
+          <span id="cityTxt">Add City</span>
+          <span id="citySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+        </button>
+      </div>
+
+      <!-- Cities list -->
+      <div id="citiesList2" class="space-y-3">
+        <div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>
+      </div>
+    </div>
+
     <!-- ── PAYMENT SETTINGS ── -->
     <div id="sec-payment" class="sec hidden">
       <h2 class="text-2xl font-bold mb-6">Payment Settings</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl">
-
-        <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] space-y-5">
-          <div>
-            <label class="lbl">UPI ID</label>
-            <input id="sUpi" type="text" placeholder="yourname@upi" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Display Name (shown on checkout)</label>
-            <input id="sName" type="text" placeholder="Builders Day Club" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Payment Note (optional)</label>
-            <textarea id="sNote" rows="3" placeholder="e.g. Add your full name in payment note" class="inp"></textarea>
-          </div>
-          <button onclick="savePayment()" id="payBtn"
-            class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
-            <span id="payTxt">Save Payment Settings</span>
-            <span id="paySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
-          </button>
+      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] space-y-5 max-w-xl">
+        <div>
+          <label class="lbl">UPI ID</label>
+          <input id="sUpi" type="text" placeholder="yourname@upi" class="inp">
         </div>
-
-        <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
-          <label class="lbl mb-3 block">UPI QR Code</label>
+        <div>
+          <label class="lbl">Display Name</label>
+          <input id="sName" type="text" placeholder="Builders Day Club" class="inp">
+        </div>
+        <div>
+          <label class="lbl">Payment Note</label>
+          <input id="sNote" type="text" placeholder="e.g. Builders Day Club Event Fee" class="inp">
+        </div>
+        <div>
+          <label class="lbl">QR Code Image</label>
           <div id="qrZone"
-            class="border-2 border-dashed border-white/[0.10] rounded-2xl p-6 text-center cursor-pointer hover:border-orange-500/40 transition-all"
+            class="border-2 border-dashed border-white/[0.10] rounded-2xl p-8 text-center cursor-pointer hover:border-orange-500/40 transition-all"
             onclick="document.getElementById('qrInput').click()"
             ondragover="event.preventDefault();this.classList.add('drag-over')"
             ondragleave="this.classList.remove('drag-over')"
             ondrop="dropQR(event)">
-            <div class="flex justify-center mb-3">
-              <div id="qrWrap" class="hidden bg-white p-2 rounded-xl inline-block">
-                <img id="qrPreview" src="" alt="QR" class="w-36 h-36 object-contain">
-              </div>
+            <div id="qrWrap" class="hidden mb-4 flex justify-center">
+              <img id="qrPreview" src="" alt="QR" class="w-40 h-40 object-contain rounded-xl bg-white p-2">
             </div>
             <div id="qrPH">
-              <p class="text-3xl mb-2">📱</p>
-              <p class="text-gray-400 text-sm font-medium">Click to upload UPI QR code</p>
-              <p class="text-gray-600 text-xs mt-1">PNG / JPG</p>
+              <p class="text-3xl mb-2">📷</p>
+              <p class="text-gray-400 text-sm font-medium">Click or drag & drop QR image</p>
             </div>
             <input id="qrInput" type="file" accept="image/*" class="hidden" onchange="prevQR(this.files[0])">
           </div>
-          <p class="text-gray-600 text-xs mt-3 text-center">This QR is shown to users during registration payment</p>
         </div>
+        <button onclick="savePayment()" id="payBtn"
+          class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-8 py-3 rounded-xl transition-all text-sm flex items-center gap-2">
+          <span id="payTxt">Save Payment Settings</span>
+          <span id="paySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+        </button>
       </div>
     </div>
 
   </main>
 </div>
 
-<!-- Tailwind shorthand styles via JS -->
 <script>
-  // Inject shared input/label classes
-  document.querySelectorAll('.inp').forEach(el => {
-    el.classList.add('w-full','bg-white/[0.04]','border','border-white/[0.08]','rounded-xl','px-4','py-3','text-sm','text-white','placeholder-gray-600','focus:outline-none','focus:border-orange-500/60','transition-colors');
-  });
-  document.querySelectorAll('.lbl').forEach(el => {
-    el.classList.add('block','text-xs','text-gray-400','font-semibold','mb-1.5','uppercase','tracking-widest');
-  });
-</script>
-
-<script>
-  // ════════════════════════════════════════════
-  // SUPABASE CONFIG  ← Paste your config here
-  // ════════════════════════════════════════════
-  const SUPABASE_URL       = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
-  const SUPABASE_ANON      = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
-  // ════════════════════════════════════════════
-
+  const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  let editId = null, uploadedUrl = '', evCache = [];
+  let evCache = [], editId = null, uploadedUrl = '';
 
-  // ─── Auth ────────────────────────────────
-  sb.auth.onAuthStateChange((event, session) => {
-    const loggedIn = !!session;
-    document.getElementById('loginScreen').classList.toggle('hidden', loggedIn);
-    document.getElementById('dashboard').classList.toggle('hidden', !loggedIn);
-    if (loggedIn) init();
-  });
-
+  // ── Auth ──
   async function doLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPass').value;
     const err   = document.getElementById('loginErr');
+    if (!email||!pass) { err.textContent='Enter email and password'; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
     setLoading('loginBtn','loginTxt','loginSpin','Signing in…', true);
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) {
-      err.textContent = error.message.includes('Invalid') ? 'Invalid email or password' : error.message;
-      err.classList.remove('hidden');
-      setLoading('loginBtn','loginTxt','loginSpin','Sign In', false);
-    }
+    const { error } = await sb.auth.signInWithPassword({ email, password:pass });
+    if (error) { err.textContent=error.message; err.classList.remove('hidden'); setLoading('loginBtn','loginTxt','loginSpin','Sign In',false); return; }
+    bootDashboard();
   }
 
-  async function doLogout() { await sb.auth.signOut(); }
-  document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-
-  // ─── Nav ─────────────────────────────────
-  function show(name) {
-    document.querySelectorAll('.sec').forEach(s=>s.classList.add('hidden'));
-    document.getElementById('sec-'+name).classList.remove('hidden');
-    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-    const btn = document.querySelector(`[data-sec="${name}"]`);
-    if(btn) btn.classList.add('active');
-    if(name==='events')        loadEvents();
-    if(name==='registrations') { loadRegs(); fillEvFilter(); }
-    if(name==='payment')       loadPayment();
-    if(name==='overview')      loadOverview();
+  async function doLogout() {
+    await sb.auth.signOut();
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
   }
 
-  async function init() { await loadEvCache(); loadOverview(); }
+  async function checkAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) bootDashboard();
+  }
 
-  // ─── Overview ────────────────────────────
+  function bootDashboard() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    loadOverview();
+    loadEvents();
+    loadCities();
+    fillEvFilter();
+    loadPayment();
+  }
+
+  // ── Navigation ──
+  function show(sec) {
+    document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const panel = document.getElementById('sec-' + sec);
+    if (panel) panel.classList.remove('hidden');
+    const btn = document.querySelector(`[data-sec="${sec}"]`);
+    if (btn) btn.classList.add('active');
+    if (sec === 'overview')       loadOverview();
+    if (sec === 'events')         loadEvents();
+    if (sec === 'registrations')  loadRegs();
+    if (sec === 'cities')         loadCities();
+    if (sec === 'payment')        loadPayment();
+  }
+
+  // ── Overview ──
   async function loadOverview() {
-    const [{ count: evCount }, { data: regs }] = await Promise.all([
-      sb.from('events').select('*', { count:'exact', head:true }),
-      sb.from('registrations').select('id, name, event_title, utr, status, created_at').order('created_at',{ascending:false}).limit(20)
+    const [{ data: evs }, { data: regs }] = await Promise.all([
+      sb.from('events').select('id'),
+      sb.from('registrations').select('id, status, name, event_title, created_at').order('created_at',{ascending:false}).limit(20)
     ]);
-    const pending = (regs||[]).filter(r=>r.status==='pending').length;
-    document.getElementById('statEv').textContent   = evCount ?? '—';
-    document.getElementById('statReg').textContent  = (regs||[]).length < 20 ? (regs||[]).length : '20+';
-    document.getElementById('statPend').textContent = pending;
-    if (pending>0) { const b=document.getElementById('pendingBadge'); b.textContent=pending; b.classList.remove('hidden'); }
-
-    // Get total regs count
-    const { count: regCount } = await sb.from('registrations').select('*',{count:'exact',head:true});
-    document.getElementById('statReg').textContent = regCount ?? '—';
-
+    const pend = (regs||[]).filter(r=>r.status==='pending').length;
+    document.getElementById('statEv').textContent   = (evs||[]).length;
+    document.getElementById('statReg').textContent  = (regs||[]).length;
+    document.getElementById('statPend').textContent = pend;
+    const badge = document.getElementById('pendingBadge');
+    if (pend > 0) { badge.textContent = pend; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
     const el = document.getElementById('recentList');
     if (!(regs||[]).length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm">No registrations yet</div>'; return; }
-    el.innerHTML=`<div class="overflow-x-auto"><table class="w-full text-sm min-w-[600px]">
-      <thead><tr class="border-b border-white/[0.05] text-gray-500 text-xs">
+    el.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
+      <thead class="text-gray-500 text-xs border-b border-white/[0.06]"><tr>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Name</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Event</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">UTR</th>
@@ -395,13 +428,13 @@
       ${(regs||[]).map(r=>`<tr class="border-b border-white/[0.04] hover:bg-white/[0.02]">
         <td class="px-5 py-3 font-medium">${r.name}</td>
         <td class="px-5 py-3 text-gray-400 max-w-[200px] truncate">${r.event_title||'—'}</td>
-        <td class="px-5 py-3 font-mono text-xs text-gray-300">${r.utr}</td>
+        <td class="px-5 py-3 font-mono text-xs text-gray-300">${r.utr||'—'}</td>
         <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-full font-medium st-${r.status} capitalize">${r.status}</span></td>
       </tr>`).join('')}
       </tbody></table></div>`;
   }
 
-  // ─── Events cache ─────────────────────────
+  // ── Events ──
   async function loadEvCache() {
     const { data } = await sb.from('events').select('*').order('date',{ascending:false});
     evCache = data || [];
@@ -417,11 +450,12 @@
              class="w-20 h-16 object-cover rounded-xl flex-shrink-0 bg-white/[0.05]"
              onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=200'" alt="">
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-0.5">
+          <div class="flex items-center gap-2 mb-1">
             <h3 class="font-semibold text-sm truncate">${ev.title}</h3>
             <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${ev.is_active?'bg-green-500/15 text-green-400':'bg-white/[0.07] text-gray-400'}">${ev.is_active?'Active':'Hidden'}</span>
           </div>
-          <p class="text-gray-500 text-xs">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${ev.price>0?'₹'+ev.price:'Free'}</p>
+          <p class="text-gray-500 text-xs mb-0.5">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${ev.price>0?'₹'+ev.price:'Free'}</p>
+          ${ev.organizer_name?`<p class="text-gray-600 text-xs">🎤 ${ev.organizer_name}</p>`:''}
         </div>
         <div class="flex gap-2 flex-shrink-0">
           <button onclick="openForm('${ev.id}')" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-xs px-4 py-2 rounded-xl transition-all">Edit</button>
@@ -430,10 +464,12 @@
       </div>`).join('');
   }
 
-  // ─── Event form ───────────────────────────
+  // ── Event form ──
   function openForm(id=null) {
     editId=id; uploadedUrl='';
-    ['fTitle','fDesc','fVenue','fTags','fDate','fTime'].forEach(i=>document.getElementById(i).value='');
+    ['fTitle','fDesc','fVenue','fCity','fTags','fDate','fTime','fOrgName','fOrgAvatar'].forEach(i=>{
+      const el = document.getElementById(i); if (el) el.value='';
+    });
     document.getElementById('fPrice').value='0';
     document.getElementById('fCap').value='50';
     document.getElementById('fActive').value='true';
@@ -446,17 +482,20 @@
     if (id) {
       const ev = evCache.find(e=>e.id===id);
       if (ev) {
-        document.getElementById('fTitle').value  = ev.title||'';
-        document.getElementById('fDesc').value   = ev.description||'';
-        document.getElementById('fDate').value   = ev.date||'';
-        document.getElementById('fTime').value   = ev.time||'';
-        document.getElementById('fVenue').value  = ev.venue||'';
-        document.getElementById('fType').value   = ev.type||'meetup';
-        document.getElementById('fPrice').value  = ev.price??0;
-        document.getElementById('fCap').value    = ev.capacity??50;
+        document.getElementById('fTitle').value    = ev.title||'';
+        document.getElementById('fDesc').value     = ev.description||'';
+        document.getElementById('fDate').value     = ev.date||'';
+        document.getElementById('fTime').value     = ev.time||'';
+        document.getElementById('fVenue').value    = ev.venue||'';
+        document.getElementById('fCity').value     = ev.city||'';
+        document.getElementById('fOrgName').value  = ev.organizer_name||'';
+        document.getElementById('fOrgAvatar').value= ev.organizer_avatar||'';
+        document.getElementById('fType').value     = ev.type||'meetup';
+        document.getElementById('fPrice').value    = ev.price??0;
+        document.getElementById('fCap').value      = ev.capacity??50;
         const tags = Array.isArray(ev.tags)?ev.tags:(ev.tags?JSON.parse(ev.tags):[]);
-        document.getElementById('fTags').value   = tags.join(', ');
-        document.getElementById('fActive').value = String(ev.is_active!==false);
+        document.getElementById('fTags').value     = tags.join(', ');
+        document.getElementById('fActive').value   = String(ev.is_active!==false);
         if (ev.image_url) {
           uploadedUrl = ev.image_url;
           document.getElementById('imgPreview').src = ev.image_url;
@@ -482,7 +521,7 @@
     const { error } = await sb.storage.from('media').upload(path, file, { upsert:true });
     document.getElementById('upProg').classList.add('hidden');
     if (error) throw error;
-    const { data: { publicUrl } } = sb.storage.from('media').getPublicUrl(path);
+    const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
     return publicUrl;
   }
 
@@ -492,7 +531,7 @@
     const date  = document.getElementById('fDate').value;
     const venue = document.getElementById('fVenue').value.trim();
     const err   = document.getElementById('formErr');
-    if (!title||!desc||!date||!venue) { err.textContent='Please fill all required fields (Title, Description, Date, Venue)'; err.classList.remove('hidden'); return; }
+    if (!title||!desc||!date||!venue) { err.textContent='Please fill required fields (Title, Description, Date, Venue)'; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
     setLoading('saveBtn','saveTxt','saveSpin','Saving…',true);
     try {
@@ -501,11 +540,14 @@
       const tags = document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
       const payload = {
         title, description:desc, date,
-        time:     document.getElementById('fTime').value,
+        time:            document.getElementById('fTime').value,
         venue,
-        type:     document.getElementById('fType').value,
-        price:    Number(document.getElementById('fPrice').value)||0,
-        capacity: Number(document.getElementById('fCap').value)||50,
+        city:            document.getElementById('fCity').value.trim(),
+        organizer_name:  document.getElementById('fOrgName').value.trim(),
+        organizer_avatar:document.getElementById('fOrgAvatar').value.trim(),
+        type:            document.getElementById('fType').value,
+        price:           Number(document.getElementById('fPrice').value)||0,
+        capacity:        Number(document.getElementById('fCap').value)||50,
         tags,
         is_active: document.getElementById('fActive').value==='true',
         image_url: uploadedUrl,
@@ -529,7 +571,7 @@
     loadEvents();
   }
 
-  // ─── Registrations ────────────────────────
+  // ── Registrations ──
   async function loadRegs() {
     const evF = document.getElementById('regEvF').value;
     const stF = document.getElementById('regStF').value;
@@ -569,7 +611,7 @@
   }
 
   async function setStatus(id, status) {
-    await sb.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+    await sb.from('registrations').update({ status, updated_at:new Date().toISOString() }).eq('id', id);
     loadRegs(); loadOverview();
   }
 
@@ -584,7 +626,47 @@
     });
   }
 
-  // ─── Payment settings ─────────────────────
+  // ── Cities ──
+  async function loadCities() {
+    const { data: cities } = await sb.from('cities').select('*').order('display_order',{ascending:true});
+    const el = document.getElementById('citiesList2');
+    if (!(cities||[]).length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No cities yet. Add your first city above.</div>'; return; }
+    el.innerHTML = (cities||[]).map(c=>`
+      <div class="bg-[#161616] rounded-2xl p-4 border border-white/[0.05] flex items-center gap-4 hover:border-white/[0.10] transition-colors">
+        <img src="${c.image_url}" alt="${c.name}" class="w-20 h-14 object-cover rounded-xl flex-shrink-0 bg-white/[0.05]"
+             onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=200&q=80'">
+        <div class="flex-1">
+          <p class="font-semibold text-sm">${c.name}</p>
+          <p class="text-gray-600 text-xs mt-0.5">Order: ${c.display_order||0}</p>
+        </div>
+        <button onclick="deleteCity('${c.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all flex-shrink-0">Remove</button>
+      </div>`).join('');
+  }
+
+  async function saveCity() {
+    const name  = document.getElementById('cName').value.trim();
+    const img   = document.getElementById('cImg').value.trim();
+    const order = Number(document.getElementById('cOrder').value)||0;
+    const err   = document.getElementById('cityErr');
+    if (!name||!img) { err.textContent='City name and image URL are required'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    setLoading('cityBtn','cityTxt','citySpin','Adding…',true);
+    const { error } = await sb.from('cities').insert({ name, image_url:img, display_order:order });
+    setLoading('cityBtn','cityTxt','citySpin','Add City',false);
+    if (error) { err.textContent='Error: '+error.message; err.classList.remove('hidden'); return; }
+    document.getElementById('cName').value='';
+    document.getElementById('cImg').value='';
+    document.getElementById('cOrder').value='';
+    loadCities();
+  }
+
+  async function deleteCity(id) {
+    if (!confirm('Remove this city?')) return;
+    await sb.from('cities').delete().eq('id', id);
+    loadCities();
+  }
+
+  // ── Payment settings ──
   async function loadPayment() {
     const { data } = await sb.from('settings').select('*').eq('id','payment').single();
     if (data) {
@@ -610,41 +692,38 @@
   async function savePayment() {
     setLoading('payBtn','payTxt','paySpin','Saving…',true);
     try {
-      let qrUrl = document.getElementById('qrPreview').src || '';
+      let qrUrl = document.getElementById('qrPreview').src||'';
       const qrFile = document.getElementById('qrInput').files[0];
       if (qrFile) {
-        const path = `settings/qr_${Date.now()}`;
-        const { error } = await sb.storage.from('media').upload(path, qrFile, {upsert:true});
+        const path=`settings/qr_${Date.now()}`;
+        const { error } = await sb.storage.from('media').upload(path,qrFile,{upsert:true});
         if (error) throw error;
-        const { data: { publicUrl } } = sb.storage.from('media').getPublicUrl(path);
-        qrUrl = publicUrl;
+        const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
+        qrUrl=publicUrl;
       }
-      const payload = { id:'payment', upi_id:document.getElementById('sUpi').value.trim(), pay_name:document.getElementById('sName').value.trim(), pay_note:document.getElementById('sNote').value.trim(), qr_code_url:qrUrl, updated_at:new Date().toISOString() };
-      const { error } = await sb.from('settings').upsert(payload, { onConflict:'id' });
+      const payload={ id:'payment', upi_id:document.getElementById('sUpi').value.trim(), pay_name:document.getElementById('sName').value.trim(), pay_note:document.getElementById('sNote').value.trim(), qr_code_url:qrUrl, updated_at:new Date().toISOString() };
+      const { error } = await sb.from('settings').upsert(payload,{onConflict:'id'});
       if (error) throw error;
-      alert('Payment settings saved ✓');
+      alert('Saved ✓');
     } catch(e) { alert('Error: '+e.message); }
     setLoading('payBtn','payTxt','paySpin','Save Payment Settings',false);
   }
 
-  // ─── Utility ──────────────────────────────
+  // ── Utility ──
   function copyUTR(utr, btn) {
-    navigator.clipboard.writeText(utr).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = 'Copied ✓';
-      btn.style.color = '#86efac';
-      setTimeout(() => { btn.textContent = orig; btn.style.color = '#9ca3af'; }, 2000);
-    }).catch(() => {
-      btn.textContent = 'Failed';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
-    });
+    navigator.clipboard.writeText(utr).then(()=>{
+      const orig=btn.textContent; btn.textContent='Copied ✓'; btn.style.color='#86efac';
+      setTimeout(()=>{ btn.textContent=orig; btn.style.color='#9ca3af'; },2000);
+    }).catch(()=>{ btn.textContent='Failed'; setTimeout(()=>{ btn.textContent='Copy'; },1500); });
   }
 
-  function setLoading(btnId, txtId, spinId, label, loading) {
-    document.getElementById(btnId).disabled = loading;
-    document.getElementById(txtId).textContent = label;
-    document.getElementById(spinId).classList.toggle('hidden', !loading);
+  function setLoading(btnId,txtId,spinId,label,loading) {
+    document.getElementById(btnId).disabled=loading;
+    document.getElementById(txtId).textContent=label;
+    document.getElementById(spinId).classList.toggle('hidden',!loading);
   }
+
+  checkAuth();
 </script>
 </body>
 </html>

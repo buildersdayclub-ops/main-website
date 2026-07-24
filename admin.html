@@ -272,7 +272,7 @@
       <!-- Add city form -->
       <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] mb-6">
         <h3 class="text-sm font-semibold text-gray-300 mb-4">Add New City</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label class="lbl">City Name *</label>
             <input id="cName" type="text" placeholder="e.g. Bengaluru" class="inp">
@@ -281,12 +281,26 @@
             <label class="lbl">Display Order</label>
             <input id="cOrder" type="number" placeholder="0" min="0" class="inp">
           </div>
-          <div class="md:col-span-1">
-            <label class="lbl">Image URL *</label>
-            <input id="cImg" type="url" placeholder="https://images.unsplash.com/..." class="inp">
-          </div>
         </div>
-        <p class="text-gray-600 text-xs mt-3 mb-4">Tip: Use Unsplash photos — right-click an image → Copy image address</p>
+        <label class="lbl">City Image *</label>
+        <div id="cityImgZone"
+          class="border-2 border-dashed border-white/[0.10] rounded-2xl p-6 text-center cursor-pointer hover:border-orange-500/40 transition-all mb-3"
+          onclick="document.getElementById('cImgInput').click()"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="dropCityImg(event)">
+          <img id="cImgPreview" src="" alt="" class="hidden w-full max-h-36 object-cover rounded-xl mb-3">
+          <div id="cImgPH">
+            <p class="text-2xl mb-1">🌆</p>
+            <p class="text-gray-400 text-sm font-medium">Click or drag & drop city photo</p>
+            <p class="text-gray-600 text-xs mt-1">JPG / PNG / WebP — landscape works best</p>
+          </div>
+          <input id="cImgInput" type="file" accept="image/*" class="hidden" onchange="prevCityImg(this.files[0])">
+        </div>
+        <div id="cUpProg" class="hidden mb-3">
+          <div class="bg-white/[0.06] rounded-full h-1"><div class="bg-orange-500 h-1 rounded-full w-1/2 transition-all"></div></div>
+          <p class="text-gray-500 text-xs mt-1">Uploading…</p>
+        </div>
         <p id="cityErr" class="text-red-400 text-xs mb-3 hidden"></p>
         <button onclick="saveCity()" id="cityBtn"
           class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
@@ -643,21 +657,57 @@
       </div>`).join('');
   }
 
+  function prevCityImg(file) {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById('cImgPreview').src = e.target.result;
+      document.getElementById('cImgPreview').classList.remove('hidden');
+      document.getElementById('cImgPH').classList.add('hidden');
+    };
+    r.readAsDataURL(file);
+  }
+
+  function dropCityImg(e) {
+    e.preventDefault();
+    document.getElementById('cityImgZone').classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) {
+      document.getElementById('cImgInput').files = e.dataTransfer.files;
+      prevCityImg(f);
+    }
+  }
+
   async function saveCity() {
     const name  = document.getElementById('cName').value.trim();
-    const img   = document.getElementById('cImg').value.trim();
     const order = Number(document.getElementById('cOrder').value)||0;
+    const file  = document.getElementById('cImgInput').files[0];
     const err   = document.getElementById('cityErr');
-    if (!name||!img) { err.textContent='City name and image URL are required'; err.classList.remove('hidden'); return; }
+    if (!name)  { err.textContent='City name is required'; err.classList.remove('hidden'); return; }
+    if (!file)  { err.textContent='Please select a city image'; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
-    setLoading('cityBtn','cityTxt','citySpin','Adding…',true);
-    const { error } = await sb.from('cities').insert({ name, image_url:img, display_order:order });
+    setLoading('cityBtn','cityTxt','citySpin','Uploading…',true);
+    try {
+      const path = `cities/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+      document.getElementById('cUpProg').classList.remove('hidden');
+      const { error: upErr } = await sb.storage.from('media').upload(path, file, { upsert:true });
+      document.getElementById('cUpProg').classList.add('hidden');
+      if (upErr) throw upErr;
+      const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
+      const { error } = await sb.from('cities').insert({ name, image_url:publicUrl, display_order:order });
+      if (error) throw error;
+      // reset form
+      document.getElementById('cName').value='';
+      document.getElementById('cOrder').value='';
+      document.getElementById('cImgInput').value='';
+      document.getElementById('cImgPreview').classList.add('hidden');
+      document.getElementById('cImgPH').classList.remove('hidden');
+      loadCities();
+    } catch(e) {
+      err.textContent = 'Error: '+e.message;
+      err.classList.remove('hidden');
+    }
     setLoading('cityBtn','cityTxt','citySpin','Add City',false);
-    if (error) { err.textContent='Error: '+error.message; err.classList.remove('hidden'); return; }
-    document.getElementById('cName').value='';
-    document.getElementById('cImg').value='';
-    document.getElementById('cOrder').value='';
-    loadCities();
   }
 
   async function deleteCity(id) {

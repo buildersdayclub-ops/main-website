@@ -33,9 +33,30 @@
     .inp:focus { border-color:rgba(249,115,22,0.5); }
     .inp option { background:#1a1a1a; }
     .lbl { display:block; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#6b7280; text-transform:uppercase; margin-bottom:6px; }
+    /* QR Modal */
+    .qr-modal { position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px; }
+    .qr-modal-box { background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;text-align:center;max-width:320px;width:100%; }
   </style>
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen">
+
+<!-- ══ QR MODAL ══ -->
+<div id="qrModal" class="qr-modal hidden">
+  <div class="qr-modal-box">
+    <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Attendee QR Code</p>
+    <p id="qrModalName" class="font-bold text-base mb-4"></p>
+    <div class="bg-white p-3 rounded-2xl inline-block mb-4">
+      <img id="qrModalImg" src="" alt="QR" style="width:180px;height:180px;object-fit:contain;">
+    </div>
+    <p class="text-gray-600 text-xs mb-4">Team scans this at the event entrance</p>
+    <div class="flex gap-2">
+      <button onclick="document.getElementById('qrModal').classList.add('hidden')"
+        class="flex-1 bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm font-semibold py-2.5 rounded-xl transition-all">Close</button>
+      <a id="qrModalLink" href="" target="_blank"
+        class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-all text-center">Open URL ↗</a>
+    </div>
+  </div>
+</div>
 
 <!-- ══ LOGIN ══ -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
@@ -89,10 +110,11 @@
         <span id="pendingBadge" class="hidden ml-auto bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">0</span>
       </button>
       <button onclick="show('cities')"         data-sec="cities"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🌆</span><span>Cities</span></button>
-      <button onclick="show('payment')"        data-sec="payment"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>💳</span><span>Payment Settings</span></button>
+      <button onclick="show('payment')"        data-sec="payment"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>💳</span><span>Payment & Check-in</span></button>
     </nav>
     <div class="p-4 border-t border-white/[0.05] space-y-1">
       <a href="events.html" target="_blank" class="block text-center text-gray-500 hover:text-white text-xs py-2 rounded-xl hover:bg-white/[0.05] transition-all">View Events Page ↗</a>
+      <a href="checkin.html" target="_blank" class="block text-center text-orange-500 hover:text-orange-400 text-xs py-2 rounded-xl hover:bg-orange-500/[0.05] transition-all">📱 Open Check-in Scanner ↗</a>
       <button onclick="doLogout()" class="w-full text-center text-red-500 hover:text-red-400 text-xs py-2 rounded-xl hover:bg-red-500/5 transition-all">Sign Out</button>
     </div>
   </aside>
@@ -103,7 +125,7 @@
     <!-- ── OVERVIEW ── -->
     <div id="sec-overview" class="sec">
       <h2 class="text-2xl font-bold mb-6">Overview</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
           <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Total Events</p>
           <p class="text-4xl font-extrabold" id="statEv">—</p>
@@ -115,6 +137,10 @@
         <div class="bg-[#161616] rounded-2xl p-6 border border-orange-500/20">
           <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Pending Verification</p>
           <p class="text-4xl font-extrabold text-orange-500" id="statPend">—</p>
+        </div>
+        <div class="bg-[#161616] rounded-2xl p-6 border border-green-500/20">
+          <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Checked In</p>
+          <p class="text-4xl font-extrabold text-green-400" id="statChecked">—</p>
         </div>
       </div>
       <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Recent Registrations</h3>
@@ -142,7 +168,6 @@
       </div>
       <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
           <div class="md:col-span-2">
             <label class="lbl">Event Title *</label>
             <input id="fTitle" type="text" placeholder="e.g. AI Buildathon 2026" class="inp">
@@ -204,7 +229,6 @@
             <label class="lbl">Tags (comma separated)</label>
             <input id="fTags" type="text" placeholder="AI, Networking, Free Food" class="inp">
           </div>
-
           <!-- Image upload -->
           <div class="md:col-span-2">
             <label class="lbl">Event Cover Image</label>
@@ -228,7 +252,6 @@
             </div>
           </div>
         </div>
-
         <p id="formErr" class="text-red-400 text-sm mt-4 hidden"></p>
         <div class="flex gap-3 mt-6">
           <button onclick="saveEvent()" id="saveBtn"
@@ -255,6 +278,11 @@
             <option value="verified">Verified</option>
             <option value="rejected">Rejected</option>
           </select>
+          <select id="regCiF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
+            <option value="all">All Check-in</option>
+            <option value="yes">Attended ✓</option>
+            <option value="no">Not Yet</option>
+          </select>
           <button onclick="loadRegs()" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm px-4 py-2 rounded-xl transition-all">Refresh</button>
         </div>
       </div>
@@ -268,8 +296,6 @@
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold">Cities</h2>
       </div>
-
-      <!-- Add city form -->
       <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] mb-6">
         <h3 class="text-sm font-semibold text-gray-300 mb-4">Add New City</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -308,16 +334,14 @@
           <span id="citySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
         </button>
       </div>
-
-      <!-- Cities list -->
       <div id="citiesList2" class="space-y-3">
         <div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>
       </div>
     </div>
 
-    <!-- ── PAYMENT SETTINGS ── -->
+    <!-- ── PAYMENT & CHECK-IN SETTINGS ── -->
     <div id="sec-payment" class="sec hidden">
-      <h2 class="text-2xl font-bold mb-6">Payment Settings</h2>
+      <h2 class="text-2xl font-bold mb-6">Payment & Check-in Settings</h2>
       <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] space-y-5 max-w-xl">
         <div>
           <label class="lbl">UPI ID</label>
@@ -349,9 +373,17 @@
             <input id="qrInput" type="file" accept="image/*" class="hidden" onchange="prevQR(this.files[0])">
           </div>
         </div>
+
+        <!-- Check-in PIN -->
+        <div class="pt-2 border-t border-white/[0.06]">
+          <label class="lbl">Team Check-in PIN</label>
+          <input id="sPin" type="text" placeholder="e.g. 1234" maxlength="8" class="inp" style="letter-spacing:0.2em;font-weight:700;">
+          <p class="text-gray-600 text-xs mt-2">Your team enters this PIN on the check-in scanner page. Default is <strong class="text-gray-400">1234</strong> — change it before your event.</p>
+        </div>
+
         <button onclick="savePayment()" id="payBtn"
           class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-8 py-3 rounded-xl transition-all text-sm flex items-center gap-2">
-          <span id="payTxt">Save Payment Settings</span>
+          <span id="payTxt">Save Settings</span>
           <span id="paySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
         </button>
       </div>
@@ -365,6 +397,7 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+  const BASE_URL = 'https://buildersdayclub.vercel.app';
 
   let evCache = [], editId = null, uploadedUrl = '';
 
@@ -421,12 +454,14 @@
   async function loadOverview() {
     const [{ data: evs }, { data: regs }] = await Promise.all([
       sb.from('events').select('id'),
-      sb.from('registrations').select('id, status, name, event_title, created_at').order('created_at',{ascending:false}).limit(20)
+      sb.from('registrations').select('id, status, name, event_title, created_at, checked_in').order('created_at',{ascending:false}).limit(50)
     ]);
-    const pend = (regs||[]).filter(r=>r.status==='pending').length;
-    document.getElementById('statEv').textContent   = (evs||[]).length;
-    document.getElementById('statReg').textContent  = (regs||[]).length;
-    document.getElementById('statPend').textContent = pend;
+    const pend    = (regs||[]).filter(r => r.status === 'pending').length;
+    const checked = (regs||[]).filter(r => r.checked_in).length;
+    document.getElementById('statEv').textContent      = (evs||[]).length;
+    document.getElementById('statReg').textContent     = (regs||[]).length;
+    document.getElementById('statPend').textContent    = pend;
+    document.getElementById('statChecked').textContent = checked;
     const badge = document.getElementById('pendingBadge');
     if (pend > 0) { badge.textContent = pend; badge.classList.remove('hidden'); }
     else badge.classList.add('hidden');
@@ -436,14 +471,16 @@
       <thead class="text-gray-500 text-xs border-b border-white/[0.06]"><tr>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Name</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Event</th>
-        <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">UTR</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Status</th>
+        <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Check-in</th>
       </tr></thead><tbody>
       ${(regs||[]).map(r=>`<tr class="border-b border-white/[0.04] hover:bg-white/[0.02]">
         <td class="px-5 py-3 font-medium">${r.name}</td>
         <td class="px-5 py-3 text-gray-400 max-w-[200px] truncate">${r.event_title||'—'}</td>
-        <td class="px-5 py-3 font-mono text-xs text-gray-300">${r.utr||'—'}</td>
         <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-full font-medium st-${r.status} capitalize">${r.status}</span></td>
+        <td class="px-5 py-3">${r.checked_in
+          ? '<span class="text-xs px-2.5 py-1 rounded-full font-medium" style="background:rgba(249,115,22,.15);color:#fb923c;">✓ Attended</span>'
+          : '<span class="text-xs text-gray-600">—</span>'}</td>
       </tr>`).join('')}
       </tbody></table></div>`;
   }
@@ -496,20 +533,20 @@
     if (id) {
       const ev = evCache.find(e=>e.id===id);
       if (ev) {
-        document.getElementById('fTitle').value    = ev.title||'';
-        document.getElementById('fDesc').value     = ev.description||'';
-        document.getElementById('fDate').value     = ev.date||'';
-        document.getElementById('fTime').value     = ev.time||'';
-        document.getElementById('fVenue').value    = ev.venue||'';
-        document.getElementById('fCity').value     = ev.city||'';
-        document.getElementById('fOrgName').value  = ev.organizer_name||'';
-        document.getElementById('fOrgAvatar').value= ev.organizer_avatar||'';
-        document.getElementById('fType').value     = ev.type||'meetup';
-        document.getElementById('fPrice').value    = ev.price??0;
-        document.getElementById('fCap').value      = ev.capacity??50;
+        document.getElementById('fTitle').value     = ev.title||'';
+        document.getElementById('fDesc').value      = ev.description||'';
+        document.getElementById('fDate').value      = ev.date||'';
+        document.getElementById('fTime').value      = ev.time||'';
+        document.getElementById('fVenue').value     = ev.venue||'';
+        document.getElementById('fCity').value      = ev.city||'';
+        document.getElementById('fOrgName').value   = ev.organizer_name||'';
+        document.getElementById('fOrgAvatar').value = ev.organizer_avatar||'';
+        document.getElementById('fType').value      = ev.type||'meetup';
+        document.getElementById('fPrice').value     = ev.price??0;
+        document.getElementById('fCap').value       = ev.capacity??50;
         const tags = Array.isArray(ev.tags)?ev.tags:(ev.tags?JSON.parse(ev.tags):[]);
-        document.getElementById('fTags').value     = tags.join(', ');
-        document.getElementById('fActive').value   = String(ev.is_active!==false);
+        document.getElementById('fTags').value      = tags.join(', ');
+        document.getElementById('fActive').value    = String(ev.is_active!==false);
         if (ev.image_url) {
           uploadedUrl = ev.image_url;
           document.getElementById('imgPreview').src = ev.image_url;
@@ -554,17 +591,17 @@
       const tags = document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
       const payload = {
         title, description:desc, date,
-        time:            document.getElementById('fTime').value,
+        time:             document.getElementById('fTime').value,
         venue,
-        city:            document.getElementById('fCity').value.trim(),
-        organizer_name:  document.getElementById('fOrgName').value.trim(),
-        organizer_avatar:document.getElementById('fOrgAvatar').value.trim(),
-        type:            document.getElementById('fType').value,
-        price:           Number(document.getElementById('fPrice').value)||0,
-        capacity:        Number(document.getElementById('fCap').value)||50,
+        city:             document.getElementById('fCity').value.trim(),
+        organizer_name:   document.getElementById('fOrgName').value.trim(),
+        organizer_avatar: document.getElementById('fOrgAvatar').value.trim(),
+        type:             document.getElementById('fType').value,
+        price:            Number(document.getElementById('fPrice').value)||0,
+        capacity:         Number(document.getElementById('fCap').value)||50,
         tags,
-        is_active: document.getElementById('fActive').value==='true',
-        image_url: uploadedUrl,
+        is_active:  document.getElementById('fActive').value==='true',
+        image_url:  uploadedUrl,
         updated_at: new Date().toISOString()
       };
       let res;
@@ -589,20 +626,26 @@
   async function loadRegs() {
     const evF = document.getElementById('regEvF').value;
     const stF = document.getElementById('regStF').value;
+    const ciF = document.getElementById('regCiF').value;
     let q = sb.from('registrations').select('*').order('created_at',{ascending:false});
-    if (evF!=='all') q = q.eq('event_id', evF);
-    if (stF!=='all') q = q.eq('status', stF);
+    if (evF !== 'all') q = q.eq('event_id', evF);
+    if (stF !== 'all') q = q.eq('status', stF);
+    if (ciF === 'yes') q = q.eq('checked_in', true);
+    if (ciF === 'no')  q = q.or('checked_in.is.null,checked_in.eq.false');
     const { data: regs, error } = await q;
     const el = document.getElementById('regList');
     if (error) { el.innerHTML=`<div class="p-8 text-center text-red-400 text-sm bg-[#161616] rounded-2xl">Error: ${error.message}</div>`; return; }
     if (!(regs||[]).length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No registrations found</div>'; return; }
-    el.innerHTML = (regs||[]).map(r=>`
+    el.innerHTML = (regs||[]).map(r => {
+      const checkedAt = r.checked_in_at ? new Date(r.checked_in_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : null;
+      return `
       <div class="bg-[#161616] rounded-2xl p-5 border border-white/[0.05] hover:border-white/[0.08] transition-colors">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2 mb-2">
               <h3 class="font-semibold text-sm">${r.name}</h3>
               <span class="text-xs px-2.5 py-0.5 rounded-full font-medium capitalize st-${r.status}">${r.status}</span>
+              ${r.checked_in ? `<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background:rgba(249,115,22,.15);color:#fb923c;">✓ Attended${checkedAt?' · '+checkedAt:''}</span>` : ''}
             </div>
             <p class="text-gray-500 text-xs mb-1">${r.email} · ${r.phone}</p>
             <p class="text-gray-500 text-xs">Event: <span class="text-gray-300">${r.event_title||r.event_id}</span></p>
@@ -611,40 +654,78 @@
               <span class="font-mono text-xs text-white bg-white/[0.06] px-3 py-1 rounded-lg">${r.utr}</span>
               <button onclick="copyUTR('${r.utr}', this)" class="text-xs px-2.5 py-1 rounded-lg transition-all" style="background:rgba(255,255,255,0.07);color:#9ca3af;border:none;cursor:pointer;">Copy</button>
               <a href="https://www.google.com/search?q=${r.utr}+UPI+UTR+transaction" target="_blank" class="text-xs px-2.5 py-1 rounded-lg no-underline" style="background:rgba(59,130,246,0.12);color:#93c5fd;display:inline-block;">Search ↗</a>
+              ${r.check_in_token ? `<button onclick="showQR('${r.check_in_token}','${r.name.replace(/'/g,"\\'")}', '${r.event_title||''}')" class="text-xs px-2.5 py-1 rounded-lg transition-all" style="background:rgba(249,115,22,0.12);color:#fb923c;border:none;cursor:pointer;">📱 QR</button>` : ''}
             </div>
             ${r.created_at?`<p class="text-gray-600 text-xs mt-1">Submitted ${new Date(r.created_at).toLocaleString('en-IN')}</p>`:''}
           </div>
-          <div class="flex gap-2 flex-shrink-0">
+          <div class="flex flex-col gap-2 flex-shrink-0">
             ${r.status==='pending'?`
-              <button onclick="setStatus('${r.id}','verified')" class="bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✓ Verify</button>
-              <button onclick="setStatus('${r.id}','rejected')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✗ Reject</button>
-            `:`<button onclick="setStatus('${r.id}','pending')" class="bg-white/[0.07] hover:bg-white/[0.12] text-gray-400 text-xs px-4 py-2 rounded-xl transition-all">Reset</button>`}
+              <div class="flex gap-2">
+                <button onclick="setStatus('${r.id}','verified')" class="bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✓ Verify</button>
+                <button onclick="setStatus('${r.id}','rejected')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✗ Reject</button>
+              </div>`
+            :`<button onclick="setStatus('${r.id}','pending')" class="bg-white/[0.07] hover:bg-white/[0.12] text-gray-400 text-xs px-4 py-2 rounded-xl transition-all">Reset</button>`}
+            ${r.status==='verified' && !r.checked_in
+              ? `<button onclick="manualCheckin('${r.id}')" class="bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">📱 Manual Check-in</button>`
+              : ''}
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
- async function sendEmail(type, reg) {
-  try {
-    await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw'
-      },
-      body: JSON.stringify({ type, name: reg.name, email: reg.email, event_title: reg.event_title, event_date: reg.event_date, event_venue: reg.event_venue })
-    });
-  } catch(e) { console.warn('Email error:', e.message); }
-}
-
-async function setStatus(id, status) {
-  await sb.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
-  if (status === 'verified' || status === 'rejected') {
-    const { data: reg } = await sb.from('registrations').select('*').eq('id', id).single();
-    if (reg) sendEmail(status, reg);
+  // ── Show QR modal ──
+  function showQR(token, name, eventTitle) {
+    const url = `${BASE_URL}/checkin.html?token=${token}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+    document.getElementById('qrModalName').textContent = name + (eventTitle ? ' · ' + eventTitle : '');
+    document.getElementById('qrModalImg').src  = qrUrl;
+    document.getElementById('qrModalLink').href = url;
+    document.getElementById('qrModal').classList.remove('hidden');
   }
-  loadRegs(); loadOverview();
-}
+
+  // ── Manual check-in by admin ──
+  async function manualCheckin(id) {
+    if (!confirm('Manually mark this person as attended?')) return;
+    await sb.from('registrations').update({
+      checked_in: true,
+      checked_in_at: new Date().toISOString()
+    }).eq('id', id);
+    loadRegs();
+    loadOverview();
+  }
+
+  // ── Send email ──
+  async function sendEmail(type, reg) {
+    try {
+      await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw'
+        },
+        body: JSON.stringify({
+          type,
+          name:        reg.name,
+          email:       reg.email,
+          event_title: reg.event_title,
+          event_date:  reg.event_date,
+          event_venue: reg.event_venue
+        })
+      });
+    } catch(e) { console.warn('Email error:', e.message); }
+  }
+
+  // ── Set status ──
+  async function setStatus(id, status) {
+    await sb.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+    if (status === 'verified' || status === 'rejected') {
+      const { data: reg } = await sb.from('registrations').select('*').eq('id', id).single();
+      if (reg) sendEmail(status, reg);
+    }
+    loadRegs();
+    loadOverview();
+  }
 
   async function fillEvFilter() {
     const { data } = await sb.from('events').select('id, title');
@@ -713,7 +794,6 @@ async function setStatus(id, status) {
       const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
       const { error } = await sb.from('cities').insert({ name, image_url:publicUrl, display_order:order });
       if (error) throw error;
-      // reset form
       document.getElementById('cName').value='';
       document.getElementById('cOrder').value='';
       document.getElementById('cImgInput').value='';
@@ -733,13 +813,14 @@ async function setStatus(id, status) {
     loadCities();
   }
 
-  // ── Payment settings ──
+  // ── Payment + Check-in settings ──
   async function loadPayment() {
     const { data } = await sb.from('settings').select('*').eq('id','payment').single();
     if (data) {
-      document.getElementById('sUpi').value  = data.upi_id||'';
-      document.getElementById('sName').value = data.pay_name||'';
-      document.getElementById('sNote').value = data.pay_note||'';
+      document.getElementById('sUpi').value  = data.upi_id  || '';
+      document.getElementById('sName').value = data.pay_name|| '';
+      document.getElementById('sNote').value = data.pay_note|| '';
+      document.getElementById('sPin').value  = data.checkin_pin || '';
       if (data.qr_code_url) {
         document.getElementById('qrPreview').src = data.qr_code_url;
         document.getElementById('qrWrap').classList.remove('hidden');
@@ -768,12 +849,20 @@ async function setStatus(id, status) {
         const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
         qrUrl=publicUrl;
       }
-      const payload={ id:'payment', upi_id:document.getElementById('sUpi').value.trim(), pay_name:document.getElementById('sName').value.trim(), pay_note:document.getElementById('sNote').value.trim(), qr_code_url:qrUrl, updated_at:new Date().toISOString() };
+      const payload = {
+        id:          'payment',
+        upi_id:      document.getElementById('sUpi').value.trim(),
+        pay_name:    document.getElementById('sName').value.trim(),
+        pay_note:    document.getElementById('sNote').value.trim(),
+        qr_code_url: qrUrl,
+        checkin_pin: document.getElementById('sPin').value.trim() || '1234',
+        updated_at:  new Date().toISOString()
+      };
       const { error } = await sb.from('settings').upsert(payload,{onConflict:'id'});
       if (error) throw error;
       alert('Saved ✓');
     } catch(e) { alert('Error: '+e.message); }
-    setLoading('payBtn','payTxt','paySpin','Save Payment Settings',false);
+    setLoading('payBtn','payTxt','paySpin','Save Settings',false);
   }
 
   // ── Utility ──
@@ -789,6 +878,11 @@ async function setStatus(id, status) {
     document.getElementById(txtId).textContent=label;
     document.getElementById(spinId).classList.toggle('hidden',!loading);
   }
+
+  // Close QR modal on backdrop click
+  document.getElementById('qrModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden');
+  });
 
   checkAuth();
 </script>

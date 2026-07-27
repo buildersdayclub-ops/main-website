@@ -705,13 +705,14 @@
           'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw'
         },
         body: JSON.stringify({
-          type,
-          name:        reg.name,
-          email:       reg.email,
-          event_title: reg.event_title,
-          event_date:  reg.event_date,
-          event_venue: reg.event_venue
-        })
+  type,
+  name:           reg.name,
+  email:          reg.email,
+  event_title:    reg.event_title,
+  event_date:     reg.event_date,
+  event_venue:    reg.event_venue,
+  check_in_token: reg.check_in_token
+})
       });
     } catch(e) { console.warn('Email error:', e.message); }
   }

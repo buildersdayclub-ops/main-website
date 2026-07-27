@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Check-In – Builders Day Club</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+    }
+    @keyframes spin  { to { transform: rotate(360deg); } }
+    @keyframes fadeIn{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .spin    { animation: spin 0.8s linear infinite; display:inline-block; }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+    /* ── Header ── */
+    .header {
+      background: #111;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: #f97316;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #fff;
+      flex-shrink: 0;
+    }
+    .header-text h1 { font-size: 15px; font-weight: 700; }
+    .header-text p  { font-size: 11px; color: #6b7280; margin-top: 1px; }
+
+    /* ── Screens ── */
+    .screen { display: none; padding: 24px 20px; max-width: 480px; margin: 0 auto; }
+    .screen.active { display: block; }
+
+    /* ── PIN screen ── */
+    .pin-wrap {
+      text-align: center;
+      padding-top: 40px;
+    }
+    .pin-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    .pin-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pin-sub {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .pin-input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      letter-spacing: 0.25em;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+    }
+    .pin-input:focus { border-color: rgba(249,115,22,0.5); }
+    .pin-btn {
+      width: 100%;
+      background: #f97316;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .pin-btn:hover { background: #ea6c0a; }
+    .pin-btn:active { transform: scale(0.97); }
+    .pin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pin-error {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* ── Scanner screen ── */
+    .scan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .scan-title { font-size: 18px; font-weight: 700; }
+    .scan-exit {
+      font-size: 12px;
+      color: #6b7280;
+      background: rgba(255,255,255,0.06);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      color: #9ca3af;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .scan-exit:hover { color: #fff; background: rgba(255,255,255,0.10); }
+    #reader {
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    #reader video { border-radius: 20px; }
+    .scan-hint {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    .scan-hint span { color: #f97316; font-weight: 600; }
+
+    /* ── Result screen ── */
+    .result-card {
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .result-status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .result-avatar {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #fb923c;
+      flex-shrink: 0;
+    }
+    .result-name { font-size: 17px; font-weight: 700; }
+    .result-email { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .result-detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .result-detail-row:last-child { border-bottom: none; }
+    .result-detail-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #4b5563;
+      width: 70px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .result-detail-val {
+      font-size: 13px;
+      color: #e5e7eb;
+      line-height: 1.5;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+    .badge-pending  { background:rgba(234,179,8,.15);  color:#fde047; }
+    .badge-verified { background:rgba(34,197,94,.15);  color:#86efac; }
+    .badge-rejected { background:rgba(239,68,68,.15);  color:#fca5a5; }
+    .badge-checkedin{ background:rgba(249,115,22,.20); color:#fb923c; }
+
+    .attend-btn {
+      width: 100%;
+      background: #f97316;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .attend-btn:hover { background: #ea6c0a; }
+    .attend-btn:active { transform: scale(0.97); }
+    .attend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .attend-btn.already {
+      background: rgba(34,197,94,0.12);
+      color: #86efac;
+      cursor: default;
+    }
+    .attend-btn.already:hover { background: rgba(34,197,94,0.12); }
+    .attend-btn.error-state {
+      background: rgba(239,68,68,0.12);
+      color: #fca5a5;
+      cursor: default;
+    }
+
+    .scan-again-btn {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      color: #9ca3af;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .scan-again-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      position: fixed; inset: 0; z-index: 99;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(8px);
+    }
+    .success-circle {
+      width: 100px; height: 100px;
+      background: rgba(34,197,94,0.15);
+      border: 2px solid #22c55e;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .success-name { font-size: 22px; font-weight: 800; }
+    .success-sub  { font-size: 14px; color: #6b7280; }
+
+    /* ── Error screen ── */
+    .error-wrap {
+      text-align: center;
+      padding-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo-mark">B</div>
+  <div class="header-text">
+    <h1>Event Check-In</h1>
+    <p>Builders Day Club · Team Only</p>
+  </div>
+</div>
+
+<!-- ── PIN Screen ── -->
+<div class="screen active" id="screenPIN">
+  <div class="pin-wrap">
+    <div class="pin-icon">🔐</div>
+    <h2 class="pin-title">Team Access</h2>
+    <p class="pin-sub">Enter your team PIN to start scanning</p>
+    <input id="pinInput" class="pin-input" type="password" placeholder="••••" maxlength="8" inputmode="numeric"
+      onkeydown="if(event.key==='Enter') verifyPIN()">
+    <button class="pin-btn" onclick="verifyPIN()" id="pinBtn">
+      <span id="pinTxt">Enter</span>
+      <span id="pinSpin" class="spin" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;display:none;"></span>
+    </button>
+    <p class="pin-error" id="pinError">Incorrect PIN. Try again.</p>
+  </div>
+</div>
+
+<!-- ── Scanner Screen ── -->
+<div class="screen" id="screenScan">
+  <div class="scan-header">
+    <h2 class="scan-title">Scan QR Code</h2>
+    <button class="scan-exit" onclick="exitScanner()">Sign Out</button>
+  </div>
+  <div id="reader"></div>
+  <p class="scan-hint">Point camera at attendee's QR code<br>Looks for code from <span>Builders Day Club</span> email</p>
+</div>
+
+<!-- ── Result Screen ── -->
+<div class="screen" id="screenResult">
+  <div id="resultContent"></div>
+</div>
+
+<!-- ── Error Screen ── -->
+<div class="screen" id="screenError">
+  <div class="error-wrap">
+    <div style="font-size:3rem;margin-bottom:16px;">❌</div>
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:8px;">Invalid QR Code</h2>
+    <p id="errorMsg" style="font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:32px;"></p>
+    <button class="scan-again-btn" onclick="goToScanner()" style="max-width:300px;margin:0 auto;display:block;">← Scan Again</button>
+  </div>
+</div>
+
+<!-- ── Success Flash ── -->
+<div class="success-overlay" id="successFlash" style="display:none;">
+  <div class="success-circle">✅</div>
+  <p class="success-name" id="flashName"></p>
+  <p class="success-sub">Checked in successfully</p>
+</div>
+
+<script>
+  const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  let html5QrCode = null;
+  let authenticated = false;
+
+  // ── Show screen ──
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ── Check if token in URL (QR was scanned by phone camera) ──
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlToken  = urlParams.get('token');
+
+  // If token in URL, after PIN → go to result directly
+  async function verifyPIN() {
+    const pin = document.getElementById('pinInput').value.trim();
+    if (!pin) return;
+    document.getElementById('pinBtn').disabled = true;
+    document.getElementById('pinTxt').textContent = 'Checking…';
+    document.getElementById('pinSpin').style.display = 'inline-block';
+    document.getElementById('pinError').style.display = 'none';
+
+    // Fetch PIN from settings
+    const { data } = await sb.from('settings').select('checkin_pin').eq('id', 'payment').single();
+    const correctPIN = (data && data.checkin_pin) ? String(data.checkin_pin) : '1234';
+
+    document.getElementById('pinBtn').disabled = false;
+    document.getElementById('pinTxt').textContent = 'Enter';
+    document.getElementById('pinSpin').style.display = 'none';
+
+    if (pin !== correctPIN) {
+      document.getElementById('pinError').style.display = 'block';
+      document.getElementById('pinInput').value = '';
+      return;
+    }
+    authenticated = true;
+    sessionStorage.setItem('cin_auth', '1');
+
+    if (urlToken) {
+      // Came here via QR scan from camera app
+      await lookupToken(urlToken);
+    } else {
+      goToScanner();
+    }
+  }
+
+  // ── Check session auth on load ──
+  window.addEventListener('load', () => {
+    if (sessionStorage.getItem('cin_auth') === '1') {
+      authenticated = true;
+      if (urlToken) {
+        lookupToken(urlToken);
+      } else {
+        goToScanner();
+      }
+    }
+  });
+
+  // ── Start scanner ──
+  function goToScanner() {
+    showScreen('screenScan');
+    if (html5QrCode) {
+      html5QrCode.stop().catch(()=>{}).then(() => startCamera());
+    } else {
+      startCamera();
+    }
+    // Clean URL token if present
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  function startCamera() {
+    html5QrCode = new Html5Qrcode('reader');
+    html5QrCode.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 260, height: 260 } },
+      onScanSuccess,
+      () => {}
+    ).catch(err => {
+      console.warn('Camera error:', err);
+    });
+  }
+
+  async function onScanSuccess(decodedText) {
+    // Stop scanner while processing
+    if (html5QrCode) await html5QrCode.stop().catch(()=>{});
+
+    // Extract token from URL in QR
+    let token = decodedText;
+    try {
+      const u = new URL(decodedText);
+      token = u.searchParams.get('token') || decodedText;
+    } catch(e) {
+      // not a URL — use raw value as token
+    }
+    await lookupToken(token);
+  }
+
+  // ── Look up registration by token ──
+  async function lookupToken(token) {
+    showScreen('screenResult');
+    document.getElementById('resultContent').innerHTML = `
+      <div style="text-align:center;padding:60px 0;">
+        <div class="spin" style="width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#f97316;border-radius:50%;margin:0 auto 16px;"></div>
+        <p style="color:#6b7280;font-size:13px;">Looking up registration…</p>
+      </div>`;
+
+    const { data: reg, error } = await sb
+      .from('registrations')
+      .select('*')
+      .eq('check_in_token', token)
+      .single();
+
+    if (error || !reg) {
+      showScreen('screenError');
+      document.getElementById('errorMsg').textContent = 'No registration found for this QR code. It may be invalid or from a different event.';
+      return;
+    }
+    renderResult(reg);
+  }
+
+  // ── Render result card ──
+  function renderResult(reg) {
+    const initials = reg.name.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const checkedIn = reg.checked_in;
+    const checkedAt = reg.checked_in_at ? new Date(reg.checked_in_at).toLocaleString('en-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : null;
+
+    const isRejected = reg.status === 'rejected';
+    const isPending  = reg.status === 'pending';
+
+    let btnHTML = '';
+    if (checkedIn) {
+      btnHTML = `<button class="attend-btn already" disabled>✅ Already Checked In${checkedAt ? ' · '+checkedAt : ''}</button>`;
+    } else if (isRejected) {
+      btnHTML = `<button class="attend-btn error-state" disabled>⛔ Registration Rejected</button>`;
+    } else if (isPending) {
+      btnHTML = `<button class="attend-btn error-state" disabled>⚠️ Payment Not Verified Yet</button>`;
+    } else {
+      btnHTML = `<button class="attend-btn" id="attendBtn" onclick="markAttended('${reg.id}', '${reg.name}')">
+        <span id="attendTxt">✓ Mark as Attended</span>
+        <span id="attendSpin" class="spin" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;display:none;"></span>
+      </button>`;
+    }
+
+    document.getElementById('resultContent').innerHTML = `
+      <div class="fade-in">
+        <div class="result-card">
+          <div class="result-status-row">
+            <div class="result-avatar">${initials}</div>
+            <div>
+              <div class="result-name">${reg.name}</div>
+              <div class="result-email">${reg.email}</div>
+            </div>
+          </div>
+          <div class="result-detail-row">
+            <span class="result-detail-label">Event</span>
+            <span class="result-detail-val">${reg.event_title || '—'}</span>
+          </div>
+          <div class="result-detail-row">
+            <span class="result-detail-label">Phone</span>
+            <span class="result-detail-val">${reg.phone || '—'}</span>
+          </div>
+          <div class="result-detail-row">
+            <span class="result-detail-label">Payment</span>
+            <span class="result-detail-val">
+              <span class="badge badge-${reg.status}">${reg.status.charAt(0).toUpperCase()+reg.status.slice(1)}</span>
+            </span>
+          </div>
+          <div class="result-detail-row">
+            <span class="result-detail-label">UTR</span>
+            <span class="result-detail-val" style="font-family:monospace;font-size:12px;">${reg.utr || '—'}</span>
+          </div>
+          ${checkedIn ? `<div class="result-detail-row">
+            <span class="result-detail-label">Check-in</span>
+            <span class="result-detail-val"><span class="badge badge-checkedin">Attended${checkedAt ? ' · '+checkedAt : ''}</span></span>
+          </div>` : ''}
+        </div>
+        ${btnHTML}
+        <button class="scan-again-btn" onclick="goToScanner()">← Scan Another</button>
+      </div>`;
+  }
+
+  // ── Mark attended ──
+  async function markAttended(id, name) {
+    const btn = document.getElementById('attendBtn');
+    if (btn) btn.disabled = true;
+    document.getElementById('attendTxt').textContent = 'Marking…';
+    document.getElementById('attendSpin').style.display = 'inline-block';
+
+    const { error } = await sb.from('registrations').update({
+      checked_in: true,
+      checked_in_at: new Date().toISOString()
+    }).eq('id', id);
+
+    if (error) {
+      document.getElementById('attendTxt').textContent = 'Error — try again';
+      document.getElementById('attendSpin').style.display = 'none';
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    // Flash success
+    document.getElementById('flashName').textContent = name;
+    document.getElementById('successFlash').style.display = 'flex';
+    setTimeout(() => {
+      document.getElementById('successFlash').style.display = 'none';
+      goToScanner();
+    }, 2000);
+  }
+
+  // ── Exit ──
+  function exitScanner() {
+    if (html5QrCode) html5QrCode.stop().catch(()=>{});
+    sessionStorage.removeItem('cin_auth');
+    authenticated = false;
+    showScreen('screenPIN');
+    document.getElementById('pinInput').value = '';
+  }
+</script>
+</body>
+</html>

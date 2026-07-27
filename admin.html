@@ -172,6 +172,7 @@
       <button onclick="show('attendance')"    data-sec="attendance"    class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>📋</span><span>Attendance</span></button>
       <button onclick="show('cities')"        data-sec="cities"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🌆</span><span>Cities</span></button>
       <button onclick="show('payment')"       data-sec="payment"       class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>💳</span><span>Payment & Check-in</span></button>
+      <button onclick="show('homepage')"     data-sec="homepage"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🏠</span><span>Homepage</span></button>
     </nav>
     <div class="p-4 space-y-1" style="border-top:1px solid var(--color-border)">
       <a href="events.html" target="_blank" class="block text-center text-xs py-2 rounded-xl transition-all hover:opacity-80" style="color:var(--color-text-muted)">View Events Page ↗</a>
@@ -413,6 +414,144 @@
       </div>
     </div>
 
+    <!-- ── HOMEPAGE CMS ── -->
+    <div id="sec-homepage" class="sec hidden">
+      <span class="sec-tag">// homepage content</span>
+      <h2 class="text-2xl font-bold mb-6" style="font-family:'Playfair Display',serif;color:var(--color-text)">Homepage</h2>
+      <p class="text-sm mb-6" style="color:var(--color-text-muted)">Update your homepage content here. Changes go live immediately — no code needed.</p>
+
+      <!-- Apply / CTA link -->
+      <div class="card p-6 mb-4">
+        <span class="sec-tag">// apply / cta link</span>
+        <p class="text-xs mb-3" style="color:var(--color-text-muted)">This URL is used for every "Apply to Join" button across the site.</p>
+        <label class="lbl">Apply Form URL</label>
+        <input id="hpApplyLink" type="url" placeholder="https://tally.so/r/..." class="inp">
+      </div>
+
+      <!-- Hero section -->
+      <div class="card p-6 mb-4">
+        <span class="sec-tag">// hero section</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="lbl">Tag Line <span style="color:var(--color-text-faint);font-weight:400;text-transform:none">(small pixel text above title)</span></label>
+            <input id="hpHeroTag" type="text" placeholder="// free to join. hard to get in." class="inp">
+          </div>
+          <div>
+            <label class="lbl">Title Highlighted Word <span style="color:var(--color-text-faint);font-weight:400;text-transform:none">(the yellow italic word)</span></label>
+            <input id="hpHeroEm" type="text" placeholder="tribe" class="inp">
+          </div>
+          <div class="md:col-span-2">
+            <label class="lbl">Hero Subtitle</label>
+            <textarea id="hpHeroSubtitle" rows="3" placeholder="A curated, verified community of founders, engineers and product builders." class="inp"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="lbl">Social Proof Text <span style="color:var(--color-text-faint);font-weight:400;text-transform:none">(below the CTA button)</span></label>
+            <input id="hpSocialProof" type="text" placeholder="Join 240+ verified builders from across India" class="inp">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card p-6 mb-4">
+        <span class="sec-tag">// stats numbers</span>
+        <div class="grid grid-cols-3 gap-4">
+          <div><label class="lbl">Stat 1</label><input id="hpStat1" type="text" placeholder="240+" class="inp"></div>
+          <div><label class="lbl">Stat 2</label><input id="hpStat2" type="text" placeholder="4" class="inp"></div>
+          <div><label class="lbl">Stat 3</label><input id="hpStat3" type="text" placeholder="48h" class="inp"></div>
+        </div>
+        <p class="text-xs mt-2" style="color:var(--color-text-faint)">These match the three stats shown in the apply section (members, cities, response time).</p>
+      </div>
+
+      <!-- Social links -->
+      <div class="card p-6 mb-4">
+        <span class="sec-tag">// social links</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="lbl">Twitter / X URL</label><input id="hpTwitter" type="url" placeholder="https://twitter.com/buildersdayclub" class="inp"></div>
+          <div><label class="lbl">Instagram URL</label><input id="hpInstagram" type="url" placeholder="https://instagram.com/buildersdayclub" class="inp"></div>
+          <div><label class="lbl">LinkedIn URL</label><input id="hpLinkedin" type="url" placeholder="https://linkedin.com/company/buildersdayclub" class="inp"></div>
+          <div><label class="lbl">Contact Email</label><input id="hpEmail" type="email" placeholder="hello@buildersdayclub.com" class="inp"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="card p-6 mb-4">
+        <span class="sec-tag">// footer</span>
+        <label class="lbl">Footer Tagline</label>
+        <input id="hpFooter" type="text" placeholder="Where builders belong." class="inp">
+      </div>
+
+      <!-- Inside the Club images -->
+      <div class="card p-6 mb-6">
+        <span class="sec-tag">// inside the club — photos</span>
+        <p class="text-xs mb-4" style="color:var(--color-text-muted)">The 4 photos in the "Inside the Club" section. Upload to replace; leave empty to keep current.</p>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Image 0 -->
+          <div>
+            <label class="lbl">Photo 1</label>
+            <div id="hpImg0Zone" class="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
+              onclick="document.getElementById('hpImg0Input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--color-yellow)'"
+              ondragleave="this.style.borderColor='var(--color-border)'"
+              ondrop="dropHpImg(event,0)">
+              <img id="hpImg0Preview" src="" alt="" class="hidden w-full h-28 object-cover rounded-lg mb-2">
+              <div id="hpImg0PH"><p class="text-2xl mb-1">📸</p><p class="text-xs" style="color:var(--color-text-muted)">Click or drop image</p></div>
+              <input id="hpImg0Input" type="file" accept="image/*" class="hidden" onchange="prevHpImg(this.files[0],0)">
+            </div>
+          </div>
+          <!-- Image 1 -->
+          <div>
+            <label class="lbl">Photo 2</label>
+            <div id="hpImg1Zone" class="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
+              onclick="document.getElementById('hpImg1Input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--color-yellow)'"
+              ondragleave="this.style.borderColor='var(--color-border)'"
+              ondrop="dropHpImg(event,1)">
+              <img id="hpImg1Preview" src="" alt="" class="hidden w-full h-28 object-cover rounded-lg mb-2">
+              <div id="hpImg1PH"><p class="text-2xl mb-1">📸</p><p class="text-xs" style="color:var(--color-text-muted)">Click or drop image</p></div>
+              <input id="hpImg1Input" type="file" accept="image/*" class="hidden" onchange="prevHpImg(this.files[0],1)">
+            </div>
+          </div>
+          <!-- Image 2 -->
+          <div>
+            <label class="lbl">Photo 3</label>
+            <div id="hpImg2Zone" class="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
+              onclick="document.getElementById('hpImg2Input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--color-yellow)'"
+              ondragleave="this.style.borderColor='var(--color-border)'"
+              ondrop="dropHpImg(event,2)">
+              <img id="hpImg2Preview" src="" alt="" class="hidden w-full h-28 object-cover rounded-lg mb-2">
+              <div id="hpImg2PH"><p class="text-2xl mb-1">📸</p><p class="text-xs" style="color:var(--color-text-muted)">Click or drop image</p></div>
+              <input id="hpImg2Input" type="file" accept="image/*" class="hidden" onchange="prevHpImg(this.files[0],2)">
+            </div>
+          </div>
+          <!-- Image 3 -->
+          <div>
+            <label class="lbl">Photo 4</label>
+            <div id="hpImg3Zone" class="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
+              onclick="document.getElementById('hpImg3Input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--color-yellow)'"
+              ondragleave="this.style.borderColor='var(--color-border)'"
+              ondrop="dropHpImg(event,3)">
+              <img id="hpImg3Preview" src="" alt="" class="hidden w-full h-28 object-cover rounded-lg mb-2">
+              <div id="hpImg3PH"><p class="text-2xl mb-1">📸</p><p class="text-xs" style="color:var(--color-text-muted)">Click or drop image</p></div>
+              <input id="hpImg3Input" type="file" accept="image/*" class="hidden" onchange="prevHpImg(this.files[0],3)">
+            </div>
+          </div>
+        </div>
+        <div id="hpImgProg" class="hidden mt-3">
+          <div class="rounded-full h-1" style="background:var(--color-surface-2)"><div class="h-1 rounded-full transition-all" style="width:50%;background:var(--color-yellow)"></div></div>
+          <p class="text-xs mt-1" style="color:var(--color-text-muted)">Uploading images…</p>
+        </div>
+      </div>
+
+      <!-- Save button -->
+      <button onclick="saveHomepage()" id="hpBtn" class="btn-primary px-8 py-3 text-sm rounded-xl">
+        <span id="hpTxt">Save Changes</span>
+        <span id="hpSpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
+      </button>
+      <p class="text-xs mt-3" style="color:var(--color-text-faint)">Changes go live on the homepage immediately after saving.</p>
+    </div>
+
   </main>
 </div>
 
@@ -448,7 +587,7 @@
   function bootDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); loadPayment();
+    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); loadPayment(); loadHomepage();
   }
 
   // ── Navigation ──
@@ -465,6 +604,7 @@
     if (sec === 'attendance')     { fillAttEvSelector(); loadAttendance(); }
     if (sec === 'cities')         loadCities();
     if (sec === 'payment')        loadPayment();
+    if (sec === 'homepage')       loadHomepage();
   }
 
   // ── Overview ──
@@ -766,6 +906,110 @@
       if(error)throw error;alert('Saved ✓');
     }catch(e){alert('Error: '+e.message);}
     setLoading('payBtn','payTxt','paySpin','Save Settings',false);
+  }
+
+  // ── Homepage CMS ──
+  let hpImgUrls = ['','','',''];
+
+  function prevHpImg(file, idx) {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById(`hpImg${idx}Preview`).src = e.target.result;
+      document.getElementById(`hpImg${idx}Preview`).classList.remove('hidden');
+      document.getElementById(`hpImg${idx}PH`).classList.add('hidden');
+    };
+    r.readAsDataURL(file);
+  }
+
+  function dropHpImg(e, idx) {
+    e.preventDefault();
+    document.getElementById(`hpImg${idx}Zone`).style.borderColor = 'var(--color-border)';
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) {
+      document.getElementById(`hpImg${idx}Input`).files = e.dataTransfer.files;
+      prevHpImg(f, idx);
+    }
+  }
+
+  async function uploadHpImg(file, idx) {
+    const path = `homepage/img${idx}_${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+    const { error } = await sb.storage.from('media').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data: { publicUrl } } = sb.storage.from('media').getPublicUrl(path);
+    hpImgUrls[idx] = publicUrl;
+    return publicUrl;
+  }
+
+  async function loadHomepage() {
+    try {
+      const { data } = await sb.from('settings').select('content').eq('id','homepage').single();
+      if (!data?.content) return;
+      const c = data.content;
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+      set('hpApplyLink',   c.apply_link);
+      set('hpHeroTag',     c.hero_tag);
+      set('hpHeroSubtitle',c.hero_subtitle);
+      set('hpHeroEm',      c.hero_em);
+      set('hpSocialProof', c.social_proof);
+      set('hpStat1',       c.stat_1);
+      set('hpStat2',       c.stat_2);
+      set('hpStat3',       c.stat_3);
+      set('hpTwitter',     c.social_twitter);
+      set('hpInstagram',   c.social_instagram);
+      set('hpLinkedin',    c.social_linkedin);
+      set('hpEmail',       c.social_email);
+      set('hpFooter',      c.footer_tagline);
+      ['inside_img_1','inside_img_2','inside_img_3','inside_img_4'].forEach((key, i) => {
+        if (c[key]) {
+          hpImgUrls[i] = c[key];
+          const prev = document.getElementById(`hpImg${i}Preview`);
+          const ph   = document.getElementById(`hpImg${i}PH`);
+          if (prev) { prev.src = c[key]; prev.classList.remove('hidden'); }
+          if (ph)   ph.classList.add('hidden');
+        }
+      });
+    } catch(e) { /* no homepage row yet — form stays blank */ }
+  }
+
+  async function saveHomepage() {
+    setLoading('hpBtn','hpTxt','hpSpin','Saving…',true);
+    try {
+      document.getElementById('hpImgProg').classList.remove('hidden');
+      for (let i = 0; i < 4; i++) {
+        const file = document.getElementById(`hpImg${i}Input`).files[0];
+        if (file) await uploadHpImg(file, i);
+      }
+      document.getElementById('hpImgProg').classList.add('hidden');
+      const content = {
+        apply_link:       document.getElementById('hpApplyLink').value.trim(),
+        hero_tag:         document.getElementById('hpHeroTag').value.trim(),
+        hero_subtitle:    document.getElementById('hpHeroSubtitle').value.trim(),
+        hero_em:          document.getElementById('hpHeroEm').value.trim(),
+        social_proof:     document.getElementById('hpSocialProof').value.trim(),
+        stat_1:           document.getElementById('hpStat1').value.trim(),
+        stat_2:           document.getElementById('hpStat2').value.trim(),
+        stat_3:           document.getElementById('hpStat3').value.trim(),
+        social_twitter:   document.getElementById('hpTwitter').value.trim(),
+        social_instagram: document.getElementById('hpInstagram').value.trim(),
+        social_linkedin:  document.getElementById('hpLinkedin').value.trim(),
+        social_email:     document.getElementById('hpEmail').value.trim(),
+        footer_tagline:   document.getElementById('hpFooter').value.trim(),
+        inside_img_1:     hpImgUrls[0],
+        inside_img_2:     hpImgUrls[1],
+        inside_img_3:     hpImgUrls[2],
+        inside_img_4:     hpImgUrls[3],
+      };
+      const { error } = await sb.from('settings').upsert(
+        { id: 'homepage', content, updated_at: new Date().toISOString() },
+        { onConflict: 'id' }
+      );
+      if (error) throw error;
+      alert('Saved ✓  Changes are live on the homepage.');
+    } catch(e) {
+      alert('Error: ' + e.message);
+    }
+    setLoading('hpBtn','hpTxt','hpSpin','Save Changes',false);
   }
 
   // ── Utility ──

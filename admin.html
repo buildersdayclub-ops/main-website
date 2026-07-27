@@ -5,228 +5,252 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin – Builders Day Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    :root {
+      --color-bg:           #0A0A0B;
+      --color-surface:      #111113;
+      --color-surface-2:    #18181B;
+      --color-border:       #2A2A30;
+      --color-border-light: #3A3A42;
+      --color-text:         #F0F0F2;
+      --color-text-muted:   #8B8B95;
+      --color-text-faint:   #55555E;
+      --color-accent:       #5B21E6;
+      --color-accent-hover: #7C3AED;
+      --color-yellow:       #E8F048;
+      --color-yellow-hover: #f0f560;
+      --color-yellow-muted: rgba(232,240,72,0.12);
+    }
     * { font-family: 'Inter', sans-serif; }
+    body { background: var(--color-bg); color: var(--color-text); }
+
     ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #0a0a0a; }
-    ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 10px; }
-    .nav-item { transition: all 0.15s; border-left: 3px solid transparent; }
-    .nav-item:hover { background: rgba(249,115,22,0.08); color: #f97316; }
-    .nav-item.active { background: rgba(249,115,22,0.12); color: #f97316; border-left-color: #f97316; }
+    ::-webkit-scrollbar-track { background: var(--color-bg); }
+    ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
+
     input[type="date"]::-webkit-calendar-picker-indicator,
     input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
-    .tag-meetup    { background:rgba(59,130,246,.15);  color:#93c5fd; }
-    .tag-workshop  { background:rgba(168,85,247,.15);  color:#d8b4fe; }
-    .tag-hackathon { background:rgba(34,197,94,.15);   color:#86efac; }
-    .tag-talk      { background:rgba(249,115,22,.15);  color:#fdba74; }
-    .tag-other     { background:rgba(255,255,255,.08); color:#d1d5db; }
+
+    /* Nav */
+    .nav-item { transition: all 0.15s; border-left: 3px solid transparent; }
+    .nav-item:hover  { background: var(--color-yellow-muted); color: var(--color-yellow); }
+    .nav-item.active { background: var(--color-yellow-muted); color: var(--color-yellow); border-left-color: var(--color-yellow); }
+
+    /* Status badges */
     .st-pending  { background:rgba(234,179,8,.15);  color:#fde047; }
     .st-verified { background:rgba(34,197,94,.15);  color:#86efac; }
     .st-rejected { background:rgba(239,68,68,.15);  color:#fca5a5; }
-    .drag-over { border-color:#f97316 !important; background:rgba(249,115,22,.05); }
+
+    /* Tag colors (event types) */
+    .tag-meetup    { background:rgba(59,130,246,.15);  color:#93c5fd; }
+    .tag-workshop  { background:rgba(168,85,247,.15);  color:#d8b4fe; }
+    .tag-hackathon { background:rgba(34,197,94,.15);   color:#86efac; }
+    .tag-talk      { background:rgba(232,240,72,.15);  color:#E8F048; }
+    .tag-other     { background:rgba(255,255,255,.08); color:#d1d5db; }
+
+    /* Inputs */
+    .inp { width:100%; background:var(--color-surface-2); border:1px solid var(--color-border); border-radius:12px; padding:10px 14px; font-size:13px; color:var(--color-text); outline:none; font-family:'Inter',sans-serif; transition:border-color 0.2s; box-sizing:border-box; }
+    .inp:focus { border-color: var(--color-accent); }
+    .inp option { background: var(--color-surface); }
+    .lbl { display:block; font-size:11px; font-weight:600; letter-spacing:0.06em; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:6px; }
+
+    /* Pixel font utility */
+    .pixel { font-family:'Press Start 2P', monospace; }
+
+    /* Drag & drop */
+    .drag-over { border-color: var(--color-yellow) !important; background: var(--color-yellow-muted); }
+
+    /* Spin animation */
     @keyframes spin { to { transform:rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; }
+
     textarea { resize: none; }
-    .inp { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:10px 14px; font-size:13px; color:#fff; outline:none; font-family:'Inter',sans-serif; transition:border-color 0.2s; box-sizing:border-box; }
-    .inp:focus { border-color:rgba(249,115,22,0.5); }
-    .inp option { background:#1a1a1a; }
-    .lbl { display:block; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#6b7280; text-transform:uppercase; margin-bottom:6px; }
+
+    /* Primary button */
+    .btn-primary {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      background: var(--color-yellow); color: var(--color-bg);
+      font-weight:700; border-radius:999px; border:2px solid var(--color-yellow);
+      transition: all 0.15s; cursor:pointer;
+    }
+    .btn-primary:hover { background: var(--color-yellow-hover); border-color: var(--color-yellow-hover); transform:translateY(-1px); }
+    .btn-primary:active { transform:scale(0.97); }
+    .btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+    /* Ghost button */
+    .btn-ghost {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      background: var(--color-surface-2); color: var(--color-text);
+      font-weight:600; border-radius:12px; border:1px solid var(--color-border);
+      transition: all 0.15s; cursor:pointer;
+    }
+    .btn-ghost:hover { background: var(--color-surface-3, #1E1E22); border-color: var(--color-border-light); }
+
+    /* Card */
+    .card { background: var(--color-surface); border:1px solid var(--color-border); border-radius:16px; }
+    .card:hover { border-color: var(--color-border-light); }
+
+    /* Section heading tag */
+    .sec-tag { font-family:'Press Start 2P',monospace; font-size:10px; color:var(--color-yellow); letter-spacing:0.05em; text-transform:lowercase; margin-bottom:8px; display:block; }
+
     /* QR Modal */
     .qr-modal { position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px; }
-    .qr-modal-box { background:#161616;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;text-align:center;max-width:320px;width:100%; }
+    .qr-modal-box { background:var(--color-surface);border:1px solid var(--color-border);border-radius:20px;padding:28px;text-align:center;max-width:320px;width:100%; }
   </style>
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen">
+<body class="min-h-screen">
+
 <!-- ══ QR MODAL ══ -->
 <div id="qrModal" class="qr-modal hidden">
   <div class="qr-modal-box">
-    <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Attendee QR Code</p>
-    <p id="qrModalName" class="font-bold text-base mb-4"></p>
+    <span class="sec-tag">// attendee qr code</span>
+    <p id="qrModalName" class="font-bold text-base mb-4" style="color:var(--color-text)"></p>
     <div class="bg-white p-3 rounded-2xl inline-block mb-4">
       <img id="qrModalImg" src="" alt="QR" style="width:180px;height:180px;object-fit:contain;">
     </div>
-    <p class="text-gray-600 text-xs mb-4">Team scans this at the event entrance</p>
+    <p style="color:var(--color-text-faint)" class="text-xs mb-4">Team scans this at the event entrance</p>
     <div class="flex gap-2">
       <button onclick="document.getElementById('qrModal').classList.add('hidden')"
-        class="flex-1 bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm font-semibold py-2.5 rounded-xl transition-all">Close</button>
+        class="btn-ghost flex-1 py-2.5 text-sm rounded-xl">Close</button>
       <a id="qrModalLink" href="" target="_blank"
-        class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-all text-center">Open URL ↗</a>
+        class="btn-primary flex-1 py-2.5 text-sm rounded-xl no-underline">Open URL ↗</a>
     </div>
   </div>
 </div>
+
 <!-- ══ LOGIN ══ -->
-<div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+<div id="loginScreen" class="min-h-screen flex items-center justify-center p-4" style="background:var(--color-bg)">
   <div class="w-full max-w-sm">
     <div class="text-center mb-8">
-      <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-content font-extrabold text-2xl mx-auto mb-5 shadow-lg shadow-orange-500/30">B</div>
-      <h1 class="text-2xl font-bold">Admin Panel</h1>
-      <p class="text-gray-500 text-sm mt-1">Builders Day Club</p>
+      <img src="./assets/logo.jpg" alt="Builders Day Club" class="w-16 h-16 rounded-2xl mx-auto mb-5 object-cover" style="box-shadow:0 0 40px rgba(91,33,230,0.3)">
+      <h1 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Admin Panel</h1>
+      <p style="color:var(--color-text-muted)" class="text-sm mt-1">Builders Day Club</p>
     </div>
-    <div class="bg-[#161616] rounded-2xl p-7 border border-white/[0.07] space-y-4">
+    <div class="card p-7 space-y-4">
       <div>
-        <label class="block text-xs text-gray-400 mb-1.5 font-semibold uppercase tracking-widest">Email</label>
-        <input id="loginEmail" type="email" placeholder="admin@example.com"
-          class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/60 transition-colors">
+        <label class="lbl">Email</label>
+        <input id="loginEmail" type="email" placeholder="admin@example.com" class="inp">
       </div>
       <div>
-        <label class="block text-xs text-gray-400 mb-1.5 font-semibold uppercase tracking-widest">Password</label>
-        <input id="loginPass" type="password" placeholder="••••••••"
-          class="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/60 transition-colors">
+        <label class="lbl">Password</label>
+        <input id="loginPass" type="password" placeholder="••••••••" class="inp">
       </div>
       <p id="loginErr" class="text-red-400 text-xs hidden"></p>
-      <button onclick="doLogin()" id="loginBtn"
-        class="w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+      <button onclick="doLogin()" id="loginBtn" class="btn-primary w-full py-3 text-sm">
         <span id="loginTxt">Sign In</span>
-        <span id="loginSpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+        <span id="loginSpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
       </button>
     </div>
-    <p class="text-gray-600 text-xs text-center mt-5">See <span class="text-gray-400">SETUP.md</span> to create your admin account.</p>
+    <p class="text-xs text-center mt-5" style="color:var(--color-text-faint)">See <span style="color:var(--color-text-muted)">SETUP.md</span> to create your admin account.</p>
   </div>
 </div>
+
 <!-- ══ DASHBOARD ══ -->
 <div id="dashboard" class="hidden min-h-screen flex">
   <!-- Sidebar -->
-  <aside class="w-60 bg-[#111] border-r border-white/[0.05] flex flex-col fixed h-full z-30">
-    <div class="p-5 border-b border-white/[0.05]">
+  <aside class="w-60 flex flex-col fixed h-full z-30" style="background:var(--color-bg);border-right:1px solid var(--color-border)">
+    <div class="p-5" style="border-bottom:1px solid var(--color-border)">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-content font-bold text-sm shadow-md shadow-orange-500/20">B</div>
+        <img src="./assets/logo.jpg" alt="BDC" class="w-9 h-9 rounded-xl object-cover flex-shrink-0" style="box-shadow:0 0 16px rgba(91,33,230,0.25)">
         <div>
-          <p class="font-semibold text-sm leading-none">Builders Day Club</p>
-          <p class="text-gray-600 text-xs mt-0.5">Admin Panel</p>
+          <p class="font-semibold text-sm leading-none" style="color:var(--color-text)">Builders Day Club</p>
+          <p class="text-xs mt-0.5" style="color:var(--color-text-muted)">Admin Panel</p>
         </div>
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <button onclick="show('overview')"       data-sec="overview"       class="nav-item active w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>📊</span><span>Overview</span></button>
-      <button onclick="show('events')"         data-sec="events"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🗓️</span><span>Events</span></button>
-      <button onclick="show('registrations')"  data-sec="registrations"  class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3">
+      <button onclick="show('overview')"      data-sec="overview"      class="nav-item active w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>📊</span><span>Overview</span></button>
+      <button onclick="show('events')"        data-sec="events"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🗓️</span><span>Events</span></button>
+      <button onclick="show('registrations')" data-sec="registrations" class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)">
         <span>👥</span><span>Registrations</span>
-        <span id="pendingBadge" class="hidden ml-auto bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+        <span id="pendingBadge" class="hidden ml-auto text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center font-bold" style="background:var(--color-accent);color:#fff">0</span>
       </button>
-      <button onclick="show('attendance')"     data-sec="attendance"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>📋</span><span>Attendance</span></button>
-      <button onclick="show('cities')"         data-sec="cities"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>🌆</span><span>Cities</span></button>
-      <button onclick="show('payment')"        data-sec="payment"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3"><span>💳</span><span>Payment & Check-in</span></button>
+      <button onclick="show('attendance')"    data-sec="attendance"    class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>📋</span><span>Attendance</span></button>
+      <button onclick="show('cities')"        data-sec="cities"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🌆</span><span>Cities</span></button>
+      <button onclick="show('payment')"       data-sec="payment"       class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>💳</span><span>Payment & Check-in</span></button>
     </nav>
-    <div class="p-4 border-t border-white/[0.05] space-y-1">
-      <a href="events.html" target="_blank" class="block text-center text-gray-500 hover:text-white text-xs py-2 rounded-xl hover:bg-white/[0.05] transition-all">View Events Page ↗</a>
-      <a href="checkin.html" target="_blank" class="block text-center text-orange-500 hover:text-orange-400 text-xs py-2 rounded-xl hover:bg-orange-500/[0.05] transition-all">📱 Open Check-in Scanner ↗</a>
-      <button onclick="doLogout()" class="w-full text-center text-red-500 hover:text-red-400 text-xs py-2 rounded-xl hover:bg-red-500/5 transition-all">Sign Out</button>
+    <div class="p-4 space-y-1" style="border-top:1px solid var(--color-border)">
+      <a href="events.html" target="_blank" class="block text-center text-xs py-2 rounded-xl transition-all hover:opacity-80" style="color:var(--color-text-muted)">View Events Page ↗</a>
+      <a href="checkin.html" target="_blank" class="block text-center text-xs py-2 rounded-xl transition-all font-semibold" style="color:var(--color-yellow)">📱 Open Check-in Scanner ↗</a>
+      <button onclick="doLogout()" class="w-full text-center text-xs py-2 rounded-xl transition-all text-red-400 hover:text-red-300">Sign Out</button>
     </div>
   </aside>
+
   <!-- Main -->
-  <main class="ml-60 flex-1 p-8 overflow-auto">
+  <main class="ml-60 flex-1 p-8 overflow-auto" style="background:var(--color-bg)">
+
     <!-- ── OVERVIEW ── -->
     <div id="sec-overview" class="sec">
-      <h2 class="text-2xl font-bold mb-6">Overview</h2>
+      <span class="sec-tag">// dashboard</span>
+      <h2 class="text-2xl font-bold mb-6" style="font-family:'Playfair Display',serif;color:var(--color-text)">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
-          <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Total Events</p>
-          <p class="text-4xl font-extrabold" id="statEv">—</p>
+        <div class="card p-6">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Total Events</p>
+          <p class="text-4xl font-extrabold pixel" style="color:var(--color-text)" id="statEv">—</p>
         </div>
-        <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
-          <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Total Registrations</p>
-          <p class="text-4xl font-extrabold" id="statReg">—</p>
+        <div class="card p-6">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Total Registrations</p>
+          <p class="text-4xl font-extrabold pixel" style="color:var(--color-text)" id="statReg">—</p>
         </div>
-        <div class="bg-[#161616] rounded-2xl p-6 border border-orange-500/20">
-          <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Pending Verification</p>
-          <p class="text-4xl font-extrabold text-orange-500" id="statPend">—</p>
+        <div class="card p-6" style="border-color:rgba(91,33,230,0.3)">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Pending Verification</p>
+          <p class="text-4xl font-extrabold pixel" style="color:var(--color-accent)" id="statPend">—</p>
         </div>
-        <div class="bg-[#161616] rounded-2xl p-6 border border-green-500/20">
-          <p class="text-gray-500 text-xs font-semibold uppercase tracking-widest mb-2">Checked In</p>
-          <p class="text-4xl font-extrabold text-green-400" id="statChecked">—</p>
+        <div class="card p-6" style="border-color:rgba(34,197,94,0.3)">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Checked In</p>
+          <p class="text-4xl font-extrabold pixel text-green-400" id="statChecked">—</p>
         </div>
       </div>
-      <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Recent Registrations</h3>
-      <div id="recentList" class="bg-[#161616] rounded-2xl border border-white/[0.05] overflow-hidden">
-        <div class="p-8 text-center text-gray-600 text-sm">Loading…</div>
+      <span class="sec-tag">// recent registrations</span>
+      <div class="card overflow-hidden" id="recentList">
+        <div class="p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
+
     <!-- ── EVENTS LIST ── -->
     <div id="sec-events" class="sec hidden">
+      <span class="sec-tag">// manage events</span>
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold">Events</h2>
-        <button onclick="openForm()" class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-5 py-2.5 rounded-xl transition-all text-sm">+ New Event</button>
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Events</h2>
+        <button onclick="openForm()" class="btn-primary px-5 py-2.5 text-sm rounded-xl">+ New Event</button>
       </div>
       <div id="evList" class="space-y-3">
-        <div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>
+        <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
+
     <!-- ── EVENT FORM ── -->
     <div id="sec-eventForm" class="sec hidden">
       <div class="flex items-center gap-4 mb-6">
-        <button onclick="show('events')" class="text-gray-500 hover:text-white text-sm transition-colors">← Back</button>
-        <h2 class="text-2xl font-bold" id="formHeading">New Event</h2>
+        <button onclick="show('events')" class="text-sm transition-colors" style="color:var(--color-text-muted)">← Back</button>
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)" id="formHeading">New Event</h2>
       </div>
-      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
+      <div class="card p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="md:col-span-2">
-            <label class="lbl">Event Title *</label>
-            <input id="fTitle" type="text" placeholder="e.g. AI Buildathon 2026" class="inp">
+          <div class="md:col-span-2"><label class="lbl">Event Title *</label><input id="fTitle" type="text" placeholder="e.g. AI Buildathon 2026" class="inp"></div>
+          <div class="md:col-span-2"><label class="lbl">Description *</label><textarea id="fDesc" rows="4" placeholder="What's this event about?" class="inp"></textarea></div>
+          <div><label class="lbl">Date *</label><input id="fDate" type="date" class="inp"></div>
+          <div><label class="lbl">Time</label><input id="fTime" type="time" class="inp"></div>
+          <div><label class="lbl">Venue / Location *</label><input id="fVenue" type="text" placeholder="e.g. Koramangala, Bengaluru" class="inp"></div>
+          <div><label class="lbl">City (for filter)</label><input id="fCity" type="text" placeholder="e.g. Bengaluru" class="inp"></div>
+          <div><label class="lbl">Organizer Name</label><input id="fOrgName" type="text" placeholder="e.g. Amit Pandey" class="inp"></div>
+          <div><label class="lbl">Organizer Photo URL</label><input id="fOrgAvatar" type="url" placeholder="https://..." class="inp"></div>
+          <div><label class="lbl">Event Type</label>
+            <select id="fType" class="inp"><option value="meetup">Meetup</option><option value="workshop">Workshop</option><option value="hackathon">Hackathon</option><option value="talk">Talk / Panel</option><option value="other">Other</option></select>
           </div>
-          <div class="md:col-span-2">
-            <label class="lbl">Description *</label>
-            <textarea id="fDesc" rows="4" placeholder="What's this event about?" class="inp"></textarea>
+          <div><label class="lbl">Visibility</label>
+            <select id="fActive" class="inp"><option value="true">Active (visible)</option><option value="false">Hidden (draft)</option></select>
           </div>
-          <div>
-            <label class="lbl">Date *</label>
-            <input id="fDate" type="date" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Time</label>
-            <input id="fTime" type="time" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Venue / Location *</label>
-            <input id="fVenue" type="text" placeholder="e.g. Koramangala, Bengaluru" class="inp">
-          </div>
-          <div>
-            <label class="lbl">City (for filter)</label>
-            <input id="fCity" type="text" placeholder="e.g. Bengaluru" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Organizer Name</label>
-            <input id="fOrgName" type="text" placeholder="e.g. Amit Pandey" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Organizer Photo URL</label>
-            <input id="fOrgAvatar" type="url" placeholder="https://..." class="inp">
-          </div>
-          <div>
-            <label class="lbl">Event Type</label>
-            <select id="fType" class="inp">
-              <option value="meetup">Meetup</option>
-              <option value="workshop">Workshop</option>
-              <option value="hackathon">Hackathon</option>
-              <option value="talk">Talk / Panel</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="lbl">Visibility</label>
-            <select id="fActive" class="inp">
-              <option value="true">Active (visible)</option>
-              <option value="false">Hidden (draft)</option>
-            </select>
-          </div>
-          <div>
-            <label class="lbl">Price (₹) — 0 for free</label>
-            <input id="fPrice" type="number" placeholder="0" min="0" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Capacity</label>
-            <input id="fCap" type="number" placeholder="50" min="1" class="inp">
-          </div>
-          <div class="md:col-span-2">
-            <label class="lbl">Tags (comma separated)</label>
-            <input id="fTags" type="text" placeholder="AI, Networking, Free Food" class="inp">
-          </div>
-          <!-- Image upload -->
+          <div><label class="lbl">Price (₹) — 0 for free</label><input id="fPrice" type="number" placeholder="0" min="0" class="inp"></div>
+          <div><label class="lbl">Capacity</label><input id="fCap" type="number" placeholder="50" min="1" class="inp"></div>
+          <div class="md:col-span-2"><label class="lbl">Tags (comma separated)</label><input id="fTags" type="text" placeholder="AI, Networking, Free Food" class="inp"></div>
           <div class="md:col-span-2">
             <label class="lbl">Event Cover Image</label>
-            <div id="imgZone"
-              class="border-2 border-dashed border-white/[0.10] rounded-2xl p-8 text-center cursor-pointer hover:border-orange-500/40 transition-all"
+            <div id="imgZone" class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
               onclick="document.getElementById('imgInput').click()"
               ondragover="event.preventDefault();this.classList.add('drag-over')"
               ondragleave="this.classList.remove('drag-over')"
@@ -234,101 +258,97 @@
               <img id="imgPreview" src="" alt="" class="hidden w-full max-h-52 object-cover rounded-xl mb-4">
               <div id="imgPH">
                 <p class="text-3xl mb-2">🖼️</p>
-                <p class="text-gray-400 text-sm font-medium">Click or drag & drop image</p>
-                <p class="text-gray-600 text-xs mt-1">JPG / PNG / WebP  •  Recommended 1200×630px</p>
+                <p class="text-sm font-medium" style="color:var(--color-text-muted)">Click or drag & drop image</p>
+                <p class="text-xs mt-1" style="color:var(--color-text-faint)">JPG / PNG / WebP • Recommended 1200×630px</p>
               </div>
               <input id="imgInput" type="file" accept="image/*" class="hidden" onchange="prevImg(this.files[0])">
             </div>
             <div id="upProg" class="hidden mt-3">
-              <div class="bg-white/[0.06] rounded-full h-1"><div id="upBar" class="bg-orange-500 h-1 rounded-full transition-all" style="width:0%"></div></div>
-              <p class="text-gray-500 text-xs mt-1">Uploading…</p>
+              <div class="rounded-full h-1" style="background:var(--color-surface-2)"><div id="upBar" class="h-1 rounded-full transition-all" style="width:0%;background:var(--color-yellow)"></div></div>
+              <p class="text-xs mt-1" style="color:var(--color-text-muted)">Uploading…</p>
             </div>
           </div>
         </div>
         <p id="formErr" class="text-red-400 text-sm mt-4 hidden"></p>
         <div class="flex gap-3 mt-6">
-          <button onclick="saveEvent()" id="saveBtn"
-            class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-8 py-3 rounded-xl transition-all text-sm flex items-center gap-2">
+          <button onclick="saveEvent()" id="saveBtn" class="btn-primary px-8 py-3 text-sm rounded-xl">
             <span id="saveTxt">Save Event</span>
-            <span id="saveSpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+            <span id="saveSpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
           </button>
-          <button onclick="show('events')" class="bg-white/[0.07] hover:bg-white/[0.12] text-white font-semibold px-8 py-3 rounded-xl transition-all text-sm">Cancel</button>
+          <button onclick="show('events')" class="btn-ghost px-8 py-3 text-sm rounded-xl">Cancel</button>
         </div>
       </div>
     </div>
+
     <!-- ── REGISTRATIONS ── -->
     <div id="sec-registrations" class="sec hidden">
+      <span class="sec-tag">// manage registrations</span>
       <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 class="text-2xl font-bold">Registrations</h2>
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Registrations</h2>
         <div class="flex gap-2 flex-wrap">
-          <select id="regEvF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
+          <select id="regEvF" onchange="loadRegs()" class="inp" style="width:auto">
             <option value="all">All Events</option>
           </select>
-          <select id="regStF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
+          <select id="regStF" onchange="loadRegs()" class="inp" style="width:auto">
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="verified">Verified</option>
             <option value="rejected">Rejected</option>
           </select>
-          <select id="regCiF" onchange="loadRegs()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
+          <select id="regCiF" onchange="loadRegs()" class="inp" style="width:auto">
             <option value="all">All Check-in</option>
             <option value="yes">Attended ✓</option>
             <option value="no">Not Yet</option>
           </select>
-          <button onclick="loadRegs()" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm px-4 py-2 rounded-xl transition-all">Refresh</button>
+          <button onclick="loadRegs()" class="btn-ghost px-4 py-2 text-sm rounded-xl">Refresh</button>
         </div>
       </div>
       <div id="regList" class="space-y-3">
-        <div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>
+        <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
+
     <!-- ── ATTENDANCE ── -->
     <div id="sec-attendance" class="sec hidden">
+      <span class="sec-tag">// event attendance</span>
       <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 class="text-2xl font-bold">Attendance</h2>
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Attendance</h2>
         <div class="flex gap-2 items-center">
-          <select id="attEvSel" onchange="loadAttendance()" class="bg-[#1a1a1a] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50">
+          <select id="attEvSel" onchange="loadAttendance()" class="inp" style="width:auto">
             <option value="">Select an event…</option>
           </select>
-          <button onclick="loadAttendance()" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-sm px-4 py-2 rounded-xl transition-all">Refresh</button>
+          <button onclick="loadAttendance()" class="btn-ghost px-4 py-2 text-sm rounded-xl">Refresh</button>
         </div>
       </div>
       <div id="attSummary" class="mb-6"></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-3">✅ Attended</h3>
+          <span class="sec-tag" style="color:#86efac">// attended ✅</span>
           <div id="attYesList" class="space-y-2">
-            <div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Select an event above</div>
+            <div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">Select an event above</div>
           </div>
         </div>
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">⏳ Not Arrived</h3>
+          <span class="sec-tag">// not arrived yet ⏳</span>
           <div id="attNoList" class="space-y-2">
-            <div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Select an event above</div>
+            <div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">Select an event above</div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- ── CITIES ── -->
     <div id="sec-cities" class="sec hidden">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold">Cities</h2>
-      </div>
-      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] mb-6">
-        <h3 class="text-sm font-semibold text-gray-300 mb-4">Add New City</h3>
+      <span class="sec-tag">// manage cities</span>
+      <h2 class="text-2xl font-bold mb-6" style="font-family:'Playfair Display',serif;color:var(--color-text)">Cities</h2>
+      <div class="card p-6 mb-6">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--color-text)">Add New City</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="lbl">City Name *</label>
-            <input id="cName" type="text" placeholder="e.g. Bengaluru" class="inp">
-          </div>
-          <div>
-            <label class="lbl">Display Order</label>
-            <input id="cOrder" type="number" placeholder="0" min="0" class="inp">
-          </div>
+          <div><label class="lbl">City Name *</label><input id="cName" type="text" placeholder="e.g. Bengaluru" class="inp"></div>
+          <div><label class="lbl">Display Order</label><input id="cOrder" type="number" placeholder="0" min="0" class="inp"></div>
         </div>
         <label class="lbl">City Image *</label>
-        <div id="cityImgZone"
-          class="border-2 border-dashed border-white/[0.10] rounded-2xl p-6 text-center cursor-pointer hover:border-orange-500/40 transition-all mb-3"
+        <div id="cityImgZone" class="border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all mb-3" style="border-color:var(--color-border)"
           onclick="document.getElementById('cImgInput').click()"
           ondragover="event.preventDefault();this.classList.add('drag-over')"
           ondragleave="this.classList.remove('drag-over')"
@@ -336,46 +356,37 @@
           <img id="cImgPreview" src="" alt="" class="hidden w-full max-h-36 object-cover rounded-xl mb-3">
           <div id="cImgPH">
             <p class="text-2xl mb-1">🌆</p>
-            <p class="text-gray-400 text-sm font-medium">Click or drag & drop city photo</p>
-            <p class="text-gray-600 text-xs mt-1">JPG / PNG / WebP — landscape works best</p>
+            <p class="text-sm font-medium" style="color:var(--color-text-muted)">Click or drag & drop city photo</p>
+            <p class="text-xs mt-1" style="color:var(--color-text-faint)">JPG / PNG / WebP — landscape works best</p>
           </div>
           <input id="cImgInput" type="file" accept="image/*" class="hidden" onchange="prevCityImg(this.files[0])">
         </div>
         <div id="cUpProg" class="hidden mb-3">
-          <div class="bg-white/[0.06] rounded-full h-1"><div class="bg-orange-500 h-1 rounded-full w-1/2 transition-all"></div></div>
-          <p class="text-gray-500 text-xs mt-1">Uploading…</p>
+          <div class="rounded-full h-1" style="background:var(--color-surface-2)"><div class="h-1 rounded-full w-1/2 transition-all" style="background:var(--color-yellow)"></div></div>
+          <p class="text-xs mt-1" style="color:var(--color-text-muted)">Uploading…</p>
         </div>
         <p id="cityErr" class="text-red-400 text-xs mb-3 hidden"></p>
-        <button onclick="saveCity()" id="cityBtn"
-          class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-6 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
+        <button onclick="saveCity()" id="cityBtn" class="btn-primary px-6 py-2.5 text-sm rounded-xl">
           <span id="cityTxt">Add City</span>
-          <span id="citySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+          <span id="citySpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
         </button>
       </div>
       <div id="citiesList2" class="space-y-3">
-        <div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>
+        <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
-    <!-- ── PAYMENT & CHECK-IN SETTINGS ── -->
+
+    <!-- ── PAYMENT & CHECK-IN ── -->
     <div id="sec-payment" class="sec hidden">
-      <h2 class="text-2xl font-bold mb-6">Payment & Check-in Settings</h2>
-      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05] space-y-5 max-w-xl">
-        <div>
-          <label class="lbl">UPI ID</label>
-          <input id="sUpi" type="text" placeholder="yourname@upi" class="inp">
-        </div>
-        <div>
-          <label class="lbl">Display Name</label>
-          <input id="sName" type="text" placeholder="Builders Day Club" class="inp">
-        </div>
-        <div>
-          <label class="lbl">Payment Note</label>
-          <input id="sNote" type="text" placeholder="e.g. Builders Day Club Event Fee" class="inp">
-        </div>
+      <span class="sec-tag">// settings</span>
+      <h2 class="text-2xl font-bold mb-6" style="font-family:'Playfair Display',serif;color:var(--color-text)">Payment & Check-in Settings</h2>
+      <div class="card p-6 space-y-5 max-w-xl">
+        <div><label class="lbl">UPI ID</label><input id="sUpi" type="text" placeholder="yourname@upi" class="inp"></div>
+        <div><label class="lbl">Display Name</label><input id="sName" type="text" placeholder="Builders Day Club" class="inp"></div>
+        <div><label class="lbl">Payment Note</label><input id="sNote" type="text" placeholder="e.g. Builders Day Club Event Fee" class="inp"></div>
         <div>
           <label class="lbl">QR Code Image</label>
-          <div id="qrZone"
-            class="border-2 border-dashed border-white/[0.10] rounded-2xl p-8 text-center cursor-pointer hover:border-orange-500/40 transition-all"
+          <div id="qrZone" class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all" style="border-color:var(--color-border)"
             onclick="document.getElementById('qrInput').click()"
             ondragover="event.preventDefault();this.classList.add('drag-over')"
             ondragleave="this.classList.remove('drag-over')"
@@ -385,26 +396,26 @@
             </div>
             <div id="qrPH">
               <p class="text-3xl mb-2">📷</p>
-              <p class="text-gray-400 text-sm font-medium">Click or drag & drop QR image</p>
+              <p class="text-sm font-medium" style="color:var(--color-text-muted)">Click or drag & drop QR image</p>
             </div>
             <input id="qrInput" type="file" accept="image/*" class="hidden" onchange="prevQR(this.files[0])">
           </div>
         </div>
-        <!-- Check-in PIN -->
-        <div class="pt-2 border-t border-white/[0.06]">
+        <div class="pt-2" style="border-top:1px solid var(--color-border)">
           <label class="lbl">Team Check-in PIN</label>
           <input id="sPin" type="text" placeholder="e.g. 1234" maxlength="8" class="inp" style="letter-spacing:0.2em;font-weight:700;">
-          <p class="text-gray-600 text-xs mt-2">Your team enters this PIN on the check-in scanner page. Default is <strong class="text-gray-400">1234</strong> — change it before your event.</p>
+          <p class="text-xs mt-2" style="color:var(--color-text-faint)">Your team enters this PIN on the check-in scanner page. Default is <strong style="color:var(--color-text-muted)">1234</strong> — change it before your event.</p>
         </div>
-        <button onclick="savePayment()" id="payBtn"
-          class="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-semibold px-8 py-3 rounded-xl transition-all text-sm flex items-center gap-2">
+        <button onclick="savePayment()" id="payBtn" class="btn-primary px-8 py-3 text-sm rounded-xl">
           <span id="payTxt">Save Settings</span>
-          <span id="paySpin" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin"></span>
+          <span id="paySpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
         </button>
       </div>
     </div>
+
   </main>
 </div>
+
 <script>
   const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
@@ -437,22 +448,17 @@
   function bootDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    loadOverview();
-    loadEvents();
-    loadCities();
-    fillEvFilter();
-    fillAttEvSelector();
-    loadPayment();
+    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); loadPayment();
   }
 
   // ── Navigation ──
   function show(sec) {
     document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); n.style.color = 'var(--color-text-muted)'; });
     const panel = document.getElementById('sec-' + sec);
     if (panel) panel.classList.remove('hidden');
     const btn = document.querySelector(`[data-sec="${sec}"]`);
-    if (btn) btn.classList.add('active');
+    if (btn) { btn.classList.add('active'); btn.style.color = 'var(--color-yellow)'; }
     if (sec === 'overview')       loadOverview();
     if (sec === 'events')         loadEvents();
     if (sec === 'registrations')  loadRegs();
@@ -477,21 +483,21 @@
     if (pend > 0) { badge.textContent = pend; badge.classList.remove('hidden'); }
     else badge.classList.add('hidden');
     const el = document.getElementById('recentList');
-    if (!(regs||[]).length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm">No registrations yet</div>'; return; }
+    if (!(regs||[]).length) { el.innerHTML='<div class="p-8 text-center text-sm" style="color:var(--color-text-faint)">No registrations yet</div>'; return; }
     el.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
-      <thead class="text-gray-500 text-xs border-b border-white/[0.06]"><tr>
+      <thead class="text-xs" style="color:var(--color-text-muted);border-bottom:1px solid var(--color-border)"><tr>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Name</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Event</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Status</th>
         <th class="text-left px-5 py-3 font-semibold uppercase tracking-widest">Check-in</th>
       </tr></thead><tbody>
-      ${(regs||[]).map(r=>`<tr class="border-b border-white/[0.04] hover:bg-white/[0.02]">
-        <td class="px-5 py-3 font-medium">${r.name}</td>
-        <td class="px-5 py-3 text-gray-400 max-w-[200px] truncate">${r.event_title||'—'}</td>
+      ${(regs||[]).map(r=>`<tr style="border-bottom:1px solid var(--color-border)">
+        <td class="px-5 py-3 font-medium" style="color:var(--color-text)">${r.name}</td>
+        <td class="px-5 py-3 max-w-[200px] truncate" style="color:var(--color-text-muted)">${r.event_title||'—'}</td>
         <td class="px-5 py-3"><span class="text-xs px-2.5 py-1 rounded-full font-medium st-${r.status} capitalize">${r.status}</span></td>
         <td class="px-5 py-3">${r.checked_in
-          ? '<span class="text-xs px-2.5 py-1 rounded-full font-medium" style="background:rgba(249,115,22,.15);color:#fb923c;">✓ Attended</span>'
-          : '<span class="text-xs text-gray-600">—</span>'}</td>
+          ? '<span class="text-xs px-2.5 py-1 rounded-full font-medium" style="background:rgba(232,240,72,.15);color:#E8F048;">✓ Attended</span>'
+          : '<span class="text-xs" style="color:var(--color-text-faint)">—</span>'}</td>
       </tr>`).join('')}
       </tbody></table></div>`;
   }
@@ -504,23 +510,23 @@
   async function loadEvents() {
     await loadEvCache();
     const el = document.getElementById('evList');
-    if (!evCache.length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No events yet. Create your first one!</div>'; return; }
+    if (!evCache.length) { el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No events yet. Create your first one!</div>'; return; }
     el.innerHTML = evCache.map(ev=>`
-      <div class="bg-[#161616] rounded-2xl p-4 border border-white/[0.05] flex items-center gap-4 hover:border-white/[0.10] transition-colors">
+      <div class="card p-4 flex items-center gap-4 transition-colors">
         <img src="${ev.image_url||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=200'}"
-             class="w-20 h-16 object-cover rounded-xl flex-shrink-0 bg-white/[0.05]"
+             class="w-20 h-16 object-cover rounded-xl flex-shrink-0"
              onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=200'" alt="">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
-            <h3 class="font-semibold text-sm truncate">${ev.title}</h3>
-            <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${ev.is_active?'bg-green-500/15 text-green-400':'bg-white/[0.07] text-gray-400'}">${ev.is_active?'Active':'Hidden'}</span>
+            <h3 class="font-semibold text-sm truncate" style="color:var(--color-text)">${ev.title}</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style="${ev.is_active?'background:rgba(34,197,94,.15);color:#86efac':'background:var(--color-surface-2);color:var(--color-text-muted)'}">${ev.is_active?'Active':'Hidden'}</span>
           </div>
-          <p class="text-gray-500 text-xs mb-0.5">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${ev.price>0?'₹'+ev.price:'Free'}</p>
-          ${ev.organizer_name?`<p class="text-gray-600 text-xs">🎤 ${ev.organizer_name}</p>`:''}
+          <p class="text-xs mb-0.5" style="color:var(--color-text-muted)">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${ev.price>0?'₹'+ev.price:'Free'}</p>
+          ${ev.organizer_name?`<p class="text-xs" style="color:var(--color-text-faint)">🎤 ${ev.organizer_name}</p>`:''}
         </div>
         <div class="flex gap-2 flex-shrink-0">
-          <button onclick="openForm('${ev.id}')" class="bg-white/[0.07] hover:bg-white/[0.12] text-white text-xs px-4 py-2 rounded-xl transition-all">Edit</button>
-          <button onclick="delEvent('${ev.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all">Delete</button>
+          <button onclick="openForm('${ev.id}')" class="btn-ghost text-xs px-4 py-2 rounded-xl">Edit</button>
+          <button onclick="delEvent('${ev.id}')" class="text-xs px-4 py-2 rounded-xl transition-all" style="background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid transparent">Delete</button>
         </div>
       </div>`).join('');
   }
@@ -528,155 +534,99 @@
   // ── Event form ──
   function openForm(id=null) {
     editId=id; uploadedUrl='';
-    ['fTitle','fDesc','fVenue','fCity','fTags','fDate','fTime','fOrgName','fOrgAvatar'].forEach(i=>{
-      const el = document.getElementById(i); if (el) el.value='';
-    });
-    document.getElementById('fPrice').value='0';
-    document.getElementById('fCap').value='50';
-    document.getElementById('fActive').value='true';
-    document.getElementById('fType').value='meetup';
-    document.getElementById('imgPreview').classList.add('hidden');
-    document.getElementById('imgPH').classList.remove('hidden');
-    document.getElementById('imgInput').value='';
-    document.getElementById('formErr').classList.add('hidden');
+    ['fTitle','fDesc','fVenue','fCity','fTags','fDate','fTime','fOrgName','fOrgAvatar'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+    document.getElementById('fPrice').value='0'; document.getElementById('fCap').value='50';
+    document.getElementById('fActive').value='true'; document.getElementById('fType').value='meetup';
+    document.getElementById('imgPreview').classList.add('hidden'); document.getElementById('imgPH').classList.remove('hidden');
+    document.getElementById('imgInput').value=''; document.getElementById('formErr').classList.add('hidden');
     document.getElementById('formHeading').textContent = id ? 'Edit Event' : 'New Event';
     if (id) {
       const ev = evCache.find(e=>e.id===id);
       if (ev) {
-        document.getElementById('fTitle').value     = ev.title||'';
-        document.getElementById('fDesc').value      = ev.description||'';
-        document.getElementById('fDate').value      = ev.date||'';
-        document.getElementById('fTime').value      = ev.time||'';
-        document.getElementById('fVenue').value     = ev.venue||'';
-        document.getElementById('fCity').value      = ev.city||'';
-        document.getElementById('fOrgName').value   = ev.organizer_name||'';
-        document.getElementById('fOrgAvatar').value = ev.organizer_avatar||'';
-        document.getElementById('fType').value      = ev.type||'meetup';
-        document.getElementById('fPrice').value     = ev.price??0;
-        document.getElementById('fCap').value       = ev.capacity??50;
-        const tags = Array.isArray(ev.tags)?ev.tags:(ev.tags?JSON.parse(ev.tags):[]);
-        document.getElementById('fTags').value      = tags.join(', ');
-        document.getElementById('fActive').value    = String(ev.is_active!==false);
-        if (ev.image_url) {
-          uploadedUrl = ev.image_url;
-          document.getElementById('imgPreview').src = ev.image_url;
-          document.getElementById('imgPreview').classList.remove('hidden');
-          document.getElementById('imgPH').classList.add('hidden');
-        }
+        document.getElementById('fTitle').value=ev.title||''; document.getElementById('fDesc').value=ev.description||'';
+        document.getElementById('fDate').value=ev.date||''; document.getElementById('fTime').value=ev.time||'';
+        document.getElementById('fVenue').value=ev.venue||''; document.getElementById('fCity').value=ev.city||'';
+        document.getElementById('fOrgName').value=ev.organizer_name||''; document.getElementById('fOrgAvatar').value=ev.organizer_avatar||'';
+        document.getElementById('fType').value=ev.type||'meetup'; document.getElementById('fPrice').value=ev.price??0;
+        document.getElementById('fCap').value=ev.capacity??50;
+        const tags=Array.isArray(ev.tags)?ev.tags:(ev.tags?JSON.parse(ev.tags):[]);
+        document.getElementById('fTags').value=tags.join(', ');
+        document.getElementById('fActive').value=String(ev.is_active!==false);
+        if (ev.image_url) { uploadedUrl=ev.image_url; document.getElementById('imgPreview').src=ev.image_url; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('imgPH').classList.add('hidden'); }
       }
     }
     show('eventForm');
   }
-  function prevImg(file) {
-    if (!file) return;
-    const r=new FileReader();
-    r.onload=e=>{ document.getElementById('imgPreview').src=e.target.result; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('imgPH').classList.add('hidden'); };
-    r.readAsDataURL(file);
-  }
+  function prevImg(file) { if(!file)return; const r=new FileReader(); r.onload=e=>{ document.getElementById('imgPreview').src=e.target.result; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('imgPH').classList.add('hidden'); }; r.readAsDataURL(file); }
   function dropImg(e) { e.preventDefault(); document.getElementById('imgZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) prevImg(f); }
   async function uploadImg(file) {
-    const path = `events/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+    const path=`events/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
     document.getElementById('upProg').classList.remove('hidden');
-    const { error } = await sb.storage.from('media').upload(path, file, { upsert:true });
+    const{error}=await sb.storage.from('media').upload(path,file,{upsert:true});
     document.getElementById('upProg').classList.add('hidden');
-    if (error) throw error;
-    const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
+    if(error) throw error;
+    const{data:{publicUrl}}=sb.storage.from('media').getPublicUrl(path);
     return publicUrl;
   }
   async function saveEvent() {
-    const title = document.getElementById('fTitle').value.trim();
-    const desc  = document.getElementById('fDesc').value.trim();
-    const date  = document.getElementById('fDate').value;
-    const venue = document.getElementById('fVenue').value.trim();
-    const err   = document.getElementById('formErr');
-    if (!title||!desc||!date||!venue) { err.textContent='Please fill required fields (Title, Description, Date, Venue)'; err.classList.remove('hidden'); return; }
-    err.classList.add('hidden');
-    setLoading('saveBtn','saveTxt','saveSpin','Saving…',true);
+    const title=document.getElementById('fTitle').value.trim(), desc=document.getElementById('fDesc').value.trim(), date=document.getElementById('fDate').value, venue=document.getElementById('fVenue').value.trim();
+    const err=document.getElementById('formErr');
+    if(!title||!desc||!date||!venue){err.textContent='Please fill required fields (Title, Description, Date, Venue)';err.classList.remove('hidden');return;}
+    err.classList.add('hidden'); setLoading('saveBtn','saveTxt','saveSpin','Saving…',true);
     try {
-      const imgFile = document.getElementById('imgInput').files[0];
-      if (imgFile) uploadedUrl = await uploadImg(imgFile);
-      const tags = document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
-      const payload = {
-        title, description:desc, date,
-        time:             document.getElementById('fTime').value,
-        venue,
-        city:             document.getElementById('fCity').value.trim(),
-        organizer_name:   document.getElementById('fOrgName').value.trim(),
-        organizer_avatar: document.getElementById('fOrgAvatar').value.trim(),
-        type:             document.getElementById('fType').value,
-        price:            Number(document.getElementById('fPrice').value)||0,
-        capacity:         Number(document.getElementById('fCap').value)||50,
-        tags,
-        is_active:  document.getElementById('fActive').value==='true',
-        image_url:  uploadedUrl,
-        updated_at: new Date().toISOString()
-      };
+      const imgFile=document.getElementById('imgInput').files[0];
+      if(imgFile) uploadedUrl=await uploadImg(imgFile);
+      const tags=document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+      const payload={title,description:desc,date,time:document.getElementById('fTime').value,venue,city:document.getElementById('fCity').value.trim(),organizer_name:document.getElementById('fOrgName').value.trim(),organizer_avatar:document.getElementById('fOrgAvatar').value.trim(),type:document.getElementById('fType').value,price:Number(document.getElementById('fPrice').value)||0,capacity:Number(document.getElementById('fCap').value)||50,tags,is_active:document.getElementById('fActive').value==='true',image_url:uploadedUrl,updated_at:new Date().toISOString()};
       let res;
-      if (editId) res = await sb.from('events').update(payload).eq('id', editId);
-      else         res = await sb.from('events').insert({ ...payload, created_at: new Date().toISOString() });
-      if (res.error) throw res.error;
+      if(editId) res=await sb.from('events').update(payload).eq('id',editId);
+      else res=await sb.from('events').insert({...payload,created_at:new Date().toISOString()});
+      if(res.error) throw res.error;
       show('events');
-    } catch(e) {
-      err.textContent = 'Error: ' + e.message;
-      err.classList.remove('hidden');
-      setLoading('saveBtn','saveTxt','saveSpin','Save Event',false);
-    }
+    } catch(e) { err.textContent='Error: '+e.message; err.classList.remove('hidden'); setLoading('saveBtn','saveTxt','saveSpin','Save Event',false); }
   }
-  async function delEvent(id) {
-    if (!confirm('Delete this event? This cannot be undone.')) return;
-    await sb.from('events').delete().eq('id', id);
-    loadEvents();
-  }
+  async function delEvent(id) { if(!confirm('Delete this event? This cannot be undone.'))return; await sb.from('events').delete().eq('id',id); loadEvents(); }
 
   // ── Registrations ──
   async function loadRegs() {
-    const evF = document.getElementById('regEvF').value;
-    const stF = document.getElementById('regStF').value;
-    const ciF = document.getElementById('regCiF').value;
-    // Fetch all then filter client-side to avoid Supabase boolean query issues
-    let q = sb.from('registrations').select('*').order('created_at',{ascending:false});
-    if (evF !== 'all') q = q.eq('event_id', evF);
-    if (stF !== 'all') q = q.eq('status', stF);
-    const { data: allRegs, error } = await q;
-    const el = document.getElementById('regList');
-    if (error) { el.innerHTML=`<div class="p-8 text-center text-red-400 text-sm bg-[#161616] rounded-2xl">Error: ${error.message}</div>`; return; }
-    // Client-side check-in filter
-    let regs = allRegs || [];
-    if (ciF === 'yes') regs = regs.filter(r => r.checked_in === true);
-    if (ciF === 'no')  regs = regs.filter(r => !r.checked_in);
-    if (!regs.length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No registrations found</div>'; return; }
-    el.innerHTML = regs.map(r => {
-      const checkedAt = r.checked_in_at ? new Date(r.checked_in_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : null;
-      return `
-      <div class="bg-[#161616] rounded-2xl p-5 border border-white/[0.05] hover:border-white/[0.08] transition-colors">
+    const evF=document.getElementById('regEvF').value, stF=document.getElementById('regStF').value, ciF=document.getElementById('regCiF').value;
+    let q=sb.from('registrations').select('*').order('created_at',{ascending:false});
+    if(evF!=='all') q=q.eq('event_id',evF);
+    if(stF!=='all') q=q.eq('status',stF);
+    const{data:allRegs,error}=await q;
+    const el=document.getElementById('regList');
+    if(error){el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
+    let regs=allRegs||[];
+    if(ciF==='yes') regs=regs.filter(r=>r.checked_in===true);
+    if(ciF==='no')  regs=regs.filter(r=>!r.checked_in);
+    if(!regs.length){el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No registrations found</div>';return;}
+    el.innerHTML=regs.map(r=>{
+      const checkedAt=r.checked_in_at?new Date(r.checked_in_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):null;
+      return `<div class="card p-5 transition-colors mb-3">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2 mb-2">
-              <h3 class="font-semibold text-sm">${r.name}</h3>
+              <h3 class="font-semibold text-sm" style="color:var(--color-text)">${r.name}</h3>
               <span class="text-xs px-2.5 py-0.5 rounded-full font-medium capitalize st-${r.status}">${r.status}</span>
-              ${r.checked_in ? `<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background:rgba(249,115,22,.15);color:#fb923c;">✓ Attended${checkedAt?' · '+checkedAt:''}</span>` : ''}
+              ${r.checked_in?`<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background:rgba(232,240,72,.15);color:#E8F048;">✓ Attended${checkedAt?' · '+checkedAt:''}</span>`:''}
             </div>
-            <p class="text-gray-500 text-xs mb-1">${r.email} · ${r.phone}</p>
-            <p class="text-gray-500 text-xs">Event: <span class="text-gray-300">${r.event_title||r.event_id}</span></p>
+            <p class="text-xs mb-1" style="color:var(--color-text-muted)">${r.email} · ${r.phone}</p>
+            <p class="text-xs" style="color:var(--color-text-muted)">Event: <span style="color:var(--color-text)">${r.event_title||r.event_id}</span></p>
             <div class="flex items-center gap-2 mt-2 flex-wrap">
-              <span class="text-gray-600 text-xs">UTR:</span>
-              <span class="font-mono text-xs text-white bg-white/[0.06] px-3 py-1 rounded-lg">${r.utr}</span>
-              <button onclick="copyUTR('${r.utr}', this)" class="text-xs px-2.5 py-1 rounded-lg transition-all" style="background:rgba(255,255,255,0.07);color:#9ca3af;border:none;cursor:pointer;">Copy</button>
-              <a href="https://www.google.com/search?q=${r.utr}+UPI+UTR+transaction" target="_blank" class="text-xs px-2.5 py-1 rounded-lg no-underline" style="background:rgba(59,130,246,0.12);color:#93c5fd;display:inline-block;">Search ↗</a>
-              ${r.check_in_token ? `<button onclick="showQR('${r.check_in_token}','${r.name.replace(/'/g,"\\'")}', '${(r.event_title||'').replace(/'/g,"\\'")}')" class="text-xs px-2.5 py-1 rounded-lg transition-all" style="background:rgba(249,115,22,0.12);color:#fb923c;border:none;cursor:pointer;">📱 QR</button>` : ''}
+              <span class="text-xs" style="color:var(--color-text-faint)">UTR:</span>
+              <span class="font-mono text-xs px-3 py-1 rounded-lg" style="background:var(--color-surface-2);color:var(--color-text)">${r.utr}</span>
+              <button onclick="copyUTR('${r.utr}',this)" class="text-xs px-2.5 py-1 rounded-lg" style="background:var(--color-surface-2);color:var(--color-text-muted);border:none;cursor:pointer;">Copy</button>
+              <a href="https://www.google.com/search?q=${r.utr}+UPI+UTR+transaction" target="_blank" class="text-xs px-2.5 py-1 rounded-lg no-underline" style="background:rgba(91,33,230,0.12);color:#a78bfa;display:inline-block;">Search ↗</a>
+              ${r.check_in_token?`<button onclick="showQR('${r.check_in_token}','${r.name.replace(/'/g,"\\'")}','${(r.event_title||'').replace(/'/g,"\\'")}')" class="text-xs px-2.5 py-1 rounded-lg" style="background:rgba(232,240,72,0.10);color:#E8F048;border:none;cursor:pointer;">📱 QR</button>`:''}
             </div>
-            ${r.created_at?`<p class="text-gray-600 text-xs mt-1">Submitted ${new Date(r.created_at).toLocaleString('en-IN')}</p>`:''}
+            ${r.created_at?`<p class="text-xs mt-1" style="color:var(--color-text-faint)">Submitted ${new Date(r.created_at).toLocaleString('en-IN')}</p>`:''}
           </div>
           <div class="flex flex-col gap-2 flex-shrink-0">
-            ${r.status==='pending'?`
-              <div class="flex gap-2">
-                <button onclick="setStatus('${r.id}','verified')" class="bg-green-500/15 hover:bg-green-500/25 text-green-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✓ Verify</button>
-                <button onclick="setStatus('${r.id}','rejected')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">✗ Reject</button>
-              </div>`
-            :`<button onclick="setStatus('${r.id}','pending')" class="bg-white/[0.07] hover:bg-white/[0.12] text-gray-400 text-xs px-4 py-2 rounded-xl transition-all">Reset</button>`}
-            ${r.status==='verified' && !r.checked_in
-              ? `<button onclick="manualCheckin('${r.id}')" class="bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs px-4 py-2 rounded-xl transition-all font-medium">📱 Manual Check-in</button>`
-              : ''}
+            ${r.status==='pending'?`<div class="flex gap-2">
+              <button onclick="setStatus('${r.id}','verified')" class="text-xs px-4 py-2 rounded-xl font-medium" style="background:rgba(34,197,94,.15);color:#86efac;border:none;cursor:pointer;">✓ Verify</button>
+              <button onclick="setStatus('${r.id}','rejected')" class="text-xs px-4 py-2 rounded-xl font-medium" style="background:rgba(239,68,68,.1);color:#fca5a5;border:none;cursor:pointer;">✗ Reject</button>
+            </div>`:`<button onclick="setStatus('${r.id}','pending')" class="btn-ghost text-xs px-4 py-2 rounded-xl">Reset</button>`}
+            ${r.status==='verified'&&!r.checked_in?`<button onclick="manualCheckin('${r.id}')" class="text-xs px-4 py-2 rounded-xl font-medium" style="background:rgba(232,240,72,.1);color:#E8F048;border:none;cursor:pointer;">📱 Manual Check-in</button>`:''}
           </div>
         </div>
       </div>`;
@@ -685,303 +635,144 @@
 
   // ── Attendance ──
   async function fillAttEvSelector() {
-    const { data } = await sb.from('events').select('id, title').order('date',{ascending:false});
-    const sel = document.getElementById('attEvSel');
-    const existing = Array.from(sel.options).map(o => o.value);
-    (data||[]).forEach(ev => {
-      if (!existing.includes(ev.id)) {
-        const o = document.createElement('option');
-        o.value = ev.id; o.textContent = ev.title;
-        sel.appendChild(o);
-      }
-    });
+    const{data}=await sb.from('events').select('id,title').order('date',{ascending:false});
+    const sel=document.getElementById('attEvSel');
+    const existing=Array.from(sel.options).map(o=>o.value);
+    (data||[]).forEach(ev=>{ if(!existing.includes(ev.id)){const o=document.createElement('option');o.value=ev.id;o.textContent=ev.title;sel.appendChild(o);} });
   }
-
   async function loadAttendance() {
-    const evId  = document.getElementById('attEvSel').value;
-    const sumEl = document.getElementById('attSummary');
-    const yesEl = document.getElementById('attYesList');
-    const noEl  = document.getElementById('attNoList');
-    if (!evId) {
-      sumEl.innerHTML = '';
-      yesEl.innerHTML = '<div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Select an event above</div>';
-      noEl.innerHTML  = '<div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Select an event above</div>';
-      return;
-    }
-    sumEl.innerHTML = '<div class="p-4 text-center text-gray-600 text-sm">Loading…</div>';
-    yesEl.innerHTML = '<div class="p-4 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>';
-    noEl.innerHTML  = '<div class="p-4 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Loading…</div>';
-
-    const { data: regs } = await sb.from('registrations')
-      .select('*')
-      .eq('event_id', evId)
-      .eq('status', 'verified')
-      .order('name', {ascending:true});
-
-    const all      = regs || [];
-    const attended = all.filter(r => r.checked_in === true);
-    const notYet   = all.filter(r => r.checked_in !== true);
-    const pct      = all.length ? Math.round((attended.length / all.length) * 100) : 0;
-
-    // Summary bar
-    sumEl.innerHTML = `
-      <div class="bg-[#161616] rounded-2xl p-6 border border-white/[0.05]">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <p class="text-2xl font-extrabold">${attended.length} <span class="text-gray-600 text-base font-normal">/ ${all.length} attended</span></p>
-            <p class="text-gray-500 text-xs mt-1">Verified registrations only</p>
-          </div>
-          <div class="text-right">
-            <p class="text-3xl font-extrabold ${pct>=50?'text-green-400':'text-orange-400'}">${pct}%</p>
-            <p class="text-gray-600 text-xs">attendance rate</p>
-          </div>
-        </div>
-        <div class="bg-white/[0.06] rounded-full h-2">
-          <div class="h-2 rounded-full transition-all" style="width:${pct}%;background:${pct>=50?'#22c55e':'#f97316'}"></div>
-        </div>
+    const evId=document.getElementById('attEvSel').value;
+    const sumEl=document.getElementById('attSummary'), yesEl=document.getElementById('attYesList'), noEl=document.getElementById('attNoList');
+    if(!evId){sumEl.innerHTML='';yesEl.innerHTML='<div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">Select an event above</div>';noEl.innerHTML='<div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">Select an event above</div>';return;}
+    const{data:regs}=await sb.from('registrations').select('*').eq('event_id',evId).eq('status','verified').order('name',{ascending:true});
+    const all=regs||[], attended=all.filter(r=>r.checked_in===true), notYet=all.filter(r=>r.checked_in!==true);
+    const pct=all.length?Math.round((attended.length/all.length)*100):0;
+    sumEl.innerHTML=`<div class="card p-6 mb-2">
+      <div class="flex items-center justify-between mb-3">
+        <div><p class="text-2xl font-extrabold" style="color:var(--color-text)">${attended.length} <span style="color:var(--color-text-muted);font-size:1rem;font-weight:400">/ ${all.length} attended</span></p>
+          <p class="text-xs mt-1" style="color:var(--color-text-faint)">Verified registrations only</p></div>
+        <div class="text-right"><p class="text-3xl font-extrabold pixel" style="color:${pct>=50?'#86efac':'#E8F048'}">${pct}%</p><p class="text-xs" style="color:var(--color-text-faint)">attendance rate</p></div>
+      </div>
+      <div class="rounded-full h-2" style="background:var(--color-surface-2)">
+        <div class="h-2 rounded-full transition-all" style="width:${pct}%;background:${pct>=50?'#22c55e':'#E8F048'}"></div>
+      </div></div>`;
+    yesEl.innerHTML=!attended.length?'<div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">No one checked in yet</div>':attended.map((r,i)=>{
+      const t=r.checked_in_at?new Date(r.checked_in_at).toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}):'';
+      return `<div class="card p-3 flex items-center gap-3" style="border-color:rgba(34,197,94,0.15)">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:rgba(34,197,94,.15);color:#86efac">${i+1}</div>
+        <div class="flex-1 min-w-0"><p class="font-semibold text-sm" style="color:var(--color-text)">${r.name}</p><p class="text-xs truncate" style="color:var(--color-text-muted)">${r.email}</p></div>
+        ${t?`<p class="text-xs flex-shrink-0" style="color:var(--color-text-faint)">${t}</p>`:''}
       </div>`;
-
-    // Attended ✓
-    if (!attended.length) {
-      yesEl.innerHTML = '<div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No one checked in yet</div>';
-    } else {
-      yesEl.innerHTML = attended.map((r, i) => {
-        const t = r.checked_in_at ? new Date(r.checked_in_at).toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}) : '';
-        return `<div class="bg-[#161616] rounded-xl px-4 py-3 border border-green-500/10 flex items-center gap-3">
-          <div class="w-7 h-7 rounded-full bg-green-500/15 text-green-400 flex items-center justify-center text-xs font-bold flex-shrink-0">${i+1}</div>
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-sm">${r.name}</p>
-            <p class="text-gray-500 text-xs truncate">${r.email}</p>
-          </div>
-          ${t ? `<p class="text-gray-600 text-xs flex-shrink-0">${t}</p>` : ''}
-        </div>`;
-      }).join('');
-    }
-
-    // Not arrived
-    if (!notYet.length) {
-      noEl.innerHTML = '<div class="p-6 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">Everyone checked in! 🎉</div>';
-    } else {
-      noEl.innerHTML = notYet.map((r, i) => `
-        <div class="bg-[#161616] rounded-xl px-4 py-3 border border-white/[0.05] flex items-center gap-3">
-          <div class="w-7 h-7 rounded-full bg-white/[0.06] text-gray-500 flex items-center justify-center text-xs font-bold flex-shrink-0">${i+1}</div>
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-sm">${r.name}</p>
-            <p class="text-gray-500 text-xs truncate">${r.email}</p>
-          </div>
-          <button onclick="manualCheckin('${r.id}',true)" class="text-xs px-3 py-1.5 rounded-lg flex-shrink-0 transition-all" style="background:rgba(249,115,22,0.10);color:#fb923c;border:none;cursor:pointer;">Check In</button>
-        </div>`).join('');
-    }
+    }).join('');
+    noEl.innerHTML=!notYet.length?'<div class="card p-6 text-center text-sm" style="color:var(--color-text-faint)">Everyone checked in! 🎉</div>':notYet.map((r,i)=>`
+      <div class="card p-3 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:var(--color-surface-2);color:var(--color-text-muted)">${i+1}</div>
+        <div class="flex-1 min-w-0"><p class="font-semibold text-sm" style="color:var(--color-text)">${r.name}</p><p class="text-xs truncate" style="color:var(--color-text-muted)">${r.email}</p></div>
+        <button onclick="manualCheckin('${r.id}',true)" class="text-xs px-3 py-1.5 rounded-lg flex-shrink-0" style="background:rgba(232,240,72,.1);color:#E8F048;border:none;cursor:pointer;">Check In</button>
+      </div>`).join('');
   }
 
-  // ── Show QR modal ──
-  function showQR(token, name, eventTitle) {
-    const url = `${BASE_URL}/checkin.html?token=${token}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
-    document.getElementById('qrModalName').textContent = name + (eventTitle ? ' · ' + eventTitle : '');
-    document.getElementById('qrModalImg').src  = qrUrl;
-    document.getElementById('qrModalLink').href = url;
+  // ── QR modal ──
+  function showQR(token,name,eventTitle) {
+    const url=`${BASE_URL}/checkin.html?token=${token}`;
+    document.getElementById('qrModalName').textContent=name+(eventTitle?' · '+eventTitle:'');
+    document.getElementById('qrModalImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+    document.getElementById('qrModalLink').href=url;
     document.getElementById('qrModal').classList.remove('hidden');
   }
 
-  // ── Manual check-in by admin ──
-  async function manualCheckin(id, fromAttendance=false) {
-    if (!confirm('Manually mark this person as attended?')) return;
-    await sb.from('registrations').update({
-      checked_in: true,
-      checked_in_at: new Date().toISOString()
-    }).eq('id', id);
-    if (fromAttendance) {
-      loadAttendance();
-    } else {
-      loadRegs();
-      loadOverview();
-    }
+  // ── Manual check-in ──
+  async function manualCheckin(id,fromAttendance=false) {
+    if(!confirm('Manually mark this person as attended?'))return;
+    await sb.from('registrations').update({checked_in:true,checked_in_at:new Date().toISOString()}).eq('id',id);
+    if(fromAttendance){loadAttendance();}else{loadRegs();loadOverview();}
   }
 
-  // ── Send email ──
-  async function sendEmail(type, reg) {
+  // ── Email ──
+  async function sendEmail(type,reg) {
     try {
-      await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw'
-        },
-        body: JSON.stringify({
-          type,
-          name:           reg.name,
-          email:          reg.email,
-          event_title:    reg.event_title,
-          event_date:     reg.event_date,
-          event_venue:    reg.event_venue,
-          check_in_token: reg.check_in_token
-        })
+      await fetch('https://sfmjxhctzpiuahitzhyt.supabase.co/functions/v1/send-email',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw'},
+        body:JSON.stringify({type,name:reg.name,email:reg.email,event_title:reg.event_title,event_date:reg.event_date,event_venue:reg.event_venue,check_in_token:reg.check_in_token})
       });
-    } catch(e) { console.warn('Email error:', e.message); }
+    }catch(e){console.warn('Email error:',e.message);}
   }
 
   // ── Set status ──
-  async function setStatus(id, status) {
-    await sb.from('registrations').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
-    if (status === 'verified' || status === 'rejected') {
-      const { data: reg } = await sb.from('registrations').select('*').eq('id', id).single();
-      if (reg) sendEmail(status, reg);
-    }
-    loadRegs();
-    loadOverview();
+  async function setStatus(id,status) {
+    await sb.from('registrations').update({status,updated_at:new Date().toISOString()}).eq('id',id);
+    if(status==='verified'||status==='rejected'){const{data:reg}=await sb.from('registrations').select('*').eq('id',id).single();if(reg)sendEmail(status,reg);}
+    loadRegs();loadOverview();
   }
 
   async function fillEvFilter() {
-    const { data } = await sb.from('events').select('id, title');
-    const sel = document.getElementById('regEvF');
-    const existing = Array.from(sel.options).map(o=>o.value);
-    (data||[]).forEach(ev => {
-      if (!existing.includes(ev.id)) {
-        const o=document.createElement('option'); o.value=ev.id; o.textContent=ev.title; sel.appendChild(o);
-      }
-    });
+    const{data}=await sb.from('events').select('id,title');
+    const sel=document.getElementById('regEvF');
+    const existing=Array.from(sel.options).map(o=>o.value);
+    (data||[]).forEach(ev=>{if(!existing.includes(ev.id)){const o=document.createElement('option');o.value=ev.id;o.textContent=ev.title;sel.appendChild(o);}});
   }
 
   // ── Cities ──
   async function loadCities() {
-    const { data: cities } = await sb.from('cities').select('*').order('display_order',{ascending:true});
-    const el = document.getElementById('citiesList2');
-    if (!(cities||[]).length) { el.innerHTML='<div class="p-8 text-center text-gray-600 text-sm bg-[#161616] rounded-2xl">No cities yet. Add your first city above.</div>'; return; }
-    el.innerHTML = (cities||[]).map(c=>`
-      <div class="bg-[#161616] rounded-2xl p-4 border border-white/[0.05] flex items-center gap-4 hover:border-white/[0.10] transition-colors">
-        <img src="${c.image_url}" alt="${c.name}" class="w-20 h-14 object-cover rounded-xl flex-shrink-0 bg-white/[0.05]"
-             onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=200&q=80'">
-        <div class="flex-1">
-          <p class="font-semibold text-sm">${c.name}</p>
-          <p class="text-gray-600 text-xs mt-0.5">Order: ${c.display_order||0}</p>
-        </div>
-        <button onclick="deleteCity('${c.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-4 py-2 rounded-xl transition-all flex-shrink-0">Remove</button>
+    const{data:cities}=await sb.from('cities').select('*').order('display_order',{ascending:true});
+    const el=document.getElementById('citiesList2');
+    if(!(cities||[]).length){el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No cities yet. Add your first city above.</div>';return;}
+    el.innerHTML=(cities||[]).map(c=>`
+      <div class="card p-4 flex items-center gap-4 transition-colors">
+        <img src="${c.image_url}" alt="${c.name}" class="w-20 h-14 object-cover rounded-xl flex-shrink-0" onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=200&q=80'">
+        <div class="flex-1"><p class="font-semibold text-sm" style="color:var(--color-text)">${c.name}</p><p class="text-xs mt-0.5" style="color:var(--color-text-faint)">Order: ${c.display_order||0}</p></div>
+        <button onclick="deleteCity('${c.id}')" class="text-xs px-4 py-2 rounded-xl flex-shrink-0 transition-all" style="background:rgba(239,68,68,.1);color:#fca5a5;border:none;cursor:pointer;">Remove</button>
       </div>`).join('');
   }
-  function prevCityImg(file) {
-    if (!file) return;
-    const r = new FileReader();
-    r.onload = e => {
-      document.getElementById('cImgPreview').src = e.target.result;
-      document.getElementById('cImgPreview').classList.remove('hidden');
-      document.getElementById('cImgPH').classList.add('hidden');
-    };
-    r.readAsDataURL(file);
-  }
-  function dropCityImg(e) {
-    e.preventDefault();
-    document.getElementById('cityImgZone').classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f && f.type.startsWith('image/')) {
-      document.getElementById('cImgInput').files = e.dataTransfer.files;
-      prevCityImg(f);
-    }
-  }
-  async function saveCity() {
-    const name  = document.getElementById('cName').value.trim();
-    const order = Number(document.getElementById('cOrder').value)||0;
-    const file  = document.getElementById('cImgInput').files[0];
-    const err   = document.getElementById('cityErr');
-    if (!name)  { err.textContent='City name is required'; err.classList.remove('hidden'); return; }
-    if (!file)  { err.textContent='Please select a city image'; err.classList.remove('hidden'); return; }
-    err.classList.add('hidden');
-    setLoading('cityBtn','cityTxt','citySpin','Uploading…',true);
-    try {
-      const path = `cities/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
+  function prevCityImg(file){if(!file)return;const r=new FileReader();r.onload=e=>{document.getElementById('cImgPreview').src=e.target.result;document.getElementById('cImgPreview').classList.remove('hidden');document.getElementById('cImgPH').classList.add('hidden');};r.readAsDataURL(file);}
+  function dropCityImg(e){e.preventDefault();document.getElementById('cityImgZone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){document.getElementById('cImgInput').files=e.dataTransfer.files;prevCityImg(f);}}
+  async function saveCity(){
+    const name=document.getElementById('cName').value.trim(),order=Number(document.getElementById('cOrder').value)||0,file=document.getElementById('cImgInput').files[0],err=document.getElementById('cityErr');
+    if(!name){err.textContent='City name is required';err.classList.remove('hidden');return;}
+    if(!file){err.textContent='Please select a city image';err.classList.remove('hidden');return;}
+    err.classList.add('hidden');setLoading('cityBtn','cityTxt','citySpin','Uploading…',true);
+    try{
+      const path=`cities/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
       document.getElementById('cUpProg').classList.remove('hidden');
-      const { error: upErr } = await sb.storage.from('media').upload(path, file, { upsert:true });
+      const{error:upErr}=await sb.storage.from('media').upload(path,file,{upsert:true});
       document.getElementById('cUpProg').classList.add('hidden');
-      if (upErr) throw upErr;
-      const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
-      const { error } = await sb.from('cities').insert({ name, image_url:publicUrl, display_order:order });
-      if (error) throw error;
-      document.getElementById('cName').value='';
-      document.getElementById('cOrder').value='';
-      document.getElementById('cImgInput').value='';
-      document.getElementById('cImgPreview').classList.add('hidden');
-      document.getElementById('cImgPH').classList.remove('hidden');
+      if(upErr)throw upErr;
+      const{data:{publicUrl}}=sb.storage.from('media').getPublicUrl(path);
+      const{error}=await sb.from('cities').insert({name,image_url:publicUrl,display_order:order});
+      if(error)throw error;
+      document.getElementById('cName').value='';document.getElementById('cOrder').value='';document.getElementById('cImgInput').value='';
+      document.getElementById('cImgPreview').classList.add('hidden');document.getElementById('cImgPH').classList.remove('hidden');
       loadCities();
-    } catch(e) {
-      err.textContent = 'Error: '+e.message;
-      err.classList.remove('hidden');
-    }
+    }catch(e){err.textContent='Error: '+e.message;err.classList.remove('hidden');}
     setLoading('cityBtn','cityTxt','citySpin','Add City',false);
   }
-  async function deleteCity(id) {
-    if (!confirm('Remove this city?')) return;
-    await sb.from('cities').delete().eq('id', id);
-    loadCities();
-  }
+  async function deleteCity(id){if(!confirm('Remove this city?'))return;await sb.from('cities').delete().eq('id',id);loadCities();}
 
-  // ── Payment + Check-in settings ──
-  async function loadPayment() {
-    const { data } = await sb.from('settings').select('*').eq('id','payment').single();
-    if (data) {
-      document.getElementById('sUpi').value  = data.upi_id  || '';
-      document.getElementById('sName').value = data.pay_name|| '';
-      document.getElementById('sNote').value = data.pay_note|| '';
-      document.getElementById('sPin').value  = data.checkin_pin || '';
-      if (data.qr_code_url) {
-        document.getElementById('qrPreview').src = data.qr_code_url;
-        document.getElementById('qrWrap').classList.remove('hidden');
-        document.getElementById('qrPH').classList.add('hidden');
-      }
-    }
+  // ── Payment ──
+  async function loadPayment(){
+    const{data}=await sb.from('settings').select('*').eq('id','payment').single();
+    if(data){document.getElementById('sUpi').value=data.upi_id||'';document.getElementById('sName').value=data.pay_name||'';document.getElementById('sNote').value=data.pay_note||'';document.getElementById('sPin').value=data.checkin_pin||'';if(data.qr_code_url){document.getElementById('qrPreview').src=data.qr_code_url;document.getElementById('qrWrap').classList.remove('hidden');document.getElementById('qrPH').classList.add('hidden');}}
   }
-  function prevQR(file) {
-    if (!file) return;
-    const r=new FileReader();
-    r.onload=e=>{ document.getElementById('qrPreview').src=e.target.result; document.getElementById('qrWrap').classList.remove('hidden'); document.getElementById('qrPH').classList.add('hidden'); };
-    r.readAsDataURL(file);
-  }
-  function dropQR(e) { e.preventDefault(); document.getElementById('qrZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) prevQR(f); }
-  async function savePayment() {
+  function prevQR(file){if(!file)return;const r=new FileReader();r.onload=e=>{document.getElementById('qrPreview').src=e.target.result;document.getElementById('qrWrap').classList.remove('hidden');document.getElementById('qrPH').classList.add('hidden');};r.readAsDataURL(file);}
+  function dropQR(e){e.preventDefault();document.getElementById('qrZone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))prevQR(f);}
+  async function savePayment(){
     setLoading('payBtn','payTxt','paySpin','Saving…',true);
-    try {
-      let qrUrl = document.getElementById('qrPreview').src||'';
-      const qrFile = document.getElementById('qrInput').files[0];
-      if (qrFile) {
-        const path=`settings/qr_${Date.now()}`;
-        const { error } = await sb.storage.from('media').upload(path,qrFile,{upsert:true});
-        if (error) throw error;
-        const { data:{ publicUrl } } = sb.storage.from('media').getPublicUrl(path);
-        qrUrl=publicUrl;
-      }
-      const payload = {
-        id:          'payment',
-        upi_id:      document.getElementById('sUpi').value.trim(),
-        pay_name:    document.getElementById('sName').value.trim(),
-        pay_note:    document.getElementById('sNote').value.trim(),
-        qr_code_url: qrUrl,
-        checkin_pin: document.getElementById('sPin').value.trim() || '1234',
-        updated_at:  new Date().toISOString()
-      };
-      const { error } = await sb.from('settings').upsert(payload,{onConflict:'id'});
-      if (error) throw error;
-      alert('Saved ✓');
-    } catch(e) { alert('Error: '+e.message); }
+    try{
+      let qrUrl=document.getElementById('qrPreview').src||'';
+      const qrFile=document.getElementById('qrInput').files[0];
+      if(qrFile){const path=`settings/qr_${Date.now()}`;const{error}=await sb.storage.from('media').upload(path,qrFile,{upsert:true});if(error)throw error;const{data:{publicUrl}}=sb.storage.from('media').getPublicUrl(path);qrUrl=publicUrl;}
+      const{error}=await sb.from('settings').upsert({id:'payment',upi_id:document.getElementById('sUpi').value.trim(),pay_name:document.getElementById('sName').value.trim(),pay_note:document.getElementById('sNote').value.trim(),qr_code_url:qrUrl,checkin_pin:document.getElementById('sPin').value.trim()||'1234',updated_at:new Date().toISOString()},{onConflict:'id'});
+      if(error)throw error;alert('Saved ✓');
+    }catch(e){alert('Error: '+e.message);}
     setLoading('payBtn','payTxt','paySpin','Save Settings',false);
   }
 
   // ── Utility ──
-  function copyUTR(utr, btn) {
-    navigator.clipboard.writeText(utr).then(()=>{
-      const orig=btn.textContent; btn.textContent='Copied ✓'; btn.style.color='#86efac';
-      setTimeout(()=>{ btn.textContent=orig; btn.style.color='#9ca3af'; },2000);
-    }).catch(()=>{ btn.textContent='Failed'; setTimeout(()=>{ btn.textContent='Copy'; },1500); });
-  }
-  function setLoading(btnId,txtId,spinId,label,loading) {
-    document.getElementById(btnId).disabled=loading;
-    document.getElementById(txtId).textContent=label;
-    document.getElementById(spinId).classList.toggle('hidden',!loading);
-  }
+  function copyUTR(utr,btn){navigator.clipboard.writeText(utr).then(()=>{const orig=btn.textContent;btn.textContent='Copied ✓';btn.style.color='#86efac';setTimeout(()=>{btn.textContent=orig;btn.style.color='var(--color-text-muted)';},2000);}).catch(()=>{btn.textContent='Failed';setTimeout(()=>{btn.textContent='Copy';},1500);});}
+  function setLoading(btnId,txtId,spinId,label,loading){document.getElementById(btnId).disabled=loading;document.getElementById(txtId).textContent=label;document.getElementById(spinId).classList.toggle('hidden',!loading);}
 
-  // Close QR modal on backdrop click
-  document.getElementById('qrModal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden');
-  });
-
+  document.getElementById('qrModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.add('hidden');});
   checkAuth();
 </script>
 </body>

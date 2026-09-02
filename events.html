@@ -441,7 +441,7 @@
           <input id="regName"  class="modal-input" type="text"  placeholder="Full name *">
           <input id="regEmail" class="modal-input" type="email" placeholder="Email address *">
           <input id="regPhone" class="modal-input" type="tel"   placeholder="Phone number *">
-          <input id="regInstagram" class="modal-input" type="text" placeholder="Instagram handle (optional)" oninput="liveInstagramCheck(this.value)">
+          <input id="regInstagram" class="modal-input" type="text" placeholder="Instagram handle *" oninput="liveInstagramCheck(this.value)">
         </div>
         <p id="igHint" style="font-size:12px;margin-top:6px;display:none;"></p>
         <p id="err1" style="color:#f87171;font-size:12px;margin-top:8px;display:none;"></p>
@@ -762,10 +762,10 @@
     const phone = document.getElementById('regPhone').value.trim();
     const igRaw = document.getElementById('regInstagram').value.trim();
     const err   = document.getElementById('err1');
-    if (!name||!email||!phone) { err.textContent='Please fill all fields'; err.style.display='block'; return; }
+    if (!name||!email||!phone||!igRaw) { err.textContent='Please fill all fields'; err.style.display='block'; return; }
     if (!/\S+@\S+\.\S+/.test(email)) { err.textContent='Enter a valid email'; err.style.display='block'; return; }
-    if (igRaw && !/^[A-Za-z0-9._]{1,30}$/.test(normalizeInstagram(igRaw))) {
-      err.textContent = 'Enter a valid Instagram handle or profile link, or leave it blank';
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(normalizeInstagram(igRaw))) {
+      err.textContent = 'Enter a valid Instagram handle or profile link';
       err.style.display = 'block'; return;
     }
     err.style.display = 'none';

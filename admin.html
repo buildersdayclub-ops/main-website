@@ -27,49 +27,38 @@
     }
     * { font-family: 'Inter', sans-serif; }
     body { background: var(--color-bg); color: var(--color-text); }
-
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--color-bg); }
     ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
-
     input[type="date"]::-webkit-calendar-picker-indicator,
     input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; }
-
     /* Nav */
     .nav-item { transition: all 0.15s; border-left: 3px solid transparent; }
     .nav-item:hover  { background: var(--color-yellow-muted); color: var(--color-yellow); }
     .nav-item.active { background: var(--color-yellow-muted); color: var(--color-yellow); border-left-color: var(--color-yellow); }
-
     /* Status badges */
     .st-pending  { background:rgba(234,179,8,.15);  color:#fde047; }
     .st-verified { background:rgba(34,197,94,.15);  color:#86efac; }
     .st-rejected { background:rgba(239,68,68,.15);  color:#fca5a5; }
-
     /* Tag colors (event types) */
     .tag-meetup    { background:rgba(59,130,246,.15);  color:#93c5fd; }
     .tag-workshop  { background:rgba(168,85,247,.15);  color:#d8b4fe; }
     .tag-hackathon { background:rgba(34,197,94,.15);   color:#86efac; }
     .tag-talk      { background:rgba(232,240,72,.15);  color:#E8F048; }
     .tag-other     { background:rgba(255,255,255,.08); color:#d1d5db; }
-
     /* Inputs */
     .inp { width:100%; background:var(--color-surface-2); border:1px solid var(--color-border); border-radius:12px; padding:10px 14px; font-size:13px; color:var(--color-text); outline:none; font-family:'Inter',sans-serif; transition:border-color 0.2s; box-sizing:border-box; }
     .inp:focus { border-color: var(--color-accent); }
     .inp option { background: var(--color-surface); }
     .lbl { display:block; font-size:11px; font-weight:600; letter-spacing:0.06em; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:6px; }
-
     /* Pixel font utility */
     .pixel { font-family:'Press Start 2P', monospace; }
-
     /* Drag & drop */
     .drag-over { border-color: var(--color-yellow) !important; background: var(--color-yellow-muted); }
-
     /* Spin animation */
     @keyframes spin { to { transform:rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; }
-
     textarea { resize: none; }
-
     /* Primary button */
     .btn-primary {
       display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -80,7 +69,6 @@
     .btn-primary:hover { background: var(--color-yellow-hover); border-color: var(--color-yellow-hover); transform:translateY(-1px); }
     .btn-primary:active { transform:scale(0.97); }
     .btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-
     /* Ghost button */
     .btn-ghost {
       display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -89,21 +77,17 @@
       transition: all 0.15s; cursor:pointer;
     }
     .btn-ghost:hover { background: var(--color-surface-3, #1E1E22); border-color: var(--color-border-light); }
-
     /* Card */
     .card { background: var(--color-surface); border:1px solid var(--color-border); border-radius:16px; }
     .card:hover { border-color: var(--color-border-light); }
-
     /* Section heading tag */
     .sec-tag { font-family:'Press Start 2P',monospace; font-size:10px; color:var(--color-yellow); letter-spacing:0.05em; text-transform:lowercase; margin-bottom:8px; display:block; }
-
     /* QR Modal */
     .qr-modal { position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px; }
     .qr-modal-box { background:var(--color-surface);border:1px solid var(--color-border);border-radius:20px;padding:28px;text-align:center;max-width:320px;width:100%; }
   </style>
 </head>
 <body class="min-h-screen">
-
 <!-- ══ QR MODAL ══ -->
 <div id="qrModal" class="qr-modal hidden">
   <div class="qr-modal-box">
@@ -121,7 +105,6 @@
     </div>
   </div>
 </div>
-
 <!-- ══ LOGIN ══ -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4" style="background:var(--color-bg)">
   <div class="w-full max-w-sm">
@@ -148,7 +131,6 @@
     <p class="text-xs text-center mt-5" style="color:var(--color-text-faint)">See <span style="color:var(--color-text-muted)">SETUP.md</span> to create your admin account.</p>
   </div>
 </div>
-
 <!-- ══ DASHBOARD ══ -->
 <div id="dashboard" class="hidden min-h-screen flex">
   <!-- Sidebar -->
@@ -180,10 +162,8 @@
       <button onclick="doLogout()" class="w-full text-center text-xs py-2 rounded-xl transition-all text-red-400 hover:text-red-300">Sign Out</button>
     </div>
   </aside>
-
   <!-- Main -->
   <main class="ml-60 flex-1 p-8 overflow-auto" style="background:var(--color-bg)">
-
     <!-- ── OVERVIEW ── -->
     <div id="sec-overview" class="sec">
       <span class="sec-tag">// dashboard</span>
@@ -211,7 +191,6 @@
         <div class="p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
-
     <!-- ── EVENTS LIST ── -->
     <div id="sec-events" class="sec hidden">
       <span class="sec-tag">// manage events</span>
@@ -223,7 +202,6 @@
         <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
-
     <!-- ── EVENT FORM ── -->
     <div id="sec-eventForm" class="sec hidden">
       <div class="flex items-center gap-4 mb-6">
@@ -280,7 +258,6 @@
         </div>
       </div>
     </div>
-
     <!-- ── REGISTRATIONS ── -->
     <div id="sec-registrations" class="sec hidden">
       <span class="sec-tag">// manage registrations</span>
@@ -302,13 +279,13 @@
             <option value="no">Not Yet</option>
           </select>
           <button onclick="loadRegs()" class="btn-ghost px-4 py-2 text-sm rounded-xl">Refresh</button>
+          <button onclick="exportRegs()" class="btn-primary px-4 py-2 text-sm rounded-xl">⬇ Export CSV</button>
         </div>
       </div>
       <div id="regList" class="space-y-3">
         <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
-
     <!-- ── ATTENDANCE ── -->
     <div id="sec-attendance" class="sec hidden">
       <span class="sec-tag">// event attendance</span>
@@ -337,7 +314,6 @@
         </div>
       </div>
     </div>
-
     <!-- ── CITIES ── -->
     <div id="sec-cities" class="sec hidden">
       <span class="sec-tag">// manage cities</span>
@@ -376,7 +352,6 @@
         <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
-
     <!-- ── PAYMENT & CHECK-IN ── -->
     <div id="sec-payment" class="sec hidden">
       <span class="sec-tag">// settings</span>
@@ -413,13 +388,11 @@
         </button>
       </div>
     </div>
-
     <!-- ── HOMEPAGE CMS ── -->
     <div id="sec-homepage" class="sec hidden">
       <span class="sec-tag">// homepage content</span>
       <h2 class="text-2xl font-bold mb-6" style="font-family:'Playfair Display',serif;color:var(--color-text)">Homepage</h2>
       <p class="text-sm mb-6" style="color:var(--color-text-muted)">Update your homepage content here. Changes go live immediately — no code needed.</p>
-
       <!-- Apply / CTA link -->
       <div class="card p-6 mb-4">
         <span class="sec-tag">// apply / cta link</span>
@@ -427,7 +400,6 @@
         <label class="lbl">Apply Form URL</label>
         <input id="hpApplyLink" type="url" placeholder="https://tally.so/r/..." class="inp">
       </div>
-
       <!-- Hero section -->
       <div class="card p-6 mb-4">
         <span class="sec-tag">// hero section</span>
@@ -450,7 +422,6 @@
           </div>
         </div>
       </div>
-
       <!-- Stats -->
       <div class="card p-6 mb-4">
         <span class="sec-tag">// stats numbers</span>
@@ -461,7 +432,6 @@
         </div>
         <p class="text-xs mt-2" style="color:var(--color-text-faint)">These match the three stats shown in the apply section (members, cities, response time).</p>
       </div>
-
       <!-- Social links -->
       <div class="card p-6 mb-4">
         <span class="sec-tag">// social links</span>
@@ -472,14 +442,12 @@
           <div><label class="lbl">Contact Email</label><input id="hpEmail" type="email" placeholder="hello@buildersdayclub.com" class="inp"></div>
         </div>
       </div>
-
       <!-- Footer -->
       <div class="card p-6 mb-4">
         <span class="sec-tag">// footer</span>
         <label class="lbl">Footer Tagline</label>
         <input id="hpFooter" type="text" placeholder="Where builders belong." class="inp">
       </div>
-
       <!-- Inside the Club images -->
       <div class="card p-6 mb-6">
         <span class="sec-tag">// inside the club — photos</span>
@@ -543,7 +511,6 @@
           <p class="text-xs mt-1" style="color:var(--color-text-muted)">Uploading images…</p>
         </div>
       </div>
-
       <!-- Save button -->
       <button onclick="saveHomepage()" id="hpBtn" class="btn-primary px-8 py-3 text-sm rounded-xl">
         <span id="hpTxt">Save Changes</span>
@@ -551,10 +518,8 @@
       </button>
       <p class="text-xs mt-3" style="color:var(--color-text-faint)">Changes go live on the homepage immediately after saving.</p>
     </div>
-
   </main>
 </div>
-
 <script>
   const SUPABASE_URL  = 'https://sfmjxhctzpiuahitzhyt.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmbWp4aGN0enBpdWFoaXR6aHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4NzY4MTIsImV4cCI6MjEwMDQ1MjgxMn0.4NAWH2BEmiJeCy-h9dPJQ8ESbxYLPPXQjO-quV9oRNw';
@@ -562,7 +527,6 @@
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
   const BASE_URL = 'https://buildersdayclub.vercel.app';
   let evCache = [], editId = null, uploadedUrl = '';
-
   // ── Auth ──
   async function doLogin() {
     const email = document.getElementById('loginEmail').value.trim();
@@ -589,7 +553,6 @@
     document.getElementById('dashboard').classList.remove('hidden');
     loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); loadPayment(); loadHomepage();
   }
-
   // ── Navigation ──
   function show(sec) {
     document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
@@ -606,7 +569,6 @@
     if (sec === 'payment')        loadPayment();
     if (sec === 'homepage')       loadHomepage();
   }
-
   // ── Overview ──
   async function loadOverview() {
     const [{ data: evs }, { data: regs }] = await Promise.all([
@@ -641,7 +603,6 @@
       </tr>`).join('')}
       </tbody></table></div>`;
   }
-
   // ── Events ──
   async function loadEvCache() {
     const { data } = await sb.from('events').select('*').order('date',{ascending:false});
@@ -670,7 +631,6 @@
         </div>
       </div>`).join('');
   }
-
   // ── Event form ──
   function openForm(id=null) {
     editId=id; uploadedUrl='';
@@ -726,8 +686,8 @@
     } catch(e) { err.textContent='Error: '+e.message; err.classList.remove('hidden'); setLoading('saveBtn','saveTxt','saveSpin','Save Event',false); }
   }
   async function delEvent(id) { if(!confirm('Delete this event? This cannot be undone.'))return; await sb.from('events').delete().eq('id',id); loadEvents(); }
-
   // ── Registrations ──
+  let lastRegs = [];
   async function loadRegs() {
     const evF=document.getElementById('regEvF').value, stF=document.getElementById('regStF').value, ciF=document.getElementById('regCiF').value;
     let q=sb.from('registrations').select('*').order('created_at',{ascending:false});
@@ -739,6 +699,7 @@
     let regs=allRegs||[];
     if(ciF==='yes') regs=regs.filter(r=>r.checked_in===true);
     if(ciF==='no')  regs=regs.filter(r=>!r.checked_in);
+    lastRegs = regs;
     if(!regs.length){el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No registrations found</div>';return;}
     el.innerHTML=regs.map(r=>{
       const checkedAt=r.checked_in_at?new Date(r.checked_in_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):null;
@@ -751,6 +712,7 @@
               ${r.checked_in?`<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background:rgba(232,240,72,.15);color:#E8F048;">✓ Attended${checkedAt?' · '+checkedAt:''}</span>`:''}
             </div>
             <p class="text-xs mb-1" style="color:var(--color-text-muted)">${r.email} · ${r.phone}</p>
+            ${r.instagram?`<p class="text-xs mb-1" style="color:var(--color-text-muted)">📸 <a href="https://instagram.com/${r.instagram}" target="_blank" style="color:#d8b4fe;text-decoration:underline;">@${r.instagram}</a></p>`:''}
             <p class="text-xs" style="color:var(--color-text-muted)">Event: <span style="color:var(--color-text)">${r.event_title||r.event_id}</span></p>
             <div class="flex items-center gap-2 mt-2 flex-wrap">
               <span class="text-xs" style="color:var(--color-text-faint)">UTR:</span>
@@ -772,7 +734,39 @@
       </div>`;
     }).join('');
   }
-
+  // ── Export registrations to CSV ──
+  function csvCell(v) {
+    if (v === null || v === undefined) return '';
+    const s = String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }
+  function exportRegs() {
+    if (!lastRegs.length) { alert('No registrations to export for the current filters.'); return; }
+    const headers = ['Name','Email','Phone','Instagram','Event','Status','UTR','Checked In','Checked In At','Submitted At'];
+    const rows = lastRegs.map(r => [
+      r.name || '',
+      r.email || '',
+      r.phone || '',
+      r.instagram ? ('@' + r.instagram) : '',
+      r.event_title || r.event_id || '',
+      r.status || '',
+      r.utr || '',
+      r.checked_in ? 'Yes' : 'No',
+      r.checked_in_at ? new Date(r.checked_in_at).toLocaleString('en-IN') : '',
+      r.created_at ? new Date(r.created_at).toLocaleString('en-IN') : ''
+    ]);
+    const csv = [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const evSel = document.getElementById('regEvF');
+    const evLabel = (evSel.options[evSel.selectedIndex]?.textContent || 'all-events')
+      .trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `registrations_${evLabel || 'all-events'}_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
   // ── Attendance ──
   async function fillAttEvSelector() {
     const{data}=await sb.from('events').select('id,title').order('date',{ascending:false});
@@ -811,7 +805,6 @@
         <button onclick="manualCheckin('${r.id}',true)" class="text-xs px-3 py-1.5 rounded-lg flex-shrink-0" style="background:rgba(232,240,72,.1);color:#E8F048;border:none;cursor:pointer;">Check In</button>
       </div>`).join('');
   }
-
   // ── QR modal ──
   function showQR(token,name,eventTitle) {
     const url=`${BASE_URL}/checkin.html?token=${token}`;
@@ -820,14 +813,12 @@
     document.getElementById('qrModalLink').href=url;
     document.getElementById('qrModal').classList.remove('hidden');
   }
-
   // ── Manual check-in ──
   async function manualCheckin(id,fromAttendance=false) {
     if(!confirm('Manually mark this person as attended?'))return;
     await sb.from('registrations').update({checked_in:true,checked_in_at:new Date().toISOString()}).eq('id',id);
     if(fromAttendance){loadAttendance();}else{loadRegs();loadOverview();}
   }
-
   // ── Email ──
   async function sendEmail(type,reg) {
     try {
@@ -838,21 +829,18 @@
       });
     }catch(e){console.warn('Email error:',e.message);}
   }
-
   // ── Set status ──
   async function setStatus(id,status) {
     await sb.from('registrations').update({status,updated_at:new Date().toISOString()}).eq('id',id);
     if(status==='verified'||status==='rejected'){const{data:reg}=await sb.from('registrations').select('*').eq('id',id).single();if(reg)sendEmail(status,reg);}
     loadRegs();loadOverview();
   }
-
   async function fillEvFilter() {
     const{data}=await sb.from('events').select('id,title');
     const sel=document.getElementById('regEvF');
     const existing=Array.from(sel.options).map(o=>o.value);
     (data||[]).forEach(ev=>{if(!existing.includes(ev.id)){const o=document.createElement('option');o.value=ev.id;o.textContent=ev.title;sel.appendChild(o);}});
   }
-
   // ── Cities ──
   async function loadCities() {
     const{data:cities}=await sb.from('cities').select('*').order('display_order',{ascending:true});
@@ -888,7 +876,6 @@
     setLoading('cityBtn','cityTxt','citySpin','Add City',false);
   }
   async function deleteCity(id){if(!confirm('Remove this city?'))return;await sb.from('cities').delete().eq('id',id);loadCities();}
-
   // ── Payment ──
   async function loadPayment(){
     const{data}=await sb.from('settings').select('*').eq('id','payment').single();
@@ -907,10 +894,8 @@
     }catch(e){alert('Error: '+e.message);}
     setLoading('payBtn','payTxt','paySpin','Save Settings',false);
   }
-
   // ── Homepage CMS ──
   let hpImgUrls = ['','','',''];
-
   function prevHpImg(file, idx) {
     if (!file) return;
     const r = new FileReader();
@@ -921,7 +906,6 @@
     };
     r.readAsDataURL(file);
   }
-
   function dropHpImg(e, idx) {
     e.preventDefault();
     document.getElementById(`hpImg${idx}Zone`).style.borderColor = 'var(--color-border)';
@@ -931,7 +915,6 @@
       prevHpImg(f, idx);
     }
   }
-
   async function uploadHpImg(file, idx) {
     const path = `homepage/img${idx}_${Date.now()}_${file.name.replace(/\s/g,'_')}`;
     const { error } = await sb.storage.from('media').upload(path, file, { upsert: true });
@@ -940,7 +923,6 @@
     hpImgUrls[idx] = publicUrl;
     return publicUrl;
   }
-
   async function loadHomepage() {
     try {
       const { data } = await sb.from('settings').select('content').eq('id','homepage').single();
@@ -971,7 +953,6 @@
       });
     } catch(e) { /* no homepage row yet — form stays blank */ }
   }
-
   async function saveHomepage() {
     setLoading('hpBtn','hpTxt','hpSpin','Saving…',true);
     try {
@@ -1011,11 +992,9 @@
     }
     setLoading('hpBtn','hpTxt','hpSpin','Save Changes',false);
   }
-
   // ── Utility ──
   function copyUTR(utr,btn){navigator.clipboard.writeText(utr).then(()=>{const orig=btn.textContent;btn.textContent='Copied ✓';btn.style.color='#86efac';setTimeout(()=>{btn.textContent=orig;btn.style.color='var(--color-text-muted)';},2000);}).catch(()=>{btn.textContent='Failed';setTimeout(()=>{btn.textContent='Copy';},1500);});}
   function setLoading(btnId,txtId,spinId,label,loading){document.getElementById(btnId).disabled=loading;document.getElementById(txtId).textContent=label;document.getElementById(spinId).classList.toggle('hidden',!loading);}
-
   document.getElementById('qrModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.add('hidden');});
   checkAuth();
 </script>

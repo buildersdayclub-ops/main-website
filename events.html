@@ -441,7 +441,9 @@
           <input id="regName"  class="modal-input" type="text"  placeholder="Full name *">
           <input id="regEmail" class="modal-input" type="email" placeholder="Email address *">
           <input id="regPhone" class="modal-input" type="tel"   placeholder="Phone number *">
+          <input id="regInstagram" class="modal-input" type="text" placeholder="Instagram handle (optional)" oninput="liveInstagramCheck(this.value)">
         </div>
+        <p id="igHint" style="font-size:12px;margin-top:6px;display:none;"></p>
         <p id="err1" style="color:#f87171;font-size:12px;margin-top:8px;display:none;"></p>
         <button class="modal-btn" onclick="goStep2()" style="margin-top:16px;">Continue →</button>
       </div>
@@ -515,7 +517,6 @@
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
   let allEvents = [], settings = {}, currentEvent = null;
   let activeFilter = 'all', activeCity = null, searchQuery = '';
-
   // ── Send email via Edge Function ──
   async function sendEmail(type, reg) {
     try {
@@ -536,7 +537,6 @@
       });
     } catch(e) { console.warn('Email error:', e.message); }
   }
-
   // ── Load everything ──
   async function loadAll() {
     try {
@@ -555,7 +555,6 @@
       applyFilters();
     }
   }
-
   // ── Cities ──
   function renderCities(cities) {
     const list = document.getElementById('citiesList');
@@ -573,7 +572,6 @@
         <div class="city-card-name">${c.name}</div>
       </div>`).join('');
   }
-
   function filterByCity(name) {
     if (activeCity === name) {
       activeCity = null;
@@ -586,13 +584,11 @@
     }
     applyFilters();
   }
-
   // ── Search ──
   function searchEvents(val) {
     searchQuery = val.trim().toLowerCase();
     applyFilters();
   }
-
   // ── Filter pills ──
   function setFilter(f) {
     activeFilter = f;
@@ -601,7 +597,6 @@
     if (btn) btn.classList.add('active');
     applyFilters();
   }
-
   // ── Master filter ──
   function applyFilters() {
     const now  = new Date();
@@ -621,7 +616,6 @@
     );
     renderEvents(filtered);
   }
-
   // ── Render event cards ──
   function renderEvents(events) {
     const grid  = document.getElementById('eventsGrid');
@@ -675,7 +669,6 @@
       </div>`;
     }).join('');
   }
-
   // ── Open event modal ──
   function openEvent(id) {
     currentEvent = allEvents.find(e => e.id === id);
@@ -711,25 +704,23 @@
     document.getElementById('regModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
-
   function closeModal() {
     document.getElementById('regModal').style.display = 'none';
     document.getElementById('modalOrganizerRow').style.display = 'flex';
     document.body.style.overflow = '';
   }
-
   function resetModal() {
-    ['regName','regEmail','regPhone','regUTR'].forEach(i => {
+    ['regName','regEmail','regPhone','regInstagram','regUTR'].forEach(i => {
       const el = document.getElementById(i); if (el) el.value = '';
     });
     document.getElementById('err1').style.display = 'none';
     document.getElementById('err3').style.display = 'none';
+    document.getElementById('igHint').style.display = 'none';
     document.getElementById('utrHint').style.display = 'none';
     document.getElementById('submitBtn').disabled = false;
     document.getElementById('submitTxt').textContent = 'Submit Registration';
     document.getElementById('submitSpin').style.display = 'none';
   }
-
   function goStep(n) {
     [1,2,3,4].forEach(i => {
       const el = document.getElementById('step'+i);
@@ -742,23 +733,48 @@
       dot.classList.toggle('active', i <= n);
     });
   }
-
+  // ── Instagram handle helpers ──
+  // Accepts a bare handle ("builder"), an @handle ("@builder"), or a full
+  // profile URL (https://instagram.com/builder/) and normalizes to a bare handle.
+  function normalizeInstagram(raw) {
+    let v = raw.trim();
+    if (!v) return '';
+    v = v.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '');
+    v = v.replace(/^@/, '');
+    v = v.replace(/\/.*$/, '');
+    return v;
+  }
+  function liveInstagramCheck(val) {
+    const hint = document.getElementById('igHint');
+    const v = val.trim();
+    if (!v) { hint.style.display = 'none'; return; }
+    const handle = normalizeInstagram(v);
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(handle)) {
+      hint.textContent = '✗ Enter a valid Instagram handle or profile link';
+      hint.style.color = '#f87171'; hint.style.display = 'block'; return;
+    }
+    hint.textContent = '✓ @' + handle;
+    hint.style.color = '#86efac'; hint.style.display = 'block';
+  }
   function goStep2() {
     const name  = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
+    const igRaw = document.getElementById('regInstagram').value.trim();
     const err   = document.getElementById('err1');
     if (!name||!email||!phone) { err.textContent='Please fill all fields'; err.style.display='block'; return; }
     if (!/\S+@\S+\.\S+/.test(email)) { err.textContent='Enter a valid email'; err.style.display='block'; return; }
+    if (igRaw && !/^[A-Za-z0-9._]{1,30}$/.test(normalizeInstagram(igRaw))) {
+      err.textContent = 'Enter a valid Instagram handle or profile link, or leave it blank';
+      err.style.display = 'block'; return;
+    }
     err.style.display = 'none';
     if (!currentEvent.price || currentEvent.price === 0) { submitReg(); return; }
     goStep(2);
   }
-
   function validateUTR(utr) {
     return /^[A-Za-z0-9]{8,22}$/.test(utr);
   }
-
   function liveUTRCheck(val) {
     const hint = document.getElementById('utrHint');
     const v = val.trim();
@@ -774,7 +790,6 @@
     hint.textContent = '✓ Looks good';
     hint.style.color = '#86efac'; hint.style.display = 'block';
   }
-
   async function submitReg() {
     const utr    = document.getElementById('regUTR')?.value.trim() || 'FREE';
     const isFree = !currentEvent.price || currentEvent.price === 0;
@@ -788,12 +803,14 @@
     btn.disabled = true;
     document.getElementById('submitTxt').textContent = 'Submitting…';
     document.getElementById('submitSpin').style.display = 'inline-block';
+    const instagram = normalizeInstagram(document.getElementById('regInstagram').value || '');
     const payload = {
       event_id:    currentEvent.id,
       event_title: currentEvent.title,
       name:        document.getElementById('regName').value.trim(),
       email:       document.getElementById('regEmail').value.trim(),
       phone:       document.getElementById('regPhone').value.trim(),
+      instagram,
       utr,
       status: isFree ? 'verified' : 'pending'
     };
@@ -822,11 +839,9 @@
       document.getElementById('submitSpin').style.display = 'none';
     }
   }
-
   document.getElementById('regModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
-
   loadAll();
 </script>
 </body>

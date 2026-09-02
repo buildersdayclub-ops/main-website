@@ -815,7 +815,8 @@
       status: isFree ? 'verified' : 'pending'
     };
     try {
-      await sb.from('registrations').insert(payload);
+      const { error: insErr } = await sb.from('registrations').insert(payload);
+      if (insErr) throw insErr;
       // Send confirmation email
       sendEmail('confirmation', {
         ...payload,

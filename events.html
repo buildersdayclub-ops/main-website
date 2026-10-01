@@ -730,11 +730,14 @@
       const orgName   = ev.organizer_name || '';
       const orgAvatar = ev.organizer_avatar || '';
       const initials  = orgName ? orgName.trim().split(' ').map(w=>w[0]).slice(0,2).join('') : '';
+      const isClubOrganizer = /^builders?\s+day\s+club$/i.test(orgName.trim());
       const avatarHTML = orgAvatar
         ? `<img src="${orgAvatar}" class="ev-avatar" alt="${orgName}" onerror="this.style.display='none'">`
-        : initials
-          ? `<div class="ev-avatar-fallback">${initials}</div>`
-          : '';
+        : isClubOrganizer
+          ? `<img src="./assets/logo.jpg" class="ev-avatar" alt="${orgName}">`
+          : initials
+            ? `<div class="ev-avatar-fallback">${initials}</div>`
+            : '';
       return `
       <div class="ev-card fade-in" onclick="openEvent('${ev.id}')" style="${isPast?'opacity:0.55;':''}">
         <div class="ev-card-img">

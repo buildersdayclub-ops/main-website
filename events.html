@@ -142,7 +142,7 @@
     }
     .ev-card-img {
       position: relative;
-      height: 200px;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
     }
     .ev-card-img img {
@@ -341,6 +341,13 @@
     #modalDesc p, #modalDesc ul { margin:0 0 12px; }
     #modalDesc > *:last-child { margin-bottom:0; }
     #modalDesc li { margin-bottom:4px; }
+    #modalDesc.desc-clamped { max-height:92px; overflow:hidden; position:relative; }
+    #modalDesc.desc-clamped::after {
+      content:'';
+      position:absolute; left:0; right:0; bottom:0; height:36px;
+      background:linear-gradient(to bottom, rgba(22,22,22,0), #161616);
+      pointer-events:none;
+    }
   </style>
 </head>
 <body>
@@ -467,7 +474,7 @@
 <div id="regModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
     <!-- Banner image -->
-    <div style="position:relative;height:210px;overflow:hidden;border-radius:24px 24px 0 0;flex-shrink:0;">
+    <div style="position:relative;aspect-ratio:1/1;overflow:hidden;border-radius:24px 24px 0 0;flex-shrink:0;">
       <img id="modalImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
       <div style="position:absolute;inset:0;background:linear-gradient(to top,#161616,transparent);"></div>
       <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.55);border:none;color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>
@@ -486,7 +493,8 @@
         <img id="modalOrgAvatar" src="" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1);display:none;">
         <span id="modalOrgName" style="font-size:12px;color:#9ca3af;"></span>
       </div>
-      <div id="modalDesc" style="font-size:13px;color:#9ca3af;line-height:1.75;margin-bottom:24px;"></div>
+      <div id="modalDesc" style="font-size:13px;color:#9ca3af;line-height:1.75;"></div>
+      <button id="descToggleBtn" type="button" onclick="toggleDesc()" style="display:none;background:none;border:none;color:#fb923c;font-size:12px;font-weight:700;cursor:pointer;padding:0;margin:8px 0 24px;font-family:inherit;">Read more ↓</button>
       <!-- Step dots -->
       <div id="stepBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
         <div class="step-dot active" id="dot1" style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0;"></div>
@@ -759,6 +767,7 @@
     document.getElementById('modalDate').textContent  = '📅 ' + d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + (ev.time?' · '+ev.time:'');
     document.getElementById('modalVenue').textContent = ev.venue ? '📍 ' + ev.venue : '';
     document.getElementById('modalDesc').innerHTML     = formatDescription(ev.description || '');
+    setupDescToggle();
     // organizer
     const orgAvatar = document.getElementById('modalOrgAvatar');
     const orgName   = document.getElementById('modalOrgName');
@@ -921,6 +930,37 @@
       }
       return paras.filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join('');
     }).join('');
+  }
+  // ── Description "Read more" toggle ──
+  // Keeps the modal short by default for long descriptions; only shows the
+  // toggle button when the text actually overflows the collapsed height.
+  function setupDescToggle() {
+    const desc = document.getElementById('modalDesc');
+    const btn  = document.getElementById('descToggleBtn');
+    desc.classList.add('desc-clamped');
+    desc.style.marginBottom = '0px';
+    btn.textContent = 'Read more ↓';
+    btn.style.display = 'none';
+    requestAnimationFrame(() => {
+      if (desc.scrollHeight > desc.clientHeight + 4) {
+        btn.style.display = 'inline-block';
+      } else {
+        desc.classList.remove('desc-clamped');
+        desc.style.marginBottom = '24px';
+      }
+    });
+  }
+  function toggleDesc() {
+    const desc = document.getElementById('modalDesc');
+    const btn  = document.getElementById('descToggleBtn');
+    const isClamped = desc.classList.contains('desc-clamped');
+    if (isClamped) {
+      desc.classList.remove('desc-clamped');
+      btn.textContent = 'Read less ↑';
+    } else {
+      desc.classList.add('desc-clamped');
+      btn.textContent = 'Read more ↓';
+    }
   }
   // ── Instagram handle helpers ──
   // Accepts a bare handle ("builder"), an @handle ("@builder"), or a full

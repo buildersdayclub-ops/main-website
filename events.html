@@ -338,6 +338,9 @@
     .modal-back:hover { color:#fff; }
     .step-dot { transition:background 0.3s, transform 0.3s; }
     .step-dot.active { transform:scale(1.3); }
+    #modalDesc p, #modalDesc ul { margin:0 0 12px; }
+    #modalDesc > *:last-child { margin-bottom:0; }
+    #modalDesc li { margin-bottom:4px; }
   </style>
 </head>
 <body>
@@ -483,7 +486,7 @@
         <img id="modalOrgAvatar" src="" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1);display:none;">
         <span id="modalOrgName" style="font-size:12px;color:#9ca3af;"></span>
       </div>
-      <p id="modalDesc" style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:24px;"></p>
+      <div id="modalDesc" style="font-size:13px;color:#9ca3af;line-height:1.75;margin-bottom:24px;"></div>
       <!-- Step dots -->
       <div id="stepBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
         <div class="step-dot active" id="dot1" style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0;"></div>
@@ -755,7 +758,7 @@
     const d = new Date(ev.date);
     document.getElementById('modalDate').textContent  = '📅 ' + d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + (ev.time?' · '+ev.time:'');
     document.getElementById('modalVenue').textContent = ev.venue ? '📍 ' + ev.venue : '';
-    document.getElementById('modalDesc').textContent  = ev.description;
+    document.getElementById('modalDesc').innerHTML     = formatDescription(ev.description || '');
     // organizer
     const orgAvatar = document.getElementById('modalOrgAvatar');
     const orgName   = document.getElementById('modalOrgName');
@@ -886,6 +889,38 @@
       dot.style.background = i <= n ? '#f97316' : 'rgba(255,255,255,0.15)';
       dot.classList.toggle('active', i <= n);
     });
+  }
+  // ── Description formatter ──
+  // Admins just type one block of text in the event form — this automatically
+  // breaks it into readable paragraphs (and turns dash/number lists into real
+  // bullet lists) so long descriptions don't render as one unreadable wall of text.
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function formatDescription(raw) {
+    if (!raw) return '';
+    const text = raw.replace(/\r\n/g, '\n').trim();
+    if (!text) return '';
+    // Respect blank-line paragraphs / bullet lines if the admin already wrote them that way
+    const hasBlankLines = /\n\s*\n/.test(text);
+    const blocks = hasBlankLines ? text.split(/\n\s*\n/) : [text];
+    return blocks.map(block => {
+      const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+      const isList = lines.length > 1 && lines.every(l => /^[-*•]\s+/.test(l) || /^\d+[.)]\s+/.test(l));
+      if (isList) {
+        const items = lines.map(l => '<li>' + escapeHtml(l.replace(/^[-*•]\s+/, '').replace(/^\d+[.)]\s+/, '')) + '</li>').join('');
+        return `<ul>${items}</ul>`;
+      }
+      const joined = lines.join(' ');
+      // Split one run-on block into sentences, then group a few per paragraph
+      const sentences = joined.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) || [joined];
+      const chunkSize = sentences.length > 4 ? 2 : sentences.length;
+      const paras = [];
+      for (let i = 0; i < sentences.length; i += chunkSize) {
+        paras.push(sentences.slice(i, i + chunkSize).join('').trim());
+      }
+      return paras.filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+    }).join('');
   }
   // ── Instagram handle helpers ──
   // Accepts a bare handle ("builder"), an @handle ("@builder"), or a full

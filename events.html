@@ -176,6 +176,52 @@
       font-weight: 700;
       padding: 4px 12px;
       border-radius: 99px;
+      white-space: nowrap;
+    }
+    /* ── Instagram follow card ── */
+    .ig-follow-card {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #111;
+      border-radius: 20px;
+      padding: 20px 24px;
+      text-decoration: none;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .ig-follow-card:hover { transform: translateY(-2px); border-color: rgba(214,53,132,0.4); }
+    .ig-follow-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(120deg, rgba(64,93,230,0.14), rgba(214,53,132,0.12), rgba(247,119,55,0.12));
+      pointer-events: none;
+    }
+    .ig-qr-wrap {
+      flex-shrink: 0;
+      background: #fff;
+      padding: 8px;
+      border-radius: 16px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .ig-qr-img { width: 96px; height: 96px; display: block; border-radius: 8px; }
+    .ig-text { position: relative; z-index: 1; flex: 1; min-width: 0; }
+    .ig-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #e1306c; margin-bottom: 4px; }
+    .ig-title { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .ig-sub { font-size: 12.5px; color: #9ca3af; line-height: 1.6; margin-bottom: 12px; }
+    .ig-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: #fff;
+      background: linear-gradient(90deg,#405de6,#e1306c,#fd1d1d,#f77737);
+      padding: 7px 16px; border-radius: 99px;
+    }
+    @media (max-width: 560px) {
+      .ig-follow-card { flex-direction: column; text-align: center; }
+      .ig-qr-img { width: 130px; height: 130px; }
     }
     .ev-card-title {
       position: absolute;
@@ -367,6 +413,18 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="searchInput" type="text" placeholder="Search for events..." oninput="searchEvents(this.value)">
     </div>
+    <!-- Instagram follow card -->
+    <a href="https://www.instagram.com/buildersdayclub/" target="_blank" rel="noopener noreferrer" class="ig-follow-card" style="margin-bottom:40px;">
+      <div class="ig-qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=https%3A%2F%2Fwww.instagram.com%2Fbuildersdayclub%2F" alt="Scan to follow Builders Day Club on Instagram" class="ig-qr-img">
+      </div>
+      <div class="ig-text">
+        <p class="ig-label">📸 ON INSTAGRAM</p>
+        <p class="ig-title">Follow Builders Day Community</p>
+        <p class="ig-sub">Scan the QR or just tap this card — either way you'll know about our next event before it's even announced. Join the builders already in on it 👀</p>
+        <span class="ig-cta">@buildersdayclub →</span>
+      </div>
+    </a>
     <!-- Cities -->
     <div style="margin-bottom:40px;" id="citiesSection">
       <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:#6b7280;margin-bottom:16px;">CITIES</p>
@@ -450,6 +508,11 @@
       <!-- Step 2 -->
       <div id="step2" style="display:none;">
         <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:16px;">Payment</p>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <input id="discCodeInput" class="modal-input" type="text" placeholder="Discount code (optional)" style="text-transform:uppercase;">
+          <button type="button" onclick="applyDiscount()" class="modal-btn" style="width:auto;padding:0 18px;flex-shrink:0;">Apply</button>
+        </div>
+        <p id="discMsg" style="font-size:12px;margin:0 0 16px;display:none;"></p>
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">
           <p style="font-size:11px;color:#9ca3af;font-weight:500;margin-bottom:12px;">SCAN & PAY</p>
           <div style="display:flex;justify-content:center;margin-bottom:12px;">
@@ -457,6 +520,7 @@
               <img id="modalQR" src="" alt="UPI QR" style="width:144px;height:144px;object-fit:contain;">
             </div>
           </div>
+          <p id="discOrigPrice" style="font-size:13px;color:#6b7280;text-decoration:line-through;display:none;margin-bottom:2px;"></p>
           <p id="modalPriceText" style="font-size:2rem;font-weight:800;color:#f97316;margin-bottom:4px;"></p>
           <p id="modalUpi" style="font-size:12px;color:#6b7280;"></p>
         </div>
@@ -517,6 +581,12 @@
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
   let allEvents = [], settings = {}, currentEvent = null;
   let activeFilter = 'all', activeCity = null, searchQuery = '';
+  let appliedDiscount = null, effectivePrice = 0;
+  // An event is free if the admin's explicit Free/Paid switch (is_free) says so;
+  // falls back to price-based inference for events saved before that switch existed.
+  function isEventFree(ev) {
+    return (ev.is_free !== undefined && ev.is_free !== null) ? ev.is_free === true : !ev.price;
+  }
   // ── Send email via Edge Function ──
   async function sendEmail(type, reg) {
     try {
@@ -643,8 +713,8 @@
                onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'">
           <div class="ev-card-gradient"></div>
           <span class="ev-type-badge tag-${ev.type||'other'}">${(ev.type||'event').toUpperCase()}</span>
-          <span class="ev-price-badge" style="${ev.price>0?'background:rgba(0,0,0,0.65);color:#fff;':'background:rgba(34,197,94,0.85);color:#fff;'}">
-            ${ev.price>0 ? '₹'+ev.price : 'FREE'}
+          <span class="ev-price-badge" style="${!isEventFree(ev)?'background:rgba(0,0,0,0.65);color:#fff;':'background:rgba(34,197,94,0.85);color:#fff;font-size:10px;'}">
+            ${!isEventFree(ev) ? '₹'+ev.price : 'FREE · INVITE ONLY'}
           </span>
           ${isPast ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;"><span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:600;padding:5px 14px;border-radius:99px;backdrop-filter:blur(4px);">Past Event</span></div>' : ''}
           <div class="ev-card-title">${ev.title}</div>
@@ -680,7 +750,7 @@
     typeEl.className = `tag-${ev.type||'other'}`;
     typeEl.style.cssText = 'font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;';
     typeEl.textContent = (ev.type||'event').toUpperCase();
-    document.getElementById('modalPriceBadge').textContent = ev.price > 0 ? `₹${ev.price}` : 'FREE';
+    document.getElementById('modalPriceBadge').textContent = !isEventFree(ev) ? `₹${ev.price}` : 'FREE · INVITE ONLY';
     const d = new Date(ev.date);
     document.getElementById('modalDate').textContent  = '📅 ' + d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + (ev.time?' · '+ev.time:'');
     document.getElementById('modalVenue').textContent = ev.venue ? '📍 ' + ev.venue : '';
@@ -695,11 +765,14 @@
     } else {
       document.getElementById('modalOrganizerRow').style.display = 'none';
     }
-    document.getElementById('modalPriceText').textContent = ev.price > 0 ? `₹${ev.price}` : 'FREE';
-    document.getElementById('payAmtLabel').textContent    = ev.price > 0 ? `₹${ev.price}` : "nothing (it's free!)";
+    document.getElementById('modalPriceText').textContent = !isEventFree(ev) ? `₹${ev.price}` : 'FREE';
+    document.getElementById('payAmtLabel').textContent    = !isEventFree(ev) ? `₹${ev.price}` : "nothing (it's free!)";
     document.getElementById('modalUpi').textContent       = settings.upi_id || '';
     document.getElementById('modalQR').src                = settings.qr_code_url || '';
-    document.getElementById('stepBar').style.display      = (!ev.price || ev.price === 0) ? 'none' : 'flex';
+    document.getElementById('stepBar').style.display      = isEventFree(ev) ? 'none' : 'flex';
+    appliedDiscount = null;
+    effectivePrice  = ev.price || 0;
+    resetDiscountUI();
     resetModal(); goStep(1);
     document.getElementById('regModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -720,6 +793,67 @@
     document.getElementById('submitBtn').disabled = false;
     document.getElementById('submitTxt').textContent = 'Submit Registration';
     document.getElementById('submitSpin').style.display = 'none';
+  }
+  // ── Discount codes ──
+  function resetDiscountUI() {
+    const codeInput = document.getElementById('discCodeInput');
+    const msgEl     = document.getElementById('discMsg');
+    const origEl    = document.getElementById('discOrigPrice');
+    if (codeInput) codeInput.value = '';
+    if (msgEl) { msgEl.textContent = ''; msgEl.style.display = 'none'; }
+    if (origEl) origEl.style.display = 'none';
+  }
+  function updatePriceDisplay() {
+    const base = currentEvent.price || 0;
+    let discounted = base;
+    if (appliedDiscount) {
+      discounted = appliedDiscount.discount_type === 'percent'
+        ? base - (base * appliedDiscount.discount_value / 100)
+        : base - appliedDiscount.discount_value;
+      discounted = Math.max(0, Math.round(discounted));
+    }
+    effectivePrice = discounted;
+    document.getElementById('modalPriceText').textContent = `₹${discounted}`;
+    document.getElementById('payAmtLabel').textContent    = `₹${discounted}`;
+    const origEl = document.getElementById('discOrigPrice');
+    if (appliedDiscount && discounted < base) {
+      origEl.textContent = `₹${base}`;
+      origEl.style.display = 'block';
+    } else {
+      origEl.style.display = 'none';
+    }
+  }
+  async function applyDiscount() {
+    const codeInput = document.getElementById('discCodeInput');
+    const msgEl      = document.getElementById('discMsg');
+    const raw = codeInput.value.trim().toUpperCase();
+    if (!raw) { msgEl.style.display = 'none'; return; }
+    msgEl.textContent = 'Checking…'; msgEl.style.color = '#9ca3af'; msgEl.style.display = 'block';
+    try {
+      const { data, error } = await sb.from('discount_codes').select('*')
+        .eq('code', raw).eq('is_active', true)
+        .or(`event_id.is.null,event_id.eq.${currentEvent.id}`)
+        .maybeSingle();
+      if (error || !data) {
+        appliedDiscount = null; updatePriceDisplay();
+        msgEl.textContent = '✗ Invalid or inactive code'; msgEl.style.color = '#f87171'; return;
+      }
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        appliedDiscount = null; updatePriceDisplay();
+        msgEl.textContent = '✗ This code has expired'; msgEl.style.color = '#f87171'; return;
+      }
+      if (data.max_uses && data.used_count >= data.max_uses) {
+        appliedDiscount = null; updatePriceDisplay();
+        msgEl.textContent = '✗ This code has reached its usage limit'; msgEl.style.color = '#f87171'; return;
+      }
+      appliedDiscount = data;
+      updatePriceDisplay();
+      msgEl.textContent = `✓ Code applied — ${data.discount_type==='percent' ? data.discount_value+'% off' : '₹'+data.discount_value+' off'}`;
+      msgEl.style.color = '#86efac';
+    } catch(e) {
+      appliedDiscount = null; updatePriceDisplay();
+      msgEl.textContent = 'Error checking code'; msgEl.style.color = '#f87171';
+    }
   }
   function goStep(n) {
     [1,2,3,4].forEach(i => {
@@ -769,7 +903,7 @@
       err.style.display = 'block'; return;
     }
     err.style.display = 'none';
-    if (!currentEvent.price || currentEvent.price === 0) { submitReg(); return; }
+    if (isEventFree(currentEvent)) { submitReg(); return; }
     goStep(2);
   }
   function validateUTR(utr) {
@@ -792,7 +926,7 @@
   }
   async function submitReg() {
     const utr    = document.getElementById('regUTR')?.value.trim() || 'FREE';
-    const isFree = !currentEvent.price || currentEvent.price === 0;
+    const isFree = isEventFree(currentEvent);
     if (!isFree && !validateUTR(utr)) {
       const err = document.getElementById('err3');
       err.textContent = 'Enter a valid UTR (8–22 letters/numbers, no spaces)';
@@ -812,11 +946,17 @@
       phone:       document.getElementById('regPhone').value.trim(),
       instagram,
       utr,
+      discount_code: appliedDiscount ? appliedDiscount.code : null,
       status: isFree ? 'verified' : 'pending'
     };
     try {
       const { error: insErr } = await sb.from('registrations').insert(payload);
       if (insErr) throw insErr;
+      // Track discount code usage (best-effort — a failure here shouldn't block registration)
+      if (appliedDiscount) {
+        try { await sb.from('discount_codes').update({ used_count: (appliedDiscount.used_count||0) + 1 }).eq('id', appliedDiscount.id); }
+        catch(e) { console.warn('Discount usage update failed:', e.message); }
+      }
       // Send confirmation email
       sendEmail('confirmation', {
         ...payload,

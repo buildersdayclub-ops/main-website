@@ -679,6 +679,14 @@
     if (btn) btn.classList.add('active');
     applyFilters();
   }
+  // Upcoming events always come first (soonest first); past events always
+  // follow, most-recent-past first — regardless of which filter is active.
+  function sortEventsForDisplay(events) {
+    const now = new Date();
+    const upcoming = events.filter(e => new Date(e.date) >= now).sort((a,b) => new Date(a.date) - new Date(b.date));
+    const past     = events.filter(e => new Date(e.date) <  now).sort((a,b) => new Date(b.date) - new Date(a.date));
+    return [...upcoming, ...past];
+  }
   // ── Master filter ──
   function applyFilters() {
     const now  = new Date();
@@ -696,7 +704,7 @@
       (e.venue||'').toLowerCase().includes(searchQuery) ||
       (e.organizer_name||'').toLowerCase().includes(searchQuery)
     );
-    renderEvents(filtered);
+    renderEvents(sortEventsForDisplay(filtered));
   }
   // ── Render event cards ──
   function renderEvents(events) {

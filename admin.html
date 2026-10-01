@@ -154,6 +154,7 @@
       <button onclick="show('attendance')"    data-sec="attendance"    class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>📋</span><span>Attendance</span></button>
       <button onclick="show('cities')"        data-sec="cities"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🌆</span><span>Cities</span></button>
       <button onclick="show('payment')"       data-sec="payment"       class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>💳</span><span>Payment & Check-in</span></button>
+      <button onclick="show('discounts')"     data-sec="discounts"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🎟️</span><span>Discount Codes</span></button>
       <button onclick="show('homepage')"     data-sec="homepage"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🏠</span><span>Homepage</span></button>
     </nav>
     <div class="p-4 space-y-1" style="border-top:1px solid var(--color-border)">
@@ -224,7 +225,10 @@
           <div><label class="lbl">Visibility</label>
             <select id="fActive" class="inp"><option value="true">Active (visible)</option><option value="false">Hidden (draft)</option></select>
           </div>
-          <div><label class="lbl">Price (₹) — 0 for free</label><input id="fPrice" type="number" placeholder="0" min="0" class="inp"></div>
+          <div><label class="lbl">Event Format</label>
+            <select id="fIsFree" class="inp" onchange="onFreeToggle()"><option value="false">Paid</option><option value="true">Free</option></select>
+          </div>
+          <div id="priceField"><label class="lbl">Price (₹)</label><input id="fPrice" type="number" placeholder="0" min="0" class="inp"></div>
           <div><label class="lbl">Capacity</label><input id="fCap" type="number" placeholder="50" min="1" class="inp"></div>
           <div class="md:col-span-2"><label class="lbl">Tags (comma separated)</label><input id="fTags" type="text" placeholder="AI, Networking, Free Food" class="inp"></div>
           <div class="md:col-span-2">
@@ -386,6 +390,44 @@
           <span id="payTxt">Save Settings</span>
           <span id="paySpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
         </button>
+      </div>
+    </div>
+    <!-- ── DISCOUNT CODES ── -->
+    <div id="sec-discounts" class="sec hidden">
+      <span class="sec-tag">// discount codes</span>
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Discount Codes</h2>
+        <button onclick="loadDiscounts()" class="btn-ghost px-4 py-2 text-sm rounded-xl">Refresh</button>
+      </div>
+      <div class="card p-6 mb-6">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--color-text)">Create Discount Code</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="lbl">Code *</label>
+            <div class="flex gap-2">
+              <input id="dCode" type="text" placeholder="e.g. EARLYBIRD20" class="inp" style="text-transform:uppercase">
+              <button onclick="genCode()" type="button" class="btn-ghost px-4 py-2 text-sm rounded-xl flex-shrink-0">🎲 Generate</button>
+            </div>
+          </div>
+          <div><label class="lbl">Applies To Event *</label>
+            <select id="dEvent" class="inp"><option value="">All Events</option></select>
+          </div>
+          <div><label class="lbl">Discount Type</label>
+            <select id="dType" class="inp"><option value="percent">Percentage (%)</option><option value="flat">Flat Amount (₹)</option></select>
+          </div>
+          <div><label class="lbl">Discount Value *</label><input id="dValue" type="number" placeholder="e.g. 20" min="1" class="inp"></div>
+          <div><label class="lbl">Max Uses <span style="color:var(--color-text-faint);font-weight:400;text-transform:none">(blank = unlimited)</span></label><input id="dMaxUses" type="number" placeholder="e.g. 50" min="1" class="inp"></div>
+          <div><label class="lbl">Expiry Date <span style="color:var(--color-text-faint);font-weight:400;text-transform:none">(optional)</span></label><input id="dExpiry" type="date" class="inp"></div>
+        </div>
+        <p id="discErr" class="text-red-400 text-xs mb-3 hidden"></p>
+        <button onclick="saveDiscount()" id="discBtn" class="btn-primary px-6 py-2.5 text-sm rounded-xl">
+          <span id="discTxt">Create Code</span>
+          <span id="discSpin" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full spin"></span>
+        </button>
+      </div>
+      <span class="sec-tag">// existing codes</span>
+      <div id="discList" class="space-y-3">
+        <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
     <!-- ── HOMEPAGE CMS ── -->
@@ -551,7 +593,7 @@
   function bootDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); loadPayment(); loadHomepage();
+    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); fillDiscEvFilter(); loadPayment(); loadHomepage();
   }
   // ── Navigation ──
   function show(sec) {
@@ -567,6 +609,7 @@
     if (sec === 'attendance')     { fillAttEvSelector(); loadAttendance(); }
     if (sec === 'cities')         loadCities();
     if (sec === 'payment')        loadPayment();
+    if (sec === 'discounts')      { fillDiscEvFilter(); loadDiscounts(); }
     if (sec === 'homepage')       loadHomepage();
   }
   // ── Overview ──
@@ -621,8 +664,9 @@
           <div class="flex items-center gap-2 mb-1">
             <h3 class="font-semibold text-sm truncate" style="color:var(--color-text)">${ev.title}</h3>
             <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style="${ev.is_active?'background:rgba(34,197,94,.15);color:#86efac':'background:var(--color-surface-2);color:var(--color-text-muted)'}">${ev.is_active?'Active':'Hidden'}</span>
+            ${(()=>{const f=(ev.is_free!==undefined&&ev.is_free!==null)?ev.is_free===true:!ev.price;return `<span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style="${f?'background:rgba(232,240,72,.12);color:#E8F048':'background:rgba(91,33,230,.15);color:#a78bfa'}">${f?'Free':'Paid'}</span>`;})()}
           </div>
-          <p class="text-xs mb-0.5" style="color:var(--color-text-muted)">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${ev.price>0?'₹'+ev.price:'Free'}</p>
+          <p class="text-xs mb-0.5" style="color:var(--color-text-muted)">${ev.date?new Date(ev.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—'} · ${ev.venue||'—'} · ${((ev.is_free!==undefined&&ev.is_free!==null)?ev.is_free===true:!ev.price)?'Free':'₹'+ev.price}</p>
           ${ev.organizer_name?`<p class="text-xs" style="color:var(--color-text-faint)">🎤 ${ev.organizer_name}</p>`:''}
         </div>
         <div class="flex gap-2 flex-shrink-0">
@@ -637,6 +681,7 @@
     ['fTitle','fDesc','fVenue','fCity','fTags','fDate','fTime','fOrgName','fOrgAvatar'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
     document.getElementById('fPrice').value='0'; document.getElementById('fCap').value='50';
     document.getElementById('fActive').value='true'; document.getElementById('fType').value='meetup';
+    document.getElementById('fIsFree').value='true';
     document.getElementById('imgPreview').classList.add('hidden'); document.getElementById('imgPH').classList.remove('hidden');
     document.getElementById('imgInput').value=''; document.getElementById('formErr').classList.add('hidden');
     document.getElementById('formHeading').textContent = id ? 'Edit Event' : 'New Event';
@@ -652,10 +697,20 @@
         const tags=Array.isArray(ev.tags)?ev.tags:(ev.tags?JSON.parse(ev.tags):[]);
         document.getElementById('fTags').value=tags.join(', ');
         document.getElementById('fActive').value=String(ev.is_active!==false);
+        const isFree = (ev.is_free!==undefined && ev.is_free!==null) ? ev.is_free===true : !ev.price;
+        document.getElementById('fIsFree').value=String(isFree);
         if (ev.image_url) { uploadedUrl=ev.image_url; document.getElementById('imgPreview').src=ev.image_url; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('imgPH').classList.add('hidden'); }
       }
     }
+    onFreeToggle();
     show('eventForm');
+  }
+  function onFreeToggle() {
+    const isFree = document.getElementById('fIsFree').value === 'true';
+    const priceInput = document.getElementById('fPrice');
+    const priceField = document.getElementById('priceField');
+    if (isFree) { priceInput.value = '0'; priceInput.disabled = true; priceField.style.opacity = '0.5'; }
+    else { priceInput.disabled = false; priceField.style.opacity = '1'; }
   }
   function prevImg(file) { if(!file)return; const r=new FileReader(); r.onload=e=>{ document.getElementById('imgPreview').src=e.target.result; document.getElementById('imgPreview').classList.remove('hidden'); document.getElementById('imgPH').classList.add('hidden'); }; r.readAsDataURL(file); }
   function dropImg(e) { e.preventDefault(); document.getElementById('imgZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) prevImg(f); }
@@ -677,7 +732,8 @@
       const imgFile=document.getElementById('imgInput').files[0];
       if(imgFile) uploadedUrl=await uploadImg(imgFile);
       const tags=document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
-      const payload={title,description:desc,date,time:document.getElementById('fTime').value,venue,city:document.getElementById('fCity').value.trim(),organizer_name:document.getElementById('fOrgName').value.trim(),organizer_avatar:document.getElementById('fOrgAvatar').value.trim(),type:document.getElementById('fType').value,price:Number(document.getElementById('fPrice').value)||0,capacity:Number(document.getElementById('fCap').value)||50,tags,is_active:document.getElementById('fActive').value==='true',image_url:uploadedUrl,updated_at:new Date().toISOString()};
+      const isFree=document.getElementById('fIsFree').value==='true';
+      const payload={title,description:desc,date,time:document.getElementById('fTime').value,venue,city:document.getElementById('fCity').value.trim(),organizer_name:document.getElementById('fOrgName').value.trim(),organizer_avatar:document.getElementById('fOrgAvatar').value.trim(),type:document.getElementById('fType').value,is_free:isFree,price:isFree?0:(Number(document.getElementById('fPrice').value)||0),capacity:Number(document.getElementById('fCap').value)||50,tags,is_active:document.getElementById('fActive').value==='true',image_url:uploadedUrl,updated_at:new Date().toISOString()};
       let res;
       if(editId) res=await sb.from('events').update(payload).eq('id',editId);
       else res=await sb.from('events').insert({...payload,created_at:new Date().toISOString()});
@@ -876,6 +932,73 @@
     setLoading('cityBtn','cityTxt','citySpin','Add City',false);
   }
   async function deleteCity(id){if(!confirm('Remove this city?'))return;await sb.from('cities').delete().eq('id',id);loadCities();}
+  // ── Discount Codes ──
+  let discCache = [];
+  function genCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random()*chars.length)];
+    document.getElementById('dCode').value = code;
+  }
+  async function fillDiscEvFilter() {
+    const{data}=await sb.from('events').select('id,title');
+    const sel=document.getElementById('dEvent');
+    if(!sel) return;
+    const existing=Array.from(sel.options).map(o=>o.value);
+    (data||[]).forEach(ev=>{if(!existing.includes(ev.id)){const o=document.createElement('option');o.value=ev.id;o.textContent=ev.title;sel.appendChild(o);}});
+  }
+  async function loadDiscounts() {
+    await loadEvCache();
+    const{data,error}=await sb.from('discount_codes').select('*').order('created_at',{ascending:false});
+    const el=document.getElementById('discList');
+    if(error){el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
+    discCache=data||[];
+    if(!discCache.length){el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No discount codes yet. Create one above.</div>';return;}
+    el.innerHTML=discCache.map(d=>{
+      const ev=evCache.find(e=>e.id===d.event_id);
+      const evLabel=d.event_id?(ev?ev.title:'Deleted event'):'All Events';
+      const expired=d.expires_at&&new Date(d.expires_at)<new Date();
+      const usedUp=d.max_uses&&d.used_count>=d.max_uses;
+      const statusLabel=!d.is_active?'Disabled':expired?'Expired':usedUp?'Used up':'Active';
+      const statusStyle=statusLabel==='Active'?'background:rgba(34,197,94,.15);color:#86efac':'background:var(--color-surface-2);color:var(--color-text-muted)';
+      return `<div class="card p-4 flex items-center gap-4 flex-wrap">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <span class="font-mono font-bold text-sm px-3 py-1 rounded-lg" style="background:var(--color-surface-2);color:var(--color-yellow)">${d.code}</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="${statusStyle}">${statusLabel}</span>
+          </div>
+          <p class="text-xs" style="color:var(--color-text-muted)">${d.discount_type==='percent'?d.discount_value+'% off':'₹'+d.discount_value+' off'} · ${evLabel} · Used ${d.used_count||0}${d.max_uses?('/'+d.max_uses):''}${d.expires_at?(' · Expires '+new Date(d.expires_at).toLocaleDateString('en-IN')):''}</p>
+        </div>
+        <div class="flex gap-2 flex-shrink-0">
+          <button onclick="copyCode('${d.code}',this)" class="btn-ghost text-xs px-3 py-2 rounded-xl">Copy</button>
+          <button onclick="toggleDiscActive('${d.id}',${!d.is_active})" class="text-xs px-3 py-2 rounded-xl" style="background:var(--color-surface-2);color:var(--color-text-muted);border:none;cursor:pointer;">${d.is_active?'Disable':'Enable'}</button>
+          <button onclick="deleteDiscount('${d.id}')" class="text-xs px-3 py-2 rounded-xl" style="background:rgba(239,68,68,.1);color:#fca5a5;border:none;cursor:pointer;">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function copyCode(code,btn){navigator.clipboard.writeText(code).then(()=>{const orig=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent=orig;},1500);}).catch(()=>{});}
+  async function saveDiscount() {
+    const code=document.getElementById('dCode').value.trim().toUpperCase();
+    const eventId=document.getElementById('dEvent').value||null;
+    const type=document.getElementById('dType').value;
+    const value=Number(document.getElementById('dValue').value);
+    const maxUses=document.getElementById('dMaxUses').value?Number(document.getElementById('dMaxUses').value):null;
+    const expiry=document.getElementById('dExpiry').value||null;
+    const err=document.getElementById('discErr');
+    if(!code||!value||value<=0){err.textContent='Enter a code and a valid discount value';err.classList.remove('hidden');return;}
+    if(type==='percent'&&value>100){err.textContent='Percentage discount cannot exceed 100';err.classList.remove('hidden');return;}
+    err.classList.add('hidden'); setLoading('discBtn','discTxt','discSpin','Creating…',true);
+    try {
+      const{error}=await sb.from('discount_codes').insert({code,event_id:eventId,discount_type:type,discount_value:value,max_uses:maxUses,used_count:0,expires_at:expiry,is_active:true,created_at:new Date().toISOString()});
+      if(error)throw error;
+      document.getElementById('dCode').value='';document.getElementById('dValue').value='';document.getElementById('dMaxUses').value='';document.getElementById('dExpiry').value='';document.getElementById('dEvent').value='';document.getElementById('dType').value='percent';
+      loadDiscounts();
+    } catch(e){err.textContent='Error: '+e.message;err.classList.remove('hidden');}
+    setLoading('discBtn','discTxt','discSpin','Create Code',false);
+  }
+  async function toggleDiscActive(id,newState){await sb.from('discount_codes').update({is_active:newState}).eq('id',id);loadDiscounts();}
+  async function deleteDiscount(id){if(!confirm('Delete this discount code? This cannot be undone.'))return;await sb.from('discount_codes').delete().eq('id',id);loadDiscounts();}
   // ── Payment ──
   async function loadPayment(){
     const{data}=await sb.from('settings').select('*').eq('id','payment').single();

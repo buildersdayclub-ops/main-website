@@ -571,14 +571,14 @@
       <!-- Step 4 -->
       <div id="step4" style="display:none;text-align:center;padding:16px 0;">
         <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
-        <h3 style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">You're registered!</h3>
-        <p style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:24px;">Your spot is pending payment verification.<br>We'll confirm once it's checked.</p>
+        <h3 id="sucTitle" style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">You're registered!</h3>
+        <p id="sucMsg" style="font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:24px;">Your spot is pending payment verification.<br>We'll confirm once it's checked.</p>
         <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;">
           <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:8px;">Booking Summary</p>
           <p id="sucEvent" style="font-weight:600;color:#fff;margin-bottom:4px;font-size:14px;"></p>
           <p id="sucName"  style="color:#9ca3af;font-size:13px;margin-bottom:2px;"></p>
           <p id="sucEmail" style="color:#9ca3af;font-size:13px;margin-bottom:8px;"></p>
-          <p style="color:#facc15;font-size:12px;">⏳ Verification usually takes 2–4 hours</p>
+          <p id="sucNote" style="color:#facc15;font-size:12px;">⏳ Verification usually takes 2–4 hours</p>
         </div>
         <button class="modal-btn" onclick="closeModal()">Done ✓</button>
       </div>
@@ -624,7 +624,8 @@
           email:       reg.email,
           event_title: reg.event_title,
           event_date:  reg.event_date,
-          event_venue: reg.event_venue
+          event_venue: reg.event_venue,
+          check_in_token: reg.check_in_token
         })
       });
     } catch(e) { console.warn('Email error:', e.message); }
@@ -634,7 +635,7 @@
     try {
       const [{ data: evs }, { data: cfg }, { data: cities }] = await Promise.all([
         sb.from('events').select('*').eq('is_active', true).order('date', { ascending: true }),
-        sb.from('settings').select('*').eq('id', 'payment').single(),
+        sb.from('settings').select('upi_id, pay_name, pay_note, qr_code_url').eq('id', 'payment').single(),
         sb.from('cities').select('*').order('display_order', { ascending: true })
       ]);
       allEvents = evs || [];
@@ -883,21 +884,16 @@
     if (!raw) { msgEl.style.display = 'none'; return; }
     msgEl.textContent = 'Checking…'; msgEl.style.color = '#9ca3af'; msgEl.style.display = 'block';
     try {
-      const { data, error } = await sb.from('discount_codes').select('*')
-        .eq('code', raw).eq('is_active', true)
-        .or(`event_id.is.null,event_id.eq.${currentEvent.id}`)
-        .maybeSingle();
-      if (error || !data) {
+      // Checked securely in the database — the full list of codes is never sent to the browser
+      const { data, error } = await sb.rpc('check_discount', { p_code: raw, p_event_id: currentEvent.id });
+      if (error) throw error;
+      if (!data || !data.ok) {
         appliedDiscount = null; updatePriceDisplay();
-        msgEl.textContent = '✗ Invalid or inactive code'; msgEl.style.color = '#f87171'; return;
-      }
-      if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        appliedDiscount = null; updatePriceDisplay();
-        msgEl.textContent = '✗ This code has expired'; msgEl.style.color = '#f87171'; return;
-      }
-      if (data.max_uses && data.used_count >= data.max_uses) {
-        appliedDiscount = null; updatePriceDisplay();
-        msgEl.textContent = '✗ This code has reached its usage limit'; msgEl.style.color = '#f87171'; return;
+        const why = data && data.reason;
+        msgEl.textContent = why === 'expired' ? '✗ This code has expired'
+                          : why === 'used_up' ? '✗ This code has reached its usage limit'
+                          : '✗ Invalid or inactive code';
+        msgEl.style.color = '#f87171'; return;
       }
       appliedDiscount = data;
       updatePriceDisplay();
@@ -1054,42 +1050,50 @@
     document.getElementById('submitTxt').textContent = 'Submitting…';
     document.getElementById('submitSpin').style.display = 'inline-block';
     const instagram = normalizeInstagram(document.getElementById('regInstagram').value || '');
-    const payload = {
-      event_id:    currentEvent.id,
-      event_title: currentEvent.title,
-      name:        document.getElementById('regName').value.trim(),
-      email:       document.getElementById('regEmail').value.trim(),
-      phone:       document.getElementById('regPhone').value.trim(),
-      instagram,
-      utr,
-      discount_code: appliedDiscount ? appliedDiscount.code : null,
-      status: isFree ? 'verified' : 'pending'
-    };
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
     try {
-      const { error: insErr } = await sb.from('registrations').insert(payload);
-      if (insErr) throw insErr;
-      // Track discount code usage (best-effort — a failure here shouldn't block registration)
-      if (appliedDiscount) {
-        try { await sb.from('discount_codes').update({ used_count: (appliedDiscount.used_count||0) + 1 }).eq('id', appliedDiscount.id); }
-        catch(e) { console.warn('Discount usage update failed:', e.message); }
-      }
-      // Send confirmation email
-      sendEmail('confirmation', {
-        ...payload,
-        event_date:  currentEvent.date,
-        event_venue: currentEvent.venue
+      // The database works out the price, checks the discount code and sets the status —
+      // nothing about payment or approval can be changed from the browser.
+      const { data, error } = await sb.rpc('register_for_event', {
+        p_event_id: currentEvent.id, p_name: name, p_email: email, p_phone: phone,
+        p_instagram: instagram, p_utr: isFree ? '' : utr,
+        p_discount_code: appliedDiscount ? appliedDiscount.code : null
       });
+      if (error) throw error;
+      if (!data || !data.ok) {
+        const why = data && data.reason;
+        const fe = new Error(
+          why === 'utr_taken' ? 'This UTR is already registered. Contact us if this is a mistake.' :
+          why === 'bad_utr'   ? 'Enter a valid UTR (8–22 letters/numbers, no spaces)' :
+          why === 'bad_code'  ? 'Your discount code is no longer valid. Go back and remove it.' :
+          why === 'event_not_found' ? 'This event is no longer open for registration.' :
+          'Please fill all fields'
+        );
+        fe.friendly = true; throw fe;
+      }
+      const confirmed = data.status === 'verified';
+      sendEmail('confirmation', {
+        name, email, event_title: currentEvent.title,
+        event_date: currentEvent.date, event_venue: currentEvent.venue,
+        check_in_token: data.check_in_token
+      });
+      document.getElementById('sucTitle').textContent = confirmed ? "You're in! 🎉" : "You're registered!";
+      document.getElementById('sucMsg').innerHTML = confirmed
+        ? 'Your spot is confirmed.<br>Check your email for the details.'
+        : 'Your spot is pending payment verification.<br>We\'ll confirm once it\'s checked.';
+      document.getElementById('sucNote').style.display = confirmed ? 'none' : 'block';
       document.getElementById('sucEvent').textContent = currentEvent.title;
-      document.getElementById('sucName').textContent  = '👤 ' + payload.name;
-      document.getElementById('sucEmail').textContent = '✉️ ' + payload.email;
+      document.getElementById('sucName').textContent  = '👤 ' + name;
+      document.getElementById('sucEmail').textContent = '✉️ ' + email;
       goStep(4);
     } catch(e) {
-      const err = document.getElementById('err3');
-      if (e.message && e.message.includes('unique')) {
-        err.textContent = 'This UTR is already registered. Contact us if this is a mistake.';
-      } else {
-        err.textContent = 'Error: ' + e.message;
-      }
+      // Show the error on whichever step the person is looking at
+      const visible = n => document.getElementById('step' + n).style.display === 'block';
+      const err = document.getElementById(visible(3) ? 'err3' : visible(2) ? 'discMsg' : 'err1');
+      err.textContent = e.friendly ? e.message : 'Error: ' + e.message;
+      err.style.color = '#f87171';
       err.style.display = 'block';
       btn.disabled = false;
       document.getElementById('submitTxt').textContent = 'Submit Registration';

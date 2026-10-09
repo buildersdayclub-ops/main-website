@@ -583,13 +583,44 @@
   }
   async function doLogout() {
     await sb.auth.signOut();
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('loginScreen').classList.remove('hidden');
+    showLoginScreen();
   }
   async function checkAuth() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) bootDashboard();
+    if (!session) return;
+    // Make sure the saved login is still valid; refresh it if it has timed out
+    if (await ensureFreshLogin()) bootDashboard();
   }
+  // Returns true if the login is valid (refreshing it if needed), otherwise shows the login screen
+  async function ensureFreshLogin() {
+    const { error } = await sb.auth.getUser();
+    if (!error) return true;
+    const { error: refreshErr } = await sb.auth.refreshSession();
+    if (!refreshErr) return true;
+    showLoginScreen('Your login expired. Please sign in again.');
+    return false;
+  }
+  function showLoginScreen(msg) {
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    setLoading('loginBtn','loginTxt','loginSpin','Sign In',false);
+    const err = document.getElementById('loginErr');
+    if (msg) { err.textContent = msg; err.classList.remove('hidden'); } else err.classList.add('hidden');
+  }
+  // If a page request fails because the login timed out, refresh it and reload that section
+  async function handleAuthError(error, retry) {
+    if (!error || !/jwt|token|auth/i.test(error.message || '')) return false;
+    if (await ensureFreshLogin()) { retry(); }
+    return true;
+  }
+  // Sign-out or a dead login anywhere → back to the login screen
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || (!session && event !== 'INITIAL_SESSION')) showLoginScreen();
+  });
+  // Coming back to a tab that's been asleep: check the login before anything else
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !document.getElementById('dashboard').classList.contains('hidden')) ensureFreshLogin();
+  });
   function bootDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
@@ -758,7 +789,7 @@
     if(stF!=='all') q=q.eq('status',stF);
     const{data:allRegs,error}=await q;
     const el=document.getElementById('regList');
-    if(error){el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
+    if(error){ if(await handleAuthError(error, loadRegs)) return; el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
     let regs=allRegs||[];
     if(ciF==='yes') regs=regs.filter(r=>r.checked_in===true);
     if(ciF==='no')  regs=regs.filter(r=>!r.checked_in);
@@ -966,7 +997,7 @@
     await loadEvCache();
     const{data,error}=await sb.from('discount_codes').select('*').order('created_at',{ascending:false});
     const el=document.getElementById('discList');
-    if(error){el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
+    if(error){ if(await handleAuthError(error, loadDiscounts)) return; el.innerHTML=`<div class="card p-8 text-center text-red-400 text-sm">Error: ${error.message}</div>`;return;}
     discCache=data||[];
     if(!discCache.length){el.innerHTML='<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No discount codes yet. Create one above.</div>';return;}
     el.innerHTML=discCache.map(d=>{

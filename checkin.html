@@ -371,21 +371,21 @@
     document.getElementById('pinSpin').style.display = 'inline-block';
     document.getElementById('pinError').style.display = 'none';
 
-    // Fetch PIN from settings
-    const { data } = await sb.from('settings').select('checkin_pin').eq('id', 'payment').single();
-    const correctPIN = (data && data.checkin_pin) ? String(data.checkin_pin) : '1234';
+    // PIN is checked inside the database — it is never sent to the browser
+    const { data: ok, error: pinErr } = await sb.rpc('verify_checkin_pin', { p_pin: pin });
 
     document.getElementById('pinBtn').disabled = false;
     document.getElementById('pinTxt').textContent = 'Enter';
     document.getElementById('pinSpin').style.display = 'none';
 
-    if (pin !== correctPIN) {
+    if (pinErr || ok !== true) {
       document.getElementById('pinError').style.display = 'block';
       document.getElementById('pinInput').value = '';
       return;
     }
     authenticated = true;
     sessionStorage.setItem('cin_auth', '1');
+    sessionStorage.setItem('cin_pin', pin);
 
     if (urlToken) {
       // Came here via QR scan from camera app
@@ -397,7 +397,7 @@
 
   // ── Check session auth on load ──
   window.addEventListener('load', () => {
-    if (sessionStorage.getItem('cin_auth') === '1') {
+    if (sessionStorage.getItem('cin_auth') === '1' && sessionStorage.getItem('cin_pin')) {
       authenticated = true;
       if (urlToken) {
         lookupToken(urlToken);
@@ -455,11 +455,11 @@
         <p style="color:#6b7280;font-size:13px;">Looking up registration…</p>
       </div>`;
 
-    const { data: reg, error } = await sb
-      .from('registrations')
-      .select('*')
-      .eq('check_in_token', token)
-      .single();
+    const { data: res, error } = await sb.rpc('checkin_lookup', {
+      p_pin: sessionStorage.getItem('cin_pin') || '', p_token: String(token || '')
+    });
+    if (res && res.reason === 'bad_pin') { exitScanner(); return; }
+    const reg = res && res.ok ? res.reg : null;
 
     if (error || !reg) {
       showScreen('screenError');
@@ -537,12 +537,11 @@
     document.getElementById('attendTxt').textContent = 'Marking…';
     document.getElementById('attendSpin').style.display = 'inline-block';
 
-    const { error } = await sb.from('registrations').update({
-      checked_in: true,
-      checked_in_at: new Date().toISOString()
-    }).eq('id', id);
+    const { data: res, error } = await sb.rpc('checkin_mark', {
+      p_pin: sessionStorage.getItem('cin_pin') || '', p_id: id
+    });
 
-    if (error) {
+    if (error || !res || !res.ok) {
       document.getElementById('attendTxt').textContent = 'Error — try again';
       document.getElementById('attendSpin').style.display = 'none';
       if (btn) btn.disabled = false;
@@ -562,6 +561,7 @@
   function exitScanner() {
     if (html5QrCode) html5QrCode.stop().catch(()=>{});
     sessionStorage.removeItem('cin_auth');
+    sessionStorage.removeItem('cin_pin');
     authenticated = false;
     showScreen('screenPIN');
     document.getElementById('pinInput').value = '';

@@ -4,20 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Claude Cohort — Builders Day Club</title>
-<meta name="description" content="A 45-day, in-person Claude cohort for working professionals and founders. 10 live sessions, one real AI build, shipped by Demo Day.">
+<meta name="description" content="A 45-day, in-person Claude cohort for working professionals and founders in India. 10 hands-on sessions, one real AI build, demoed live on Day 45.">
 <!-- Unlisted page: keep it out of search engines -->
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0A0A0B">
 <meta property="og:title" content="Claude Cohort — Builders Day Club">
-<meta property="og:description" content="45 days. 10 live, in-person sessions. One real AI build you ship by Demo Day.">
+<meta property="og:description" content="Your next hire is Claude. 45 days, 10 in-person sessions, one real AI build.">
 <meta property="og:image" content="/assets/logo.jpg">
 <link rel="icon" href="/assets/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <script>
-  // If an image can't load from this site (e.g. when previewing the file
-  // before it's uploaded), load the same file from the GitHub repo instead.
+  // If an image can't load from this site, load the same file from the GitHub repo instead.
   (function () {
     var RAW = 'https://raw.githubusercontent.com/buildersdayclub-ops/main-website/main';
     window.addEventListener('error', function (e) {
@@ -51,6 +50,9 @@
     --yellow: #E8F048;
     --yellow-2: #f0f560;
     --yellow-soft: rgba(232,240,72,0.12);
+    --blue: #93c5fd;
+    --blue-soft: rgba(59,130,246,0.16);
+    --claude: #D97757;
     --green: #86efac;
     --r: 18px;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -73,7 +75,8 @@
   .tag { display: inline-block; margin-bottom: 18px; }
   .h2 { font-family: var(--font-display); font-size: clamp(2rem, 1.3rem + 2.6vw, 3.4rem); font-weight: 700; margin-bottom: 18px; letter-spacing: -0.01em; }
   em { font-style: italic; color: var(--yellow); }
-  .lead { font-size: clamp(1rem, 0.96rem + 0.25vw, 1.125rem); color: var(--muted); max-width: 640px; line-height: 1.7; }
+  .lead { font-size: clamp(1rem, 0.96rem + 0.25vw, 1.125rem); color: var(--muted); max-width: 660px; line-height: 1.7; }
+  .lead b { color: var(--text); font-weight: 600; }
   section { padding: clamp(64px, 9vw, 120px) 0; position: relative; }
   .alt { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .center { text-align: center; }
@@ -88,7 +91,7 @@
   .btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
   .btn-sm { min-height: 40px; padding: 0 18px; font-size: 13px; box-shadow: 3px 3px 0 var(--purple); }
 
-  /* Reveal on scroll (content is always visible without JS) */
+  /* Reveal on scroll (content stays visible without JS) */
   .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
   .js .reveal.in { opacity: 1; transform: none; }
 
@@ -103,6 +106,7 @@
   .topnav { display: flex; align-items: center; gap: 26px; }
   .topnav a.link { font-size: 14px; color: var(--muted); font-weight: 500; transition: color .2s; }
   .topnav a.link:hover { color: var(--text); }
+  .topnav a.link.hot { color: var(--yellow); }
 
   /* ═════ HERO ═════ */
   .hero { padding: clamp(48px, 7vw, 96px) 0 clamp(56px, 7vw, 96px); overflow: hidden; }
@@ -119,7 +123,7 @@
   .presented img { width: 28px; height: 28px; border-radius: 7px; object-fit: cover; }
   .presented span { font-size: 13px; color: var(--muted); }
   .presented b { color: var(--text); font-weight: 600; }
-  .hero h1 { font-family: var(--font-display); font-size: clamp(2.6rem, 1.5rem + 4vw, 5rem); font-weight: 700; letter-spacing: -0.015em; margin-bottom: 22px; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(2.7rem, 1.5rem + 4.3vw, 5.2rem); font-weight: 700; letter-spacing: -0.015em; margin-bottom: 22px; }
   .hero .lead { margin-bottom: 28px; }
   .price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-bottom: 26px; }
   .price-row s { color: var(--faint); font-size: 18px; }
@@ -140,13 +144,12 @@
   .win-bar .pixel { font-size: 8px; color: var(--muted); margin-left: 8px; }
   .win-main img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
   .win-small { position: absolute; left: 0; bottom: 0; width: 48%; box-shadow: 8px 8px 0 var(--yellow), 0 20px 50px rgba(0,0,0,0.55); }
-  .win-small img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+  .win-small img { width: 100%; aspect-ratio: 4/3; object-fit: cover; object-position: 30% 50%; }
   .sticker { position: absolute; top: -6px; right: -4px; width: 86px; height: 86px; border-radius: 16px; overflow: hidden; transform: rotate(8deg); border: 3px solid var(--bg); box-shadow: 4px 4px 0 var(--yellow); z-index: 2; }
   .sticker img { width: 100%; height: 100%; object-fit: cover; }
   .chip-float { position: absolute; right: 6px; bottom: 6px; z-index: 2; background: rgba(17,17,19,0.95); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; max-width: 220px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
   .chip-float .pixel { font-size: 7.5px; display: block; margin-bottom: 7px; }
   .chip-float p { font-size: 13px; font-weight: 600; line-height: 1.4; }
-
 
   /* ═════ TOOLS (logo tiles) ═════ */
   .tools { padding: 40px 0 34px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; background: var(--surface); }
@@ -188,8 +191,8 @@
   .lane-top { display: flex; align-items: center; justify-content: space-between; }
   .lane-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--purple-soft); color: var(--yellow); display: flex; align-items: center; justify-content: center; }
   .lane blockquote { font-family: var(--font-display); font-style: italic; font-size: 17px; line-height: 1.45; flex: 1; }
-  .lane .builds { font-size: 12px; color: var(--muted); border-top: 1px dashed var(--border-light); padding-top: 14px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-  .lane .builds b { display: block; color: var(--text); font-size: 15px; margin-top: 4px; text-transform: none; letter-spacing: 0; }
+  .lane .builds { font-size: 11px; color: var(--muted); border-top: 1px dashed var(--border-light); padding-top: 14px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+  .lane .builds b { display: block; color: var(--text); font-size: 14.5px; margin-top: 5px; text-transform: none; letter-spacing: 0; line-height: 1.4; font-weight: 600; }
   .not-for { margin-top: 24px; font-size: 14px; color: var(--muted); }
   .not-for b { color: var(--text); }
 
@@ -208,51 +211,85 @@
   .layer.last { grid-column: 1 / -1; border-color: rgba(232,240,72,0.45); background: var(--yellow-soft); }
   .layer.last .n { color: var(--yellow); }
 
-  /* ═════ CURRICULUM ═════ */
-  .timeline { margin-top: 44px; position: relative; }
-  .phase { display: flex; align-items: center; gap: 12px; margin: 8px 0 18px; }
-  .phase .pixel { font-size: 9px; padding: 7px 10px; border-radius: 6px; }
-  .phase.basics .pixel { background: rgba(59,130,246,0.15); color: #93c5fd; }
-  .phase.adv .pixel { background: var(--purple-soft); color: #c4b5fd; }
-  .phase p { font-size: 13px; color: var(--muted); }
-  .week { display: grid; grid-template-columns: 150px 1fr; gap: 20px; margin-bottom: 22px; }
-  .week-label { position: relative; padding-top: 16px; }
-  .week-label .pixel { display: inline-block; font-size: 9px; background: var(--bg); border: 1px solid var(--border-light); padding: 7px 9px; border-radius: 6px; color: var(--yellow); }
-  .sessions { display: grid; gap: 10px; }
-  .session { border: 1px solid var(--border); border-radius: 14px; background: var(--bg); overflow: hidden; transition: border-color .2s, box-shadow .2s; }
-  .session.open { border-color: rgba(91,33,230,0.7); box-shadow: 6px 6px 0 rgba(91,33,230,0.3); }
-  .s-head { width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 14px; padding: 16px 18px; text-align: left; min-height: 60px; }
-  .s-num { font-family: var(--font-pixel); font-size: 11px; color: var(--yellow); width: 30px; }
-  .s-title { font-size: 15.5px; font-weight: 600; line-height: 1.35; }
-  .s-chip { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
-  .chip-basics { background: rgba(59,130,246,0.15); color: #93c5fd; }
-  .chip-adv { background: var(--purple-soft); color: #c4b5fd; }
-  .chip-live { background: var(--yellow-soft); color: var(--yellow); }
+  /* ═════ SCHEDULE (standout section) ═════ */
+  .sched { background: #100726; border-top: 2px solid var(--purple); border-bottom: 2px solid var(--purple); overflow: hidden; }
+  .sched::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(124,58,237,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.14) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%);
+            mask-image: linear-gradient(180deg, #000, transparent 55%); }
+  .sched::after { content: ''; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(232,240,72,0.10), transparent 65%); pointer-events: none; }
+  .sched .wrap { position: relative; z-index: 1; }
+  .sched-head { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: end; }
+  .sched-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--yellow); color: var(--bg); font-family: var(--font-pixel); font-size: 9px; padding: 9px 12px; border-radius: 8px; box-shadow: 4px 4px 0 var(--purple); margin-bottom: 22px; }
+  .sched .h2 { font-size: clamp(2.3rem, 1.4rem + 3.2vw, 4rem); }
+  .sched .lead { color: #b6b0cc; }
+  .sched-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sched-stats div { border: 1px solid rgba(124,58,237,0.45); background: rgba(91,33,230,0.12); border-radius: 14px; padding: 14px; text-align: center; }
+  .sched-stats b { display: block; font-family: var(--font-pixel); font-size: 15px; color: var(--yellow); font-weight: 400; margin-bottom: 8px; }
+  .sched-stats span { font-size: 12px; color: #b6b0cc; line-height: 1.35; display: block; }
+
+  /* 45-day map */
+  .map { margin: 44px 0 14px; position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .map::before { content: ''; position: absolute; left: 4%; right: 4%; top: 31px; height: 4px; background: repeating-linear-gradient(90deg, var(--purple-2) 0 8px, transparent 8px 14px); opacity: 0.8; }
+  .stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 4px 14px; border-radius: 14px; transition: background .2s; }
+  .stop:hover { background: rgba(91,33,230,0.18); }
+  .stop .dots { display: flex; gap: 6px; margin-top: 14px; position: relative; z-index: 1; }
+  .dot { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: var(--font-pixel); font-size: 9px; border: 2px solid; box-shadow: 3px 3px 0 rgba(0,0,0,0.5); }
+  .dot.basics { background: #10224a; color: var(--blue); border-color: #3b82f6; }
+  .dot.adv { background: #24104f; color: #ddd0ff; border-color: var(--purple-2); }
+  .dot.live { background: var(--yellow); color: var(--bg); border-color: var(--yellow); }
+  .stop .wk-l { font-family: var(--font-pixel); font-size: 8.5px; color: var(--text); }
+  .stop .wk-f { font-size: 12px; color: #b6b0cc; text-align: center; line-height: 1.4; max-width: 150px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 40px; font-size: 12.5px; color: #b6b0cc; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 2px solid; }
+
+  /* Week cards */
+  .weeks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: start; }
+  .wk { background: var(--bg); border: 1px solid #2c1b5c; border-radius: 20px; overflow: hidden; box-shadow: 6px 6px 0 rgba(91,33,230,0.35); scroll-margin-top: 90px; }
+  .wk.wk-final { border-color: rgba(232,240,72,0.45); box-shadow: 6px 6px 0 rgba(232,240,72,0.25); }
+  .wk-head { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-bottom: 1px solid #22163f; background: linear-gradient(90deg, rgba(91,33,230,0.16), transparent); }
+  .wk-num { font-family: var(--font-pixel); font-size: 22px; color: var(--yellow); line-height: 1; min-width: 58px; }
+  .wk-meta { flex: 1; min-width: 0; }
+  .wk-meta .pixel { font-size: 8px; color: #b6b0cc; display: block; margin-bottom: 5px; }
+  .wk-meta p { font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .phase-chip { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; flex-shrink: 0; }
+  .phase-chip.basics { background: var(--blue-soft); color: var(--blue); }
+  .phase-chip.adv { background: var(--purple-soft); color: #c4b5fd; }
+  .phase-chip.final { background: var(--yellow); color: var(--bg); }
+  .sessions { padding: 10px; display: grid; gap: 8px; }
+  .session { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; transition: border-color .2s; }
+  .session.open { border-color: rgba(124,58,237,0.8); }
+  .s-head { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 15px 16px; text-align: left; min-height: 60px; }
+  .s-num { font-family: var(--font-pixel); font-size: 10px; width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid; }
+  .s-num.basics { color: var(--blue); border-color: #3b82f6; background: #10224a; }
+  .s-num.adv { color: #ddd0ff; border-color: var(--purple-2); background: #24104f; }
+  .s-num.live { color: var(--bg); border-color: var(--yellow); background: var(--yellow); }
+  .s-title { font-size: 15px; font-weight: 600; line-height: 1.35; }
   .s-chev { color: var(--muted); transition: transform .3s var(--ease); }
   .session.open .s-chev { transform: rotate(180deg); color: var(--yellow); }
   .s-body { max-height: 0; overflow: hidden; transition: max-height .45s var(--ease); }
-  .s-inner { padding: 0 18px 20px 62px; display: grid; gap: 14px; }
-  .s-inner h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); margin-bottom: 4px; font-weight: 700; }
+  .s-inner { padding: 0 16px 18px 66px; display: grid; gap: 12px; }
+  .s-inner h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); margin-bottom: 4px; font-weight: 800; }
   .s-inner p { font-size: 14px; color: var(--muted); line-height: 1.7; }
   .s-inner .build p { color: var(--text); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chips span { font-size: 12px; border: 1px solid var(--border-light); color: var(--muted); padding: 4px 10px; border-radius: 999px; }
-  .session.special { border-style: dashed; border-color: rgba(232,240,72,0.4); }
+  .sched-foot { margin-top: 36px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; border: 1px dashed rgba(232,240,72,0.4); border-radius: 16px; padding: 18px 22px; }
+  .sched-foot p { font-size: 15px; color: #d9d4ea; }
+  .sched-foot p b { color: var(--yellow); }
 
   /* ═════ WHAT YOU GET ═════ */
   .get-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; margin-top: 44px; align-items: stretch; }
-  .get-img { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); min-height: 360px; }
+  .get-img { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); min-height: 380px; box-shadow: 10px 10px 0 var(--purple); }
   .get-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .get-img .badge { position: absolute; left: 16px; top: 16px; background: var(--yellow); color: var(--bg); font-family: var(--font-pixel); font-size: 9px; padding: 8px 10px; border-radius: 6px; box-shadow: 3px 3px 0 var(--purple); }
   .gets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .get { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .get { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
   .get .ico { width: 38px; height: 38px; border-radius: 10px; background: var(--yellow-soft); color: var(--yellow); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .get h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
   .get p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
-  .numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
-  .num { border: 1px solid var(--border); border-radius: 16px; padding: 20px; background: var(--bg); }
-  .num b { display: block; font-family: var(--font-pixel); font-size: clamp(16px, 1rem + 0.6vw, 22px); color: var(--yellow); font-weight: 400; margin-bottom: 10px; }
-  .num span { font-size: 13.5px; color: var(--muted); }
 
   /* ═════ MENTOR ═════ */
   .mentor { display: grid; grid-template-columns: 0.75fr 1.25fr; gap: 56px; align-items: center; margin-top: 44px; }
@@ -277,7 +314,7 @@
   .pricing::before { content: ''; position: absolute; top: 50%; left: 50%; width: 820px; height: 820px; max-width: 100vw; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(91,33,230,0.2) 0%, transparent 65%); pointer-events: none; }
   .pricing .wrap { position: relative; }
   .price-card { max-width: 940px; margin: 44px auto 0; display: grid; grid-template-columns: 1fr 1fr; border-radius: 24px; background: var(--surface); border: 2px solid var(--purple); box-shadow: 12px 12px 0 var(--purple); overflow: hidden; }
-  .pc-left { padding: 38px; border-right: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
+  .pc-left { padding: 38px; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
   .pc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
   .pc-head img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
   .pc-head .pixel { font-size: 8px; display: block; }
@@ -308,12 +345,12 @@
   .faq-a p { padding-bottom: 22px; font-size: 15px; color: var(--muted); line-height: 1.8; max-width: 720px; }
 
   /* ═════ FINAL + FOOTER ═════ */
-  .final { text-align: center; overflow: hidden; }
-  .final::before { content: ''; position: absolute; top: 50%; left: 50%; width: 640px; height: 640px; max-width: 100vw; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(91,33,230,0.24) 0%, transparent 70%); pointer-events: none; }
-  .final .wrap { position: relative; }
-  .final img.logo-big { width: 84px; height: 84px; border-radius: 18px; margin: 0 auto 22px; box-shadow: 6px 6px 0 var(--yellow); }
-  .final h2 { font-family: var(--font-display); font-size: clamp(2.2rem, 1.4rem + 3vw, 4rem); margin-bottom: 16px; }
-  .final .lead { margin: 0 auto 30px; }
+  section.final { text-align: center; overflow: hidden; }
+  section.final::before { content: ''; position: absolute; top: 50%; left: 50%; width: 640px; height: 640px; max-width: 100vw; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(91,33,230,0.24) 0%, transparent 70%); pointer-events: none; }
+  section.final .wrap { position: relative; }
+  section.final img.logo-big { width: 84px; height: 84px; border-radius: 18px; margin: 0 auto 22px; box-shadow: 6px 6px 0 var(--yellow); }
+  section.final h2 { font-family: var(--font-display); font-size: clamp(2.2rem, 1.4rem + 3vw, 4rem); margin-bottom: 16px; }
+  section.final .lead { margin: 0 auto 30px; }
   footer { border-top: 1px solid var(--border); padding: 28px 0 36px; }
   footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
   footer .f-brand { display: flex; align-items: center; gap: 10px; }
@@ -330,11 +367,34 @@
   .mbar .p strong { font-size: 19px; font-weight: 800; }
   .mbar .p small { font-size: 11px; color: var(--muted); font-weight: 500; }
 
+  /* ═════ FLYING CLAUDES (play with them, pop them) ═════ */
+  .critter { position: fixed; left: 0; top: 0; z-index: 90; width: 52px; height: 52px; padding: 6px; border-radius: 14px; touch-action: none; user-select: none; -webkit-user-select: none; will-change: transform; filter: drop-shadow(3px 4px 0 rgba(91,33,230,0.75)); }
+  .critter .cbody { display: block; width: 100%; height: 100%; }
+  .critter svg { width: 100%; height: 100%; display: block; transition: transform .2s var(--ease); }
+  .critter:hover svg { animation: wiggle .5s ease-in-out infinite; }
+  .critter.grab svg { transform: scale(1.18) rotate(-8deg); animation: none; }
+  .critter .bubble { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; white-space: nowrap; font-family: var(--font-pixel); font-size: 7px; color: var(--bg); background: var(--yellow); padding: 6px 8px; border-radius: 6px; box-shadow: 2px 2px 0 var(--purple); opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .critter:hover .bubble, .critter.talk .bubble { opacity: 1; }
+  @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+  .pxl { position: fixed; left: 0; top: 0; z-index: 91; width: 8px; height: 8px; pointer-events: none; }
+  .critter-hud { position: fixed; left: 18px; bottom: 18px; z-index: 95; display: none; align-items: center; gap: 10px; background: rgba(17,17,19,0.95); border: 1px solid var(--border-light); border-radius: 12px; padding: 8px 10px 8px 8px; box-shadow: 4px 4px 0 var(--purple); font-size: 12.5px; color: var(--muted); }
+  .critter-hud.show { display: flex; }
+  .critter-hud .hud-ico { width: 26px; height: 26px; }
+  .critter-hud .hud-ico svg { width: 100%; height: 100%; }
+  .critter-hud b { color: var(--text); }
+  .critter-hud button { font-size: 12px; font-weight: 700; color: var(--yellow); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(232,240,72,0.35); }
+  .critter-hud button:hover { background: var(--yellow-soft); }
+  .critter-hud .hud-num { display: none; font-family: var(--font-pixel); font-size: 10px; color: var(--yellow); }
+  .critter-hud.mini { padding: 6px 10px 6px 6px; gap: 8px; }
+  .critter-hud.mini #hudText, .critter-hud.mini #hudBtn { display: none; }
+  .critter-hud.mini .hud-num { display: inline; }
 
   /* ═════ PIXEL CURSOR (this page only, mouse/trackpad devices) ═════ */
   @media (hover: hover) and (pointer: fine) {
     html, body { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2232%22%20viewBox%3D%220%200%2024%2032%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%226%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%228%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%224%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%228%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%222%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%228%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%220%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%230A0A0B%22/%3E%3C/svg%3E") 1 1, auto; }
-    a, button, summary, label, .s-head, .faq-q, .lane, .gallery figure { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2232%22%20viewBox%3D%220%200%2024%2032%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3C/svg%3E") 1 1, pointer; }
+    a, button, summary, label, .s-head, .faq-q, .lane, .gallery figure, .stop { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2232%22%20viewBox%3D%220%200%2024%2032%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2216%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2218%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%228%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2220%22%20y%3D%2220%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%226%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%224%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%222%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%228%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2226%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%220%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237C3AED%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2230%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23E8F048%22/%3E%3C/svg%3E") 1 1, pointer; }
+    .critter { cursor: grab; }
+    .critter.grab { cursor: grabbing; }
     .cursor-ring { display: block; }
   }
   .cursor-ring { display: none; position: fixed; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px; pointer-events: none; z-index: 9999; border: 2px solid rgba(232,240,72,0.55); opacity: 0; transition: opacity .25s, width .25s var(--ease), height .25s var(--ease), margin .25s var(--ease), background .25s, border-color .25s; will-change: transform; }
@@ -344,36 +404,41 @@
   .cursor-ring.on { opacity: 1; }
   .cursor-ring.hover { width: 54px; height: 54px; margin: -27px 0 0 -27px; background: rgba(124,58,237,0.14); border-color: var(--purple-2); }
   .cursor-ring.down { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-  @media (prefers-reduced-motion: reduce) { .cursor-ring { display: none !important; } }
 
   /* ═════ RESPONSIVE ═════ */
   @media (max-width: 1080px) {
     .lanes { grid-template-columns: repeat(2, 1fr); }
     .facts { grid-template-columns: repeat(2, auto); }
-    .numbers { grid-template-columns: repeat(2, 1fr); }
+    .sched-head { grid-template-columns: 1fr; }
+    .weeks { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 900px) {
     :root { --gutter: 20px; }
     .topnav a.link { display: none; }
-    .hero .wrap, .build-grid, .get-grid, .mentor, .price-card, .compare { grid-template-columns: 1fr; }
+    .hero .wrap, .build-grid, .get-grid, .mentor, .price-card, .compare, .weeks { grid-template-columns: 1fr; }
     .hero .wrap { gap: 36px; }
     .stage { max-width: 520px; width: 100%; margin: 0 auto; }
     .build-img { position: relative; top: 0; }
-    .build-img img { aspect-ratio: 16/10; }
-    .week { grid-template-columns: 1fr; gap: 10px; }
-    .week-label { padding-top: 0; }
+    .build-img img { aspect-ratio: 16/11; }
     .pc-left { border-right: none; border-bottom: 1px solid var(--border); }
     .mentor { gap: 36px; }
     .portrait { margin: 0 auto; width: 100%; max-width: 340px; }
     .mbar { display: flex; }
     footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .critter-hud { display: none !important; }
+    /* Map becomes a swipeable strip */
+    .map { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 0 var(--gutter) 6px; scrollbar-width: none; gap: 6px; }
+    .map::-webkit-scrollbar { display: none; }
+    .map::before { left: var(--gutter); right: auto; width: 820px; }
+    .stop { flex: 0 0 132px; scroll-snap-align: start; }
   }
   @media (max-width: 640px) {
     body { font-size: 15.5px; }
     section { padding: 64px 0; }
     .h2 { font-size: clamp(1.9rem, 1.4rem + 3vw, 2.4rem); }
+    .sched .h2 { font-size: clamp(2.1rem, 1.5rem + 3.5vw, 2.7rem); }
     .hero { padding-top: 32px; }
-    .hero h1 { font-size: clamp(2.35rem, 1.6rem + 4vw, 3rem); }
+    .hero h1 { font-size: clamp(2.5rem, 1.7rem + 4.4vw, 3.2rem); }
     .hero-ctas { flex-direction: column; }
     .hero-ctas .btn { width: 100%; }
     .facts { grid-template-columns: 1fr 1fr; }
@@ -384,7 +449,6 @@
     .chip-float p { font-size: 12px; }
     .brand-text strong { font-size: 13px; }
     .topbar .btn-sm { padding: 0 14px; }
-
     .core-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .core-row .ltile { width: 100%; height: 50px; font-size: 13.5px; }
     .core-row .ltile:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: 50%; }
@@ -394,36 +458,37 @@
     /* Swipeable rows on phones */
     .lanes, .gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 4px var(--gutter) 14px; scrollbar-width: none; }
     .lanes::-webkit-scrollbar, .gallery::-webkit-scrollbar { display: none; }
-    .lane { flex: 0 0 78%; scroll-snap-align: start; }
+    .lane { flex: 0 0 80%; scroll-snap-align: start; }
     .gallery figure { flex: 0 0 72%; scroll-snap-align: start; }
     .swipe-hint { display: block !important; }
-
     .cmp, .pc-left, .pc-right { padding: 24px; }
     .layers { grid-template-columns: 1fr; gap: 8px; }
     .layer { padding: 14px; }
     .gets { grid-template-columns: 1fr 1fr; gap: 10px; }
     .get { padding: 16px; }
     .get p { font-size: 13px; }
-    .get-img { min-height: 220px; }
-    .s-head { grid-template-columns: auto 1fr auto; gap: 6px 12px; padding: 14px 14px; }
-    .s-num { grid-row: 1 / span 2; align-self: start; padding-top: 3px; width: 26px; }
-    .s-title { grid-column: 2; font-size: 15px; }
-    .s-chev { grid-column: 3; grid-row: 1; }
-    .s-chip { grid-column: 2; grid-row: 2; justify-self: start; }
-    .s-inner { padding: 0 14px 18px 52px; }
+    .get-img { min-height: 240px; }
+    .sched-stats b { font-size: 13px; }
+    .wk-head { padding: 16px; gap: 12px; flex-wrap: wrap; }
+    .wk-num { font-size: 18px; min-width: 46px; }
+    .s-head { gap: 12px; padding: 13px 12px; }
+    .s-inner { padding: 0 14px 18px 14px; }
+    .sched-foot { padding: 16px; }
+    .sched-foot .btn { width: 100%; }
     .price-card { box-shadow: 8px 8px 0 var(--purple); }
     .portrait .name-tag { left: 8px; }
     .bigline { padding-left: 16px; }
+    .critter { width: 46px; height: 46px; }
   }
   @media (max-width: 380px) {
     .gets { grid-template-columns: 1fr; }
-    .facts { grid-template-columns: 1fr 1fr; }
     .brand-text .pixel { display: none; }
   }
   .swipe-hint { display: none; margin-top: 4px; font-size: 12px; color: var(--faint); }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .js .reveal { opacity: 1; transform: none; }
+    .cursor-ring { display: none !important; }
   }
 </style>
 </head>
@@ -437,11 +502,11 @@
       <span class="brand-text"><strong>Builders Day Club</strong><span class="pixel" data-cohort-name>claude cohort</span></span>
     </a>
     <nav class="topnav" aria-label="Page sections">
-      <a class="link" href="#curriculum">Curriculum</a>
-      <a class="link" href="#included">What you get</a>
+      <a class="link hot" href="#schedule">Schedule</a>
+      <a class="link" href="#included">What's included</a>
       <a class="link" href="#pricing">Pricing</a>
       <a class="link" href="#faq">FAQ</a>
-      <a class="btn btn-yellow btn-sm js-enroll" href="#pricing">Enrol now</a>
+      <a class="btn btn-yellow btn-sm js-enroll" href="#pricing">Reserve seat</a>
     </nav>
   </div>
 </header>
@@ -454,10 +519,10 @@
     <div>
       <div class="presented">
         <img src="/assets/logo.jpg" alt="">
-        <span>A <b>Builders Day Club</b> cohort · offline</span>
+        <span>A <b>Builders Day Club</b> cohort · in person</span>
       </div>
-      <h1>Turn Claude into your <em>AI&nbsp;team.</em></h1>
-      <p class="lead">A 45-day, in-person cohort for working professionals and founders. 10 live sessions, one real project, shipped and demoed by Day 45. Every session recorded, every deck shared as a PDF.</p>
+      <h1>Your next hire<br>is <em>Claude.</em></h1>
+      <p class="lead">45 days. 10 hands-on sessions in a room full of builders. Walk in with one real problem from your work, walk out with a working AI system that solves it, <b>demoed live on Day 45</b>.</p>
       <div class="price-row">
         <s>₹50,000</s>
         <span class="now">₹40,000</span>
@@ -466,13 +531,13 @@
       </div>
       <div class="hero-ctas">
         <a class="btn btn-yellow js-enroll" href="#pricing">Reserve your seat →</a>
-        <a class="btn btn-ghost" href="#curriculum">See the curriculum</a>
+        <a class="btn btn-ghost" href="#schedule">See the 45-day schedule</a>
       </div>
       <div class="facts">
         <div class="fact"><b>45</b>days</div>
         <div class="fact"><b>10</b>live sessions</div>
         <div class="fact"><b>offline</b>in person</div>
-        <div class="fact"><b>rec + pdf</b>for every session</div>
+        <div class="fact"><b>1</b>real build</div>
       </div>
     </div>
 
@@ -480,15 +545,15 @@
       <div class="sticker"><img src="/assets/logo.jpg" alt=""></div>
       <div class="win win-main">
         <div class="win-bar"><i></i><i></i><i></i><span class="pixel">cohort.exe</span></div>
-        <img src="/assets/community-event.jpg" alt="">
+        <img src="https://images.unsplash.com/photo-1578992176613-3768c7f5163b?w=1100&q=78&auto=format&fit=crop" alt="">
       </div>
       <div class="win win-small">
         <div class="win-bar"><i></i><i></i><i></i></div>
-        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=75&auto=format&fit=crop" alt="">
+        <img src="https://images.unsplash.com/photo-1696834137451-f52f471a58bc?w=700&q=78&auto=format&fit=crop" alt="">
       </div>
       <div class="chip-float">
         <span class="pixel">session 04</span>
-        <p>Ship a real tool with Claude Code, without writing the code yourself.</p>
+        <p>Ship a real tool with Claude Code. You won't write a line.</p>
       </div>
     </div>
   </div>
@@ -496,7 +561,7 @@
 
 <!-- ═══════════ TOOLS ═══════════ -->
 <div class="tools" aria-label="Tools covered in the cohort">
-  <p class="tools-label pixel">// claude at the core, plus the tools it connects to</p>
+  <p class="tools-label pixel">// claude at the core. 20+ tools around it.</p>
   <div class="wrap"><div class="core-row" id="coreRow"></div></div>
   <div class="marquee"><div class="track" id="toolsTrack"></div></div>
 </div>
@@ -504,32 +569,32 @@
 <!-- ═══════════ WHY ═══════════ -->
 <section>
   <div class="wrap">
-    <span class="pixel tag reveal">// why this cohort</span>
-    <h2 class="h2 reveal">Most people chat with Claude.<br>Few let it <em>do the work.</em></h2>
-    <p class="lead reveal">Claude can now build tools, run jobs on a schedule, work inside Excel and PowerPoint, and act across your apps. This cohort teaches you every major part of it, hands-on, on your own work.</p>
+    <span class="pixel tag reveal">// the gap</span>
+    <h2 class="h2 reveal">Everyone has Claude open in a tab.<br>Almost no one has it <em>on the team.</em></h2>
+    <p class="lead reveal">Most professionals use Claude like a smarter search bar: ask, copy, paste, repeat. Meanwhile it can build software, run work on a schedule, live inside Excel and PowerPoint, and hand jobs between agents. <b>The gap isn't access. It's knowing how to set it up.</b></p>
     <div class="compare">
       <div class="cmp old reveal">
-        <span class="pixel">// before</span>
-        <h3>Claude as a chat box</h3>
+        <span class="pixel">// today</span>
+        <h3>Claude as a chat tab</h3>
         <ul>
           <li>You prompt, copy, paste, repeat</li>
           <li>Every chat starts from zero</li>
-          <li>Generic answers, not your numbers</li>
-          <li>You still do the work</li>
+          <li>Smart-sounding answers, not your numbers</li>
+          <li>The work still lands on your desk</li>
         </ul>
       </div>
       <div class="cmp new reveal">
-        <span class="pixel">// after 45 days</span>
+        <span class="pixel">// day 45</span>
         <h3>Claude as your team</h3>
         <ul>
-          <li>Works from your own data in Projects</li>
-          <li>Runs recurring jobs on a schedule with Cowork</li>
-          <li>Ships real tools with Claude Code</li>
-          <li>Hands work between agents, end to end</li>
+          <li>Knows your business through Projects and your own data</li>
+          <li>Runs recurring work on a schedule with Cowork</li>
+          <li>Ships real tools with Claude Code, no coding from you</li>
+          <li>Splits big jobs across a team of agents</li>
         </ul>
       </div>
     </div>
-    <p class="bigline reveal">By Demo Day, Claude isn't a tab you open. It's a team that works for you.</p>
+    <p class="bigline reveal">By Day 45, Claude isn't something you open. It's something that works for you.</p>
   </div>
 </section>
 
@@ -537,32 +602,32 @@
 <section class="alt">
   <div class="wrap">
     <span class="pixel tag reveal">// who it's for</span>
-    <h2 class="h2 reveal">Pick your lane.<br><em>Build</em> your engine.</h2>
-    <p class="lead reveal">In Session 1 you lock one real build for your role. Founders pick the engine their business needs most.</p>
+    <h2 class="h2 reveal">Built for people who <em>run things.</em></h2>
+    <p class="lead reveal">Marketing, finance, sales or tech: in Session 1 you pick one real bottleneck from your job, and everything after goes into fixing it. Founders, pick the one eating the most hours.</p>
     <div class="lanes">
       <div class="lane reveal">
         <div class="lane-top"><span class="pixel">marketing</span><span class="lane-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8v18l-18-8z"/><path d="M7 13v5a2 2 0 0 0 4 0v-3"/></svg></span></div>
-        <blockquote>"I make the same campaign assets from scratch every single week."</blockquote>
-        <div class="builds">you'll build<b>A campaign engine</b></div>
+        <blockquote>"I rebuild the same campaign assets from scratch every single week."</blockquote>
+        <div class="builds">you'll build<b>A campaign engine that turns one brief into a week of content</b></div>
       </div>
       <div class="lane reveal">
         <div class="lane-top"><span class="pixel">finance</span><span class="lane-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span></div>
         <blockquote>"Our forecasts live in five spreadsheets and my head."</blockquote>
-        <div class="builds">you'll build<b>A forecasting co-pilot</b></div>
+        <div class="builds">you'll build<b>A forecasting co-pilot that runs on real numbers</b></div>
       </div>
       <div class="lane reveal">
         <div class="lane-top"><span class="pixel">sales</span><span class="lane-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span></div>
         <blockquote>"Leads go cold while we're busy updating the CRM."</blockquote>
-        <div class="builds">you'll build<b>A pipeline accelerator</b></div>
+        <div class="builds">you'll build<b>A pipeline accelerator that never lets a lead go cold</b></div>
       </div>
       <div class="lane reveal">
         <div class="lane-top"><span class="pixel">tech</span><span class="lane-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg></span></div>
         <blockquote>"The team keeps asking for internal tools we never get to."</blockquote>
-        <div class="builds">you'll build<b>An internal tool</b></div>
+        <div class="builds">you'll build<b>The internal tool your team keeps asking for</b></div>
       </div>
     </div>
     <p class="swipe-hint">Swipe to see all four →</p>
-    <p class="not-for reveal"><b>Not for</b> students or anyone looking for a "top 50 prompts" class. The basics are done by Session 3; everything after is advanced.</p>
+    <p class="not-for reveal"><b>Not for</b> students, and not a "50 prompts" class. The basics wrap up by Session 3. Everything after that is advanced.</p>
   </div>
 </section>
 
@@ -570,65 +635,81 @@
 <section>
   <div class="wrap">
     <span class="pixel tag reveal">// one project, ten layers</span>
-    <h2 class="h2 reveal">Start one build in Session 1.<br>Demo it on <em>Day 45.</em></h2>
-    <p class="lead reveal">Every session adds a working layer to the same project. You leave with one system you'll keep using, not ten disconnected exercises.</p>
+    <h2 class="h2 reveal">One real project.<br><em>Ten layers.</em> Zero toy exercises.</h2>
+    <p class="lead reveal">Every session stacks a working layer onto the same build. By Demo Day you're presenting a system you'll actually use on Monday morning.</p>
     <div class="build-grid">
       <div class="build-img reveal">
-        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&q=75&auto=format&fit=crop" alt="Two people building software together at a laptop" loading="lazy">
-        <div class="cap"><b>Your build, layer by layer</b>Reviewed live in every session, presented at Demo Day.</div>
+        <img src="https://images.unsplash.com/photo-1734120113509-f2813e863650?w=900&q=78&auto=format&fit=crop" alt="A professional building on a laptop" loading="lazy">
+        <div class="cap"><b>Your build, layer by layer</b>Reviewed in every session. Presented on Demo Day.</div>
       </div>
       <ol class="layers">
-        <li class="layer reveal"><span class="n">01</span><p>Problem brief + success metric<small>Your build, locked in Session 1</small></p></li>
-        <li class="layer reveal"><span class="n">02</span><p>An AI advisory board<small>Expert personas that stress-test your decisions</small></p></li>
+        <li class="layer reveal"><span class="n">01</span><p>Problem brief + success metric<small>Locked on Day 1, so every hour counts</small></p></li>
+        <li class="layer reveal"><span class="n">02</span><p>Your AI advisory board<small>Expert personas that pressure-test decisions</small></p></li>
         <li class="layer reveal"><span class="n">03</span><p>Knowledge base, first tool &amp; reports<small>Projects, Artifacts, Skills, Excel, PowerPoint</small></p></li>
         <li class="layer reveal"><span class="n">04</span><p>A real, shipped tool<small>Built with Claude Code, live on the web</small></p></li>
-        <li class="layer reveal"><span class="n">05</span><p>Automation, WhatsApp &amp; voice agents<small>Work that runs while you don't</small></p></li>
+        <li class="layer reveal"><span class="n">05</span><p>Automations, WhatsApp &amp; voice agents<small>Work that runs while you sleep</small></p></li>
         <li class="layer reveal"><span class="n">06</span><p>A creative production pipeline<small>One brief into image, video, voice and formats</small></p></li>
         <li class="layer reveal"><span class="n">07</span><p>Live cross-tool automation<small>Make.com, n8n and MCP, plus a security check</small></p></li>
-        <li class="layer reveal"><span class="n">08</span><p>Data pipeline &amp; forecasting<small>Real crawled data, computed charts, ROI scorecard</small></p></li>
-        <li class="layer reveal"><span class="n">09</span><p>AI search visibility<small>An audit plus one page rewritten to get cited</small></p></li>
-        <li class="layer reveal"><span class="n">10</span><p>A multi-agent AI team<small>Researcher, drafter and reviewer working together</small></p></li>
+        <li class="layer reveal"><span class="n">08</span><p>Data pipeline &amp; forecasting<small>Real crawled data, computed charts, an ROI scorecard</small></p></li>
+        <li class="layer reveal"><span class="n">09</span><p>AI search visibility<small>Get found and cited inside AI answers</small></p></li>
+        <li class="layer reveal"><span class="n">10</span><p>A multi-agent AI team<small>Researcher, drafter and reviewer, working together</small></p></li>
         <li class="layer last reveal"><span class="n">★</span><p>Demo Day + your 90-day roadmap<small>The whole build, presented live to the cohort and mentors</small></p></li>
       </ol>
     </div>
   </div>
 </section>
 
-<!-- ═══════════ CURRICULUM ═══════════ -->
-<section class="alt" id="curriculum">
+<!-- ═══════════ SCHEDULE ═══════════ -->
+<section class="sched" id="schedule">
   <div class="wrap">
-    <span class="pixel tag reveal">// curriculum</span>
-    <h2 class="h2 reveal">45 days. 10 sessions.<br><em>Zero fluff.</em></h2>
-    <p class="lead reveal">Each session runs 1 hour 15 minutes: roughly a quarter theory you can verify, three quarters building. Tap any session to see what you'll learn and build.</p>
-    <div class="timeline" id="timeline"></div>
+    <div class="sched-head">
+      <div>
+        <span class="sched-badge reveal">▶ the 45-day schedule</span>
+        <h2 class="h2 reveal">Your next <em>45 days,</em><br>mapped out.</h2>
+        <p class="lead reveal">Two sessions a week, 1 hr 15 min each: roughly a quarter theory you can verify, three quarters building. Basics are done in the first two weeks. Everything after is advanced.</p>
+      </div>
+      <div class="sched-stats reveal">
+        <div><b>10</b><span>live sessions</span></div>
+        <div><b>2×</b><span>every week</span></div>
+        <div><b>75%</b><span>hands-on building</span></div>
+      </div>
+    </div>
+
+    <div class="map reveal" id="map" aria-label="Schedule overview"></div>
+    <div class="legend reveal">
+      <span><i style="background:#10224a;border-color:#3b82f6"></i>Basics</span>
+      <span><i style="background:#24104f;border-color:#7C3AED"></i>Advanced</span>
+      <span><i style="background:#E8F048;border-color:#E8F048"></i>Checkpoint &amp; Demo Day</span>
+    </div>
+
+    <div class="weeks" id="weeks"></div>
+
+    <div class="sched-foot reveal">
+      <p><b>Tap any session</b> to see the theory, what you'll build and the tools you'll use.</p>
+      <a class="btn btn-yellow js-enroll" href="#pricing">Reserve your seat →</a>
+    </div>
   </div>
 </section>
 
-<!-- ═══════════ WHAT YOU GET ═══════════ -->
+<!-- ═══════════ WHAT'S INCLUDED ═══════════ -->
 <section id="included">
   <div class="wrap">
-    <span class="pixel tag reveal">// what you get</span>
-    <h2 class="h2 reveal">In the room, <em>and after it.</em></h2>
-    <p class="lead reveal">Sessions happen offline, in person, with the rest of your cohort. Everything is recorded and shared, so you can revisit any step while you build.</p>
+    <span class="pixel tag reveal">// what's included</span>
+    <h2 class="h2 reveal">Everything you need<br>to <em>finish the build.</em></h2>
+    <p class="lead reveal">Every session is offline, in a room with your cohort and mentors. Questions get answered while you're building, not three days later on a forum.</p>
     <div class="get-grid">
       <div class="get-img reveal">
-        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1100&q=75&auto=format&fit=crop" alt="An in-person workshop with people building on laptops" loading="lazy">
+        <img src="https://images.unsplash.com/flagged/photo-1576485436509-a7d286952b65?w=1200&q=78&auto=format&fit=crop" alt="A hands-on session with professionals around a table" loading="lazy">
         <span class="badge">offline · in person</span>
       </div>
       <div class="gets">
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Live, in-person sessions</h3><p>Build side by side with your cohort and mentors.</p></div>
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Every session recorded</h3><p>Rewatch any session, anytime during the cohort.</p></div>
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div><h3>All PDFs shared</h3><p>Session decks and notes, yours to keep.</p></div>
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>Q&amp;A in every session</h3><p>10 to 15 minutes reserved each time for your questions.</p></div>
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>Doubt-clearing checkpoint</h3><p>1:1 troubleshooting before the advanced half begins.</p></div>
-        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Demo Day + roadmap</h3><p>Present your build and leave with a 90-day plan.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>In-person sessions</h3><p>Build side by side with your cohort and mentors.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div><h3>Every session as a PDF</h3><p>Decks and notes for all 10 sessions, yours to keep.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>Live Q&amp;A, every session</h3><p>10 to 15 minutes set aside each time, just for your questions.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>A basics checkpoint</h3><p>1:1 troubleshooting before the advanced half begins.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Demo Day</h3><p>Present your build live, and leave with a 90-day roadmap.</p></div>
+        <div class="get reveal"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.17L4 17.17V4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="12" x2="13" y2="12"/></svg></div><h3>45-day builders' channel</h3><p>Stuck between sessions? Mentors and your cohort are a message away.</p></div>
       </div>
-    </div>
-    <div class="numbers">
-      <div class="num reveal"><b>10</b><span>live sessions of 1 hr 15 min</span></div>
-      <div class="num reveal"><b>2×</b><span>sessions a week for 5 weeks</span></div>
-      <div class="num reveal"><b>20+</b><span>tools used hands-on</span></div>
-      <div class="num reveal"><b>45</b><span>days of community support</span></div>
     </div>
   </div>
 </section>
@@ -646,13 +727,13 @@
       <div class="mentor-copy reveal">
         <h3>Nakshatra Sain</h3>
         <p class="role">Founder, YNF &amp; Sphere Labs</p>
-        <p>Nakshatra founded YNF and runs Sphere Labs, its home for AI and tech work.</p>
-        <p>He leads Builders Day Club's hands-on Claude workshops for professionals and founders, and creates content on AI, tech and culture.</p>
+        <p>Nakshatra founded YNF and runs Sphere Labs, its home for AI and tech work. He leads Builders Day Club's hands-on Claude workshops for professionals and founders, and makes content on AI, tech and culture.</p>
+        <p>Expect fewer slides and more "open your laptop, let's build it now".</p>
         <div class="pills"><span>Claude workflows</span><span>Sphere Labs</span><span>Builders Day Club</span></div>
         <div class="gallery">
-          <figure><img src="/assets/builders-working.webp" alt="Builders working together around a table" loading="lazy"><figcaption>build nights</figcaption></figure>
-          <figure><img src="/assets/startup-collab.jpg" alt="Community members working on laptops" loading="lazy"><figcaption>co-building</figcaption></figure>
-          <figure><img src="https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=75&auto=format&fit=crop" alt="A presenter demoing to an audience" loading="lazy"><figcaption>demo day</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1559089717-698da4a8d2c9?w=700&q=78&auto=format&fit=crop" alt="Builders at a community night" loading="lazy"><figcaption>build together</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1653923787829-bfdebad30bb6?w=700&q=78&auto=format&fit=crop" alt="Two professionals working on laptops" loading="lazy"><figcaption>ship together</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=700&q=78&auto=format&fit=crop" alt="A team session with a presenter" loading="lazy"><figcaption>learn together</figcaption></figure>
         </div>
       </div>
     </div>
@@ -663,7 +744,7 @@
 <section class="pricing" id="pricing">
   <div class="wrap">
     <div class="center">
-      <span class="pixel tag reveal">// enrol</span>
+      <span class="pixel tag reveal">// reserve your seat</span>
       <h2 class="h2 reveal">One seat. One build.<br><em>One price.</em></h2>
     </div>
     <div class="price-card reveal">
@@ -674,22 +755,21 @@
         </div>
         <div class="pc-was">₹50,000</div>
         <div class="pc-now"><b>₹40,000</b><span>/ person</span></div>
-        <p class="pc-single">Fee covers one participant. Coming as a team? Each person books their own seat.</p>
+        <p class="pc-single">The fee covers one participant. Coming with your team? Each person books their own seat.</p>
         <span class="save">you save ₹10,000</span>
         <a class="btn btn-yellow js-enroll" href="#pricing">Reserve your seat →</a>
         <p class="pc-note">Bring a laptop and a paid Claude plan (Pro or above). We set everything up together in Session 1.</p>
       </div>
       <div class="pc-right">
-        <h4>What's included</h4>
+        <h4>Everything that's included</h4>
         <ul class="pc-list">
-          <li>10 live, in-person sessions of 1 hr 15 min</li>
-          <li>Recordings of every session</li>
-          <li>All session PDFs: decks and notes</li>
-          <li>Doubt-clearing checkpoint + Demo Day</li>
-          <li>Q&amp;A block in every session</li>
-          <li>One real AI build, guided from Session 1 to Demo Day</li>
-          <li>Community channel open for all 45 days</li>
-          <li>Your 90-day roadmap after Demo Day</li>
+          <li>10 hands-on, in-person sessions (1 hr 15 min each)</li>
+          <li>Decks and notes for every session, as PDFs</li>
+          <li>A basics checkpoint + Demo Day</li>
+          <li>Live Q&amp;A in every session</li>
+          <li>One real AI build, mentored from Session 1 to Demo Day</li>
+          <li>45 days in the builders' community channel</li>
+          <li>A 90-day roadmap to keep going after Demo Day</li>
         </ul>
       </div>
     </div>
@@ -713,7 +793,7 @@
     <img class="logo-big reveal" src="/assets/logo.jpg" alt="Builders Day Club logo">
     <span class="pixel tag reveal">// ready to build?</span>
     <h2 class="reveal">Your AI team is <em>waiting.</em></h2>
-    <p class="lead reveal">₹40,000 per person (regular ₹50,000). Small, in-person batch, so seats are limited.</p>
+    <p class="lead reveal">₹40,000 per person (regular ₹50,000). It's an in-person batch, so seats are limited.</p>
     <a class="btn btn-yellow js-enroll reveal" href="#pricing">Reserve your seat →</a>
   </div>
 </section>
@@ -730,6 +810,12 @@
   </div>
 </footer>
 
+<div class="critter-hud" id="critterHud" aria-live="polite">
+  <span class="hud-ico" id="hudIco"></span>
+  <span class="hud-num" id="hudNum"></span>
+  <span id="hudText"></span>
+  <button type="button" id="hudBtn"></button>
+</div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
 <!-- Mobile sticky enrol bar -->
@@ -742,11 +828,13 @@
   /* ═══════════════════════════════════════════════════════
      EDIT HERE
      COHORT_NAME — shown in the top bar, pricing card and tab title.
-     ENROLL_URL  — where every "Reserve / Enrol" button goes.
+     ENROLL_URL  — where every "Reserve" button goes.
                    Right now it opens an Instagram DM to @buildersdayclub.
+     CLAUDES     — how many flying Claudes appear (0 turns them off).
      ═══════════════════════════════════════════════════════ */
   const COHORT_NAME = 'Claude Cohort';
   const ENROLL_URL  = 'https://ig.me/m/buildersdayclub';
+  const CLAUDES     = 4;
 
   document.title = COHORT_NAME + ' — Builders Day Club';
   document.querySelectorAll('[data-cohort-name]').forEach(el => el.textContent = COHORT_NAME.toLowerCase());
@@ -761,105 +849,110 @@
   const toolTiles = LOGOS.tools.map(t => tile(t, false)).join('');
   document.getElementById('toolsTrack').innerHTML = toolTiles + toolTiles;
 
-  /* ── Curriculum (from the Program Overview) ── */
-  const PHASES = [
-    { kind: 'basics', label: 'basics', note: 'Sessions 1–3: every foundation, done properly', weeks: [
-      { label: 'week 01', sessions: [
-        { n: '01', kind: 'basics', title: 'Lock your build + the real history of AI',
-          theory: 'From 1950s symbolic AI, through two AI winters, to the 2017 Transformer paper and the 2022 breakthrough moment. What generative AI actually is, and why it all arrived together.',
-          build: 'Pick and lock one real AI build for your function: a campaign engine, a forecasting co-pilot, a pipeline accelerator or an internal tool. Live capability test, and your Claude account set up.',
-          tools: ['Claude'] },
-        { n: '02', kind: 'basics', title: 'How Claude actually thinks + your AI Advisory Board',
-          theory: 'Tokens, context windows, and why hallucination is a predictable mechanism rather than "lying". What sets Claude\'s reasoning and writing apart.',
-          build: 'Build a panel of expert personas inside Claude (a skeptical investor, a CFO, a customer, a growth hacker) that debate your real business decision. Plus the basics of connectors.',
-          tools: ['Claude', 'Custom instructions', 'Figma connector', 'Canva connector'] }
-      ]},
-      { label: 'week 02', sessions: [
-        { n: '03', kind: 'basics', title: 'Claude Mastery: Projects, Artifacts, Skills, Excel, PowerPoint & Chrome',
-          theory: 'Why context beats a cleverer prompt, how Claude moves from chat answers to live, editable tools, and the real decision framework: prompting vs RAG vs fine-tuning.',
-          build: 'Load your real business data into a Claude Project, build your first working Artifact and Skill, and create a live Excel model or PowerPoint version of your build.',
-          tools: ['Projects', 'Artifacts', 'Skills', 'Claude for Excel', 'Claude for PowerPoint', 'Claude in Chrome'] },
-        { n: '—', kind: 'live', chip: 'Checkpoint', title: 'Doubt-clearing session: basics checkpoint',
-          build: 'Nothing advanced starts until the foundation is solid. Full Q&A and 1:1 troubleshooting on Sessions 1 to 3.' }
-      ]}
+  /* ── Schedule (from the Program Overview) ── */
+  const WEEKS = [
+    { id: 'w1', num: '01', label: 'week 01', phase: 'basics', focus: 'Lock your build. Learn how Claude really thinks.', sessions: [
+      { n: '01', kind: 'basics', title: 'Lock your build + the real story of AI',
+        theory: 'From 1950s symbolic AI, through two AI winters, to the 2017 Transformer paper and the 2022 breakthrough. What generative AI actually is, and why it all arrived at once.',
+        build: 'Pick and lock one real AI build for your role: a campaign engine, a forecasting co-pilot, a pipeline accelerator or an internal tool. Live capability test, and your Claude account set up.',
+        tools: ['Claude'] },
+      { n: '02', kind: 'basics', title: 'How Claude thinks + your AI Advisory Board',
+        theory: 'Tokens, context windows, and why hallucination is a predictable mechanism, not "lying". What sets Claude\'s reasoning and writing apart.',
+        build: 'Build a panel of expert personas inside Claude (a sceptical investor, a CFO, a customer, a growth hacker) that debate your real business decision. Plus your first connectors.',
+        tools: ['Claude', 'Custom instructions', 'Figma connector', 'Canva connector'] }
     ]},
-    { kind: 'adv', label: 'advanced', note: 'Sessions 4–10: shipping, agents, automation, data', weeks: [
-      { label: 'week 03', sessions: [
-        { n: '04', kind: 'adv', title: 'Vibe coding: ship a real tool with Claude Code',
-          theory: 'What vibe coding actually is, where non-technical builders are genuinely shipping real software today, and where it still breaks.',
-          build: 'Use Claude Code to build and ship one real working tool or mini-app for your business, without writing the code yourself.',
-          tools: ['Claude Code', 'GitHub', 'Vercel'] },
-        { n: '05', kind: 'adv', title: 'Cowork, OpenClaw & voice agents',
-          theory: 'What "autonomous" really means today, and its limits: cloud-hosted agents (Cowork), self-hosted messaging agents that can run on local models, and phone-native voice agents.',
-          build: 'Hand Claude Cowork one recurring job running on a schedule, set up an OpenClaw agent over WhatsApp, and wire up a simple call flow with an AI voice agent.',
-          tools: ['Claude Cowork', 'OpenClaw', 'Local models', 'Vapi'] }
-      ]},
-      { label: 'week 04', sessions: [
-        { n: '06', kind: 'adv', title: 'Generative AI: build a creative pipeline',
-          theory: 'Diffusion models explained simply, how image, video and voice generation differ from text, and today\'s landscape versus the hype.',
-          build: 'Build a repeatable content engine: one brief turned into image, video, voice and multiple platform formats, on-brand every time.',
-          tools: ['Higgsfield', 'Google Flow (Veo / Imagen)'] },
-        { n: '07', kind: 'adv', title: 'Real automation with Make.com, n8n & MCP',
-          theory: 'What connectors (MCP) and no-code automation platforms actually are, where they replace manual work, and the real security risks once Claude touches outside data.',
-          build: 'Build one live automation connecting Claude to your business tools, then run a security check on what it can access and act on.',
-          tools: ['Make.com', 'n8n', 'MCP connectors'] }
-      ]},
-      { label: 'week 05', sessions: [
-        { n: '08', kind: 'adv', title: 'Claude as your analyst: crawling, forecasting & data',
-          theory: 'How AI-assisted web crawling pulls real external data instead of guessing, and how Claude\'s code execution runs real computation on it.',
-          build: 'Crawl competitor pricing, leads or market numbers, feed them into a live forecasting layer with computed charts, and build an ROI scorecard for your project.',
-          tools: ['Firecrawl', 'Apify', 'Code execution', 'Sheets / Excel'] },
-        { n: '09', kind: 'adv', title: 'AI search visibility: SEO, GEO & AEO',
-          theory: 'How classic search ranking (SEO), direct answers (AEO) and citations inside AI assistants (GEO) differ, plus how the new AI ad platforms work.',
-          build: 'Test whether AI assistants recommend your business today, then rewrite one real page so it gets cited: clear definitions, Q&A structure and schema markup.',
-          tools: ['AI assistants', 'Schema markup', 'AI ads managers'] }
-      ]},
-      { label: 'days 36–45', sessions: [
-        { n: '10', kind: 'adv', title: 'Build a multi-agent AI team',
-          theory: 'What multi-agent orchestration really is: specialised AI agents handing work to each other instead of one assistant doing everything.',
-          build: 'Orchestrate 2 to 3 Claude-based agents (a researcher, a drafter, a reviewer) that automate a real multi-step process inside your project, end to end.',
-          tools: ['Claude agents', 'Supabase', 'Vercel'] },
-        { n: '★', kind: 'live', chip: 'Demo Day', title: 'Demo Day',
-          build: 'Your whole build, every layer, presented live to the cohort and mentors, closing with your 90-day roadmap.' }
-      ]}
+    { id: 'w2', num: '02', label: 'week 02', phase: 'basics', focus: 'Master the Claude toolkit. Then a checkpoint.', sessions: [
+      { n: '03', kind: 'basics', title: 'Claude Mastery: Projects, Artifacts, Skills, Excel, PowerPoint & Chrome',
+        theory: 'Why context beats a cleverer prompt, how Claude goes from chat answers to live, editable tools, and when you need prompting vs RAG vs fine-tuning (hint: rarely the last one).',
+        build: 'Load your real business data into a Claude Project, build your first working Artifact and Skill, and turn your build into a live Excel model or PowerPoint deck.',
+        tools: ['Projects', 'Artifacts', 'Skills', 'Claude for Excel', 'Claude for PowerPoint', 'Claude in Chrome'] },
+      { n: '✓', kind: 'live', title: 'Basics checkpoint (doubt-clearing session)',
+        build: 'Nothing advanced starts until your foundation is solid. Open Q&A and 1:1 troubleshooting on Sessions 1 to 3.' }
+    ]},
+    { id: 'w3', num: '03', label: 'week 03', phase: 'adv', focus: 'Ship real software. Delegate real work.', sessions: [
+      { n: '04', kind: 'adv', title: 'Vibe coding: ship a real tool with Claude Code',
+        theory: 'What vibe coding actually is, where non-technical builders are shipping real software today, and where it still breaks.',
+        build: 'Use Claude Code to build and ship one working tool or mini-app for your business, live on the web, without writing the code yourself.',
+        tools: ['Claude Code', 'GitHub', 'Vercel'] },
+      { n: '05', kind: 'adv', title: 'Cowork, OpenClaw & voice agents',
+        theory: 'What "autonomous" really means today, and its limits: cloud agents (Cowork), self-hosted messaging agents that can run on local models, and AI voice agents that answer the phone.',
+        build: 'Hand Cowork one recurring job running on a schedule, set up an OpenClaw agent on WhatsApp, and wire a simple call flow with an AI voice agent.',
+        tools: ['Claude Cowork', 'OpenClaw', 'Local models', 'Vapi'] }
+    ]},
+    { id: 'w4', num: '04', label: 'week 04', phase: 'adv', focus: 'Creative pipelines and real automation.', sessions: [
+      { n: '06', kind: 'adv', title: 'Generative AI: build a creative pipeline',
+        theory: 'Diffusion models explained simply, how image, video and voice generation differ from text, and what\'s real versus hype right now.',
+        build: 'Build a repeatable content engine: one brief turned into image, video, voice and multiple platform formats, on-brand every time.',
+        tools: ['Higgsfield', 'Google Flow (Veo / Imagen)'] },
+      { n: '07', kind: 'adv', title: 'Real automation with Make.com, n8n & MCP',
+        theory: 'What connectors (MCP) and no-code automation actually are, where they replace manual work, and the real security risks once Claude touches outside data.',
+        build: 'Build one live automation connecting Claude to your business tools, then run a security check on what it can access and act on.',
+        tools: ['Make.com', 'n8n', 'MCP connectors'] }
+    ]},
+    { id: 'w5', num: '05', label: 'week 05', phase: 'adv', focus: 'Data intelligence and AI search visibility.', sessions: [
+      { n: '08', kind: 'adv', title: 'Claude as your analyst: crawling, forecasting & data',
+        theory: 'How AI-assisted web crawling pulls real external data instead of guessing, and how Claude\'s code execution runs real computation on it.',
+        build: 'Crawl competitor pricing, leads or market numbers, feed them into a live forecasting layer with computed charts, and build an ROI scorecard for your project.',
+        tools: ['Firecrawl', 'Apify', 'Code execution', 'Sheets / Excel'] },
+      { n: '09', kind: 'adv', title: 'AI search visibility: SEO, GEO & AEO',
+        theory: 'How classic search ranking (SEO), direct answers (AEO) and citations inside AI assistants (GEO) differ, plus how the new AI ad platforms work.',
+        build: 'Check whether AI assistants recommend your business today, then rewrite one real page so it gets cited: clear definitions, Q&A structure and schema markup.',
+        tools: ['AI assistants', 'Schema markup', 'AI ads managers'] }
+    ]},
+    { id: 'w6', num: 'D45', label: 'days 36–45', phase: 'final', focus: 'Build your AI team. Then show it off.', sessions: [
+      { n: '10', kind: 'adv', title: 'Build a multi-agent AI team',
+        theory: 'What multi-agent orchestration really is: specialised agents handing work to each other, instead of one assistant doing everything.',
+        build: 'Orchestrate 2 to 3 Claude agents (a researcher, a drafter, a reviewer) that automate a real multi-step process in your project, end to end.',
+        tools: ['Claude agents', 'Supabase', 'Vercel'] },
+      { n: '★', kind: 'live', title: 'Demo Day',
+        build: 'Your whole build, every layer, presented live to the cohort and mentors. You leave with a 90-day roadmap to keep it growing.' }
     ]}
   ];
-  const CHIP = { basics: ['Basics', 'chip-basics'], adv: ['Advanced', 'chip-adv'], live: ['Live', 'chip-live'] };
+  const PHASE = { basics: 'Basics', adv: 'Advanced', final: 'Finale' };
   const chev = '<svg class="s-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
 
-  document.getElementById('timeline').innerHTML = PHASES.map(ph => `
-    <div class="phase ${ph.kind} reveal"><span class="pixel">${ph.label}</span><p>${ph.note}</p></div>
-    ${ph.weeks.map(w => `
-      <div class="week reveal">
-        <div class="week-label"><span class="pixel">${w.label}</span></div>
-        <div class="sessions">
-          ${w.sessions.map(s => `
-            <div class="session${s.kind === 'live' ? ' special' : ''}">
-              <button class="s-head" aria-expanded="false">
-                <span class="s-num">${s.n}</span>
-                <span class="s-title">${s.title}</span>
-                <span class="s-chip ${CHIP[s.kind][1]}">${s.chip || CHIP[s.kind][0]}</span>
-                ${chev}
-              </button>
-              <div class="s-body"><div class="s-inner">
-                ${s.theory ? `<div><h4>The theory</h4><p>${s.theory}</p></div>` : ''}
-                <div class="build"><h4>${s.kind === 'live' ? 'What happens' : 'What you build'}</h4><p>${s.build}</p></div>
-                ${s.tools ? `<div><h4>Tools</h4><div class="chips">${s.tools.map(t => `<span>${t}</span>`).join('')}</div></div>` : ''}
-              </div></div>
-            </div>`).join('')}
-        </div>
-      </div>`).join('')}`).join('');
+  document.getElementById('map').innerHTML = WEEKS.map(w => `
+    <a class="stop" href="#${w.id}">
+      <span class="dots">${w.sessions.map(s => `<span class="dot ${s.kind}">${s.n}</span>`).join('')}</span>
+      <span class="wk-l">${w.label}</span>
+      <span class="wk-f">${w.focus}</span>
+    </a>`).join('');
+
+  document.getElementById('weeks').innerHTML = WEEKS.map(w => `
+    <article class="wk${w.phase === 'final' ? ' wk-final' : ''} reveal" id="${w.id}">
+      <header class="wk-head">
+        <span class="wk-num">${w.num}</span>
+        <div class="wk-meta"><span class="pixel">${w.label}</span><p>${w.focus}</p></div>
+        <span class="phase-chip ${w.phase}">${PHASE[w.phase]}</span>
+      </header>
+      <div class="sessions">
+        ${w.sessions.map(s => `
+          <div class="session">
+            <button class="s-head" aria-expanded="false">
+              <span class="s-num ${s.kind}">${s.n}</span>
+              <span class="s-title">${s.title}</span>
+              ${chev}
+            </button>
+            <div class="s-body"><div class="s-inner">
+              ${s.theory ? `<div><h4>The theory</h4><p>${s.theory}</p></div>` : ''}
+              <div class="build"><h4>${s.kind === 'live' ? 'What happens' : 'What you build'}</h4><p>${s.build}</p></div>
+              ${s.tools ? `<div><h4>Tools</h4><div class="chips">${s.tools.map(t => `<span>${t}</span>`).join('')}</div></div>` : ''}
+            </div></div>
+          </div>`).join('')}
+      </div>
+    </article>`).join('');
 
   /* ── FAQ ── */
   const FAQS = [
-    ['Who is this cohort for?', 'Working professionals and founders in marketing, finance, sales and tech who want Claude doing real work for them. It isn\'t built for students or first-time AI users.'],
-    ['Is it online or offline?', 'Offline. All 10 sessions, the doubt-clearing checkpoint and Demo Day happen in person, with the rest of your cohort. Venue and timings are shared when your seat is confirmed.'],
-    ['Will I get recordings and notes?', 'Yes. Every session is recorded, and all session PDFs (decks and notes) are shared with you, so you can revisit anything while you build.'],
+    ['Who is this cohort for?', 'Working professionals and founders in marketing, finance, sales and tech who want Claude doing real work for them, not just answering questions. It isn\'t built for students or first-time AI users.'],
+    ['Is it online or offline?', 'Offline. All 10 sessions, the basics checkpoint and Demo Day happen in person, with the rest of your cohort. Venue and timings are shared once your seat is confirmed.'],
     ['Is the ₹40,000 fee per person?', 'Yes. The fee covers one participant and one build. If you\'re coming with colleagues or co-founders, each person books their own seat.'],
-    ['Do I need to know how to code?', 'No. In Session 4 you ship a real tool with Claude Code without writing the code yourself. If you can describe clearly what you want, you can build it.'],
-    ['What do I need to bring?', 'A laptop, a paid Claude plan (Pro or above), and one real problem from your work that you\'d like AI to solve. We set up your account and lock your build together in Session 1.'],
-    ['How much time does it take each week?', 'Two sessions of 1 hour 15 minutes, plus time between sessions to build your project. Most of the learning happens while you build.'],
-    ['What if I miss a session?', 'Watch the recording and use the PDFs to catch up, then bring your questions to the next session\'s Q&A or the community channel.'],
+    ['Do I need to know how to code?', 'No. In Session 4 you ship a real tool with Claude Code without writing the code yourself. If you can explain clearly what you want, you can build it.'],
+    ['What do I need to bring?', 'A laptop, a paid Claude plan (Pro or above), and one real problem from your work you\'d love to stop doing manually. We set up your account and lock your build together in Session 1.'],
+    ['How much time does it take each week?', 'Two sessions of 1 hour 15 minutes, plus some time between sessions to push your build forward. Most of the learning happens while you build.'],
+    ['Will I get notes after each session?', 'Yes. Every session\'s deck and notes are shared as PDFs, so you can revisit any step while you build.'],
+    ['What if I miss a session?', 'Use the session PDFs to catch up, and bring your questions to the next session\'s Q&A or the community channel. There\'s also buffer time before Demo Day with makeup slots.'],
+    ['Is this a basic AI course?', 'No. The basics are wrapped up by Session 3. Sessions 4 to 10 are advanced: shipping software, autonomous agents, automation, data pipelines and multi-agent systems.'],
     ['How do I reserve my seat?', 'Tap any "Reserve your seat" button and message us. We\'ll confirm your seat and share the payment details.']
   ];
   const plus = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
@@ -883,8 +976,6 @@
     const btn = el.querySelector('.faq-q');
     btn.addEventListener('click', () => toggle(el, el.querySelector('.faq-a'), btn));
   });
-  const firstSession = document.querySelector('.session');
-  if (firstSession) toggle(firstSession, firstSession.querySelector('.s-body'), firstSession.querySelector('.s-head'));
 
   /* ── Reveal on scroll (with a safety net so nothing stays hidden) ── */
   const revealAll = () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
@@ -914,7 +1005,7 @@
     const ring = document.getElementById('cursorRing');
     if (!ring || !matchMedia('(hover: hover) and (pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let x = -100, y = -100, rx = -100, ry = -100;
-    const HOVER = 'a, button, .s-head, .faq-q, .lane, .gallery figure, .ltile';
+    const HOVER = 'a, button, .s-head, .faq-q, .lane, .gallery figure, .ltile, .stop, .critter';
     addEventListener('mousemove', e => { x = e.clientX; y = e.clientY; ring.classList.add('on'); }, { passive: true });
     document.addEventListener('mouseleave', () => ring.classList.remove('on'));
     addEventListener('mousedown', () => ring.classList.add('down'));
@@ -925,6 +1016,128 @@
       ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
       requestAnimationFrame(loop);
     })();
+  })();
+
+  /* ── Flying Claudes: drag them, throw them, tap to pop them ── */
+  (function () {
+    if (!CLAUDES || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const SVG = LOGOS.core[1][1]; // the Claude Code pixel mascot
+    const LINES = ['hire me', 'ship it!', 'catch me', 'pop me', 'i do the work', '45 days?', 'bonk'];
+    const COLORS = ['#D97757', '#E8F048', '#7C3AED', '#F0F0F2'];
+    const hud = document.getElementById('critterHud');
+    const hudText = document.getElementById('hudText');
+    const hudBtn = document.getElementById('hudBtn');
+    const hudNum = document.getElementById('hudNum');
+    let miniTimer;
+    document.getElementById('hudIco').innerHTML = SVG;
+    const small = innerWidth < 640;
+    let critters = [], popped = 0;
+
+    function updateHud() {
+      const n = critters.length;
+      if (n) { hudText.innerHTML = `<b>${n}</b> Claude${n > 1 ? 's' : ''} loose. Drag them, throw them, click to pop.`; hudBtn.textContent = 'clear all'; }
+      else { hudText.innerHTML = popped ? `<b>All clear.</b> Back to building.` : 'Claudes are off.'; hudBtn.textContent = 'bring them back'; }
+      hudNum.textContent = n ? '×' + n : '✓';
+      hud.classList.add('show');
+      hud.classList.remove('mini');
+      clearTimeout(miniTimer);
+      miniTimer = setTimeout(() => hud.classList.add('mini'), 4500);
+    }
+    hud.addEventListener('mouseenter', () => { clearTimeout(miniTimer); hud.classList.remove('mini'); });
+    hud.addEventListener('mouseleave', () => { miniTimer = setTimeout(() => hud.classList.add('mini'), 1500); });
+    hudBtn.addEventListener('click', () => {
+      if (critters.length) critters.slice().forEach(c => pop(c, true));
+      else spawnAll();
+    });
+
+    function spawn() {
+      const el = document.createElement('div');
+      el.className = 'critter';
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', 'Flying Claude. Tap to pop it.');
+      el.innerHTML = `<span class="cbody">${SVG}</span><span class="bubble">${LINES[Math.floor(Math.random() * LINES.length)]}</span>`;
+      document.body.appendChild(el);
+      const size = small ? 46 : 52;
+      const c = { el, size, body: el.querySelector('.cbody'),
+        x: Math.random() * (innerWidth - size), y: innerHeight * (0.2 + Math.random() * 0.6),
+        vx: (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.9), vy: (Math.random() - 0.5) * 1.2,
+        t: Math.random() * 100, drag: false, hist: [] };
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        el.setPointerCapture(e.pointerId);
+        c.drag = true; c.moved = 0; c.ox = e.clientX - c.x; c.oy = e.clientY - c.y; c.hist = [];
+        el.classList.add('grab', 'talk');
+      });
+      el.addEventListener('pointermove', e => {
+        if (!c.drag) return;
+        const nx = e.clientX - c.ox, ny = e.clientY - c.oy;
+        c.moved += Math.abs(nx - c.x) + Math.abs(ny - c.y);
+        c.x = nx; c.y = ny;
+        c.hist.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+        if (c.hist.length > 5) c.hist.shift();
+      });
+      const release = () => {
+        if (!c.drag) return;
+        c.drag = false; el.classList.remove('grab', 'talk');
+        if (c.moved < 6) { pop(c); return; }
+        const h = c.hist;
+        if (h.length > 1) {
+          const a = h[0], b = h[h.length - 1], dt = Math.max(16, b.t - a.t);
+          c.vx = Math.max(-28, Math.min(28, (b.x - a.x) / dt * 16));
+          c.vy = Math.max(-28, Math.min(28, (b.y - a.y) / dt * 16));
+        }
+      };
+      el.addEventListener('pointerup', release);
+      el.addEventListener('pointercancel', release);
+      critters.push(c);
+    }
+
+    function pop(c, quiet) {
+      critters = critters.filter(k => k !== c);
+      popped++;
+      const cx = c.x + c.size / 2, cy = c.y + c.size / 2;
+      if (!quiet) for (let i = 0; i < 14; i++) {
+        const p = document.createElement('span');
+        p.className = 'pxl';
+        p.style.background = COLORS[i % COLORS.length];
+        document.body.appendChild(p);
+        const ang = Math.random() * Math.PI * 2, dist = 30 + Math.random() * 60;
+        p.animate([
+          { transform: `translate(${cx}px, ${cy}px) scale(1)`, opacity: 1 },
+          { transform: `translate(${cx + Math.cos(ang) * dist}px, ${cy + Math.sin(ang) * dist}px) scale(0.4)`, opacity: 0 }
+        ], { duration: 550 + Math.random() * 250, easing: 'cubic-bezier(.16,1,.3,1)' }).onfinish = () => p.remove();
+      }
+      c.el.animate([{ transform: c.el.style.transform + ' scale(1)' }, { transform: c.el.style.transform + ' scale(1.5)', opacity: 0 }], { duration: 180 }).onfinish = () => c.el.remove();
+      updateHud();
+    }
+
+    function spawnAll() {
+      const n = small ? Math.min(2, CLAUDES) : CLAUDES;
+      for (let i = 0; i < n; i++) spawn();
+      updateHud();
+    }
+
+    function loop() {
+      const W = innerWidth, H = innerHeight;
+      for (const c of critters) {
+        if (!c.drag) {
+          c.t += 0.03;
+          c.vx *= 0.985; c.vy *= 0.985;               // air drag after a throw
+          const cruise = 0.7;                          // keep drifting gently
+          if (Math.abs(c.vx) < cruise) c.vx += Math.sign(c.vx || 1) * 0.02;
+          c.x += c.vx; c.y += c.vy + Math.sin(c.t) * 0.45;
+          if (c.x < 0) { c.x = 0; c.vx = Math.abs(c.vx) * 0.8; }
+          if (c.x > W - c.size) { c.x = W - c.size; c.vx = -Math.abs(c.vx) * 0.8; }
+          if (c.y < 70) { c.y = 70; c.vy = Math.abs(c.vy) * 0.8; }
+          if (c.y > H - c.size - 10) { c.y = H - c.size - 10; c.vy = -Math.abs(c.vy) * 0.8; }
+        }
+        c.el.style.transform = `translate3d(${c.x}px, ${c.y}px, 0)`;
+        c.body.style.transform = `scaleX(${c.vx < 0 ? -1 : 1})`;
+      }
+      requestAnimationFrame(loop);
+    }
+
+    setTimeout(() => { spawnAll(); loop(); }, 1200);
   })();
 </script>
 </body>

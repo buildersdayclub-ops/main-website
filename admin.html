@@ -155,6 +155,10 @@
       <button onclick="show('cities')"        data-sec="cities"        class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🌆</span><span>Cities</span></button>
       <button onclick="show('payment')"       data-sec="payment"       class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>💳</span><span>Payment & Check-in</span></button>
       <button onclick="show('discounts')"     data-sec="discounts"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🎟️</span><span>Discount Codes</span></button>
+      <button onclick="show('leads')"         data-sec="leads"         class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)">
+        <span>🎓</span><span>Cohort Leads</span>
+        <span id="leadsBadge" class="hidden ml-auto text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center font-bold" style="background:var(--color-accent);color:#fff">0</span>
+      </button>
       <button onclick="show('homepage')"     data-sec="homepage"     class="nav-item w-full text-left px-4 py-2.5 rounded-r-xl text-sm font-medium flex items-center gap-3" style="color:var(--color-text-muted)"><span>🏠</span><span>Homepage</span></button>
     </nav>
     <div class="p-4 space-y-1" style="border-top:1px solid var(--color-border)">
@@ -430,6 +434,37 @@
         <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
       </div>
     </div>
+    <!-- ── COHORT LEADS ── -->
+    <div id="sec-leads" class="sec hidden">
+      <span class="sec-tag">// cohort enquiries</span>
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h2 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;color:var(--color-text)">Cohort Leads</h2>
+        <div class="flex gap-2 flex-wrap">
+          <input id="leadSearch" type="text" placeholder="Search name, email, phone…" class="inp" style="width:220px" oninput="renderLeads()">
+          <select id="leadCohortF" onchange="renderLeads()" class="inp" style="width:auto">
+            <option value="all">All Cohorts</option>
+          </select>
+          <select id="leadStF" onchange="renderLeads()" class="inp" style="width:auto">
+            <option value="all">All Statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="paid">Paid</option>
+            <option value="not_interested">Not interested</option>
+          </select>
+          <button onclick="loadLeads()" class="btn-ghost px-4 py-2 text-sm rounded-xl">Refresh</button>
+          <button onclick="exportLeads()" class="btn-primary px-4 py-2 text-sm rounded-xl">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card p-5"><p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Total</p><p class="text-3xl font-extrabold pixel" style="color:var(--color-text)" id="leadStatTotal">—</p></div>
+        <div class="card p-5" style="border-color:rgba(91,33,230,0.3)"><p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">New</p><p class="text-3xl font-extrabold pixel" style="color:var(--color-accent)" id="leadStatNew">—</p></div>
+        <div class="card p-5"><p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Contacted</p><p class="text-3xl font-extrabold pixel" style="color:var(--color-yellow)" id="leadStatContacted">—</p></div>
+        <div class="card p-5" style="border-color:rgba(34,197,94,0.3)"><p class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--color-text-muted)">Paid</p><p class="text-3xl font-extrabold pixel text-green-400" id="leadStatPaid">—</p></div>
+      </div>
+      <div id="leadList" class="space-y-3">
+        <div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">Loading…</div>
+      </div>
+    </div>
     <!-- ── HOMEPAGE CMS ── -->
     <div id="sec-homepage" class="sec hidden">
       <span class="sec-tag">// homepage content</span>
@@ -624,7 +659,7 @@
   function bootDashboard() {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); fillDiscEvFilter(); loadPayment(); loadHomepage();
+    loadOverview(); loadEvents(); loadCities(); fillEvFilter(); fillAttEvSelector(); fillDiscEvFilter(); loadPayment(); loadHomepage(); loadLeadsBadge();
   }
   // ── Navigation ──
   function show(sec) {
@@ -642,6 +677,7 @@
     if (sec === 'payment')        loadPayment();
     if (sec === 'discounts')      { fillDiscEvFilter(); loadDiscounts(); }
     if (sec === 'homepage')       loadHomepage();
+    if (sec === 'leads')          loadLeads();
   }
   // ── Overview ──
   async function loadOverview() {
@@ -1045,6 +1081,133 @@
   }
   async function toggleDiscActive(id,newState){const{error}=await sb.from('discount_codes').update({is_active:newState}).eq('id',id);if(error){alert('Could not update code: '+error.message);return;}loadDiscounts();}
   async function deleteDiscount(id){if(!confirm('Delete this discount code? This cannot be undone.'))return;const{error}=await sb.from('discount_codes').delete().eq('id',id);if(error){alert('Could not delete code: '+error.message);return;}loadDiscounts();}
+  // ── Cohort Leads (from the "Reserve your seat" form on /cohort2) ──
+  let leadsCache = [];
+  const LEAD_STATUSES = { new:'New', contacted:'Contacted', paid:'Paid', not_interested:'Not interested' };
+  const LEAD_STYLE = {
+    new:'background:rgba(91,33,230,.18);color:#c4b5fd',
+    contacted:'background:rgba(232,240,72,.12);color:#E8F048',
+    paid:'background:rgba(34,197,94,.15);color:#86efac',
+    not_interested:'background:var(--color-surface-2);color:var(--color-text-muted)'
+  };
+  // Anyone on the internet can fill the form, so never put their text into the page as raw HTML
+  function esc(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  async function loadLeadsBadge() {
+    const { count } = await sb.from('cohort_leads').select('id', { count: 'exact', head: true }).eq('status', 'new');
+    const b = document.getElementById('leadsBadge');
+    if (!b) return;
+    b.textContent = count || 0;
+    b.classList.toggle('hidden', !count);
+  }
+  async function loadLeads() {
+    const el = document.getElementById('leadList');
+    const { data, error } = await sb.from('cohort_leads').select('*').order('created_at', { ascending: false });
+    if (error) {
+      if (await handleAuthError(error, loadLeads)) return;
+      const hint = /cohort_leads/.test(error.message) ? ' — run cohort_leads_setup.sql in Supabase first.' : '';
+      el.innerHTML = `<div class="card p-8 text-center text-red-400 text-sm">Error: ${esc(error.message)}${hint}</div>`;
+      return;
+    }
+    leadsCache = data || [];
+    // cohort filter options
+    const sel = document.getElementById('leadCohortF');
+    const keep = sel.value;
+    const cohorts = [...new Set(leadsCache.map(l => l.cohort).filter(Boolean))];
+    sel.innerHTML = '<option value="all">All Cohorts</option>' + cohorts.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    if ([...sel.options].some(o => o.value === keep)) sel.value = keep;
+    // stats
+    const n = st => leadsCache.filter(l => (l.status || 'new') === st).length;
+    document.getElementById('leadStatTotal').textContent     = leadsCache.length;
+    document.getElementById('leadStatNew').textContent       = n('new');
+    document.getElementById('leadStatContacted').textContent = n('contacted');
+    document.getElementById('leadStatPaid').textContent      = n('paid');
+    const b = document.getElementById('leadsBadge');
+    b.textContent = n('new'); b.classList.toggle('hidden', !n('new'));
+    renderLeads();
+  }
+  function filteredLeads() {
+    const st = document.getElementById('leadStF').value;
+    const co = document.getElementById('leadCohortF').value;
+    const q  = document.getElementById('leadSearch').value.trim().toLowerCase();
+    return leadsCache.filter(l =>
+      (st === 'all' || (l.status || 'new') === st) &&
+      (co === 'all' || l.cohort === co) &&
+      (!q || [l.name, l.email, l.phone, l.company, l.city].some(v => (v || '').toLowerCase().includes(q))));
+  }
+  function renderLeads() {
+    const el = document.getElementById('leadList');
+    const list = filteredLeads();
+    if (!leadsCache.length) { el.innerHTML = '<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No enquiries yet. They’ll show up here when someone fills the “Reserve your seat” form.</div>'; return; }
+    if (!list.length) { el.innerHTML = '<div class="card p-8 text-center text-sm" style="color:var(--color-text-faint)">No leads match these filters.</div>'; return; }
+    el.innerHTML = list.map(l => {
+      const st = l.status || 'new';
+      const digits = (l.phone || '').replace(/\D/g, '');
+      const wa = digits ? 'https://wa.me/' + (digits.length === 10 ? '91' + digits : digits) : '';
+      const opts = Object.entries(LEAD_STATUSES).map(([v, t]) => `<option value="${v}"${v === st ? ' selected' : ''}>${t}</option>`).join('');
+      return `<div class="card p-5">
+        <div class="flex items-start gap-4 flex-wrap">
+          <div class="flex-1 min-w-[240px]">
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              <span class="font-semibold" style="color:var(--color-text)">${esc(l.name)}</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="${LEAD_STYLE[st] || LEAD_STYLE.new}">${esc(LEAD_STATUSES[st] || st)}</span>
+              ${l.cohort ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:var(--color-surface-2);color:var(--color-text-muted)">${esc(l.cohort)}</span>` : ''}
+            </div>
+            <p class="text-sm" style="color:var(--color-text-muted)">
+              <a href="mailto:${esc(l.email)}" style="color:inherit;text-decoration:underline">${esc(l.email)}</a> ·
+              ${wa ? `<a href="${wa}" target="_blank" rel="noopener" style="color:#86efac;text-decoration:underline">${esc(l.phone)} (WhatsApp)</a>` : esc(l.phone)}
+            </p>
+            <p class="text-xs mt-1" style="color:var(--color-text-muted)">
+              ${[l.role, l.company, l.city].filter(Boolean).map(esc).join(' · ') || '—'}
+            </p>
+            ${l.goal ? `<p class="text-sm mt-3 p-3 rounded-xl" style="background:var(--color-surface-2);color:var(--color-text);white-space:pre-wrap">${esc(l.goal)}</p>` : ''}
+            <p class="text-xs mt-2" style="color:var(--color-text-faint)">Submitted ${l.created_at ? new Date(l.created_at).toLocaleString('en-IN') : ''}</p>
+          </div>
+          <div class="flex flex-col gap-2 flex-shrink-0" style="width:220px;max-width:100%">
+            <select class="inp" onchange="setLeadStatus('${l.id}', this.value)">${opts}</select>
+            <textarea id="note-${l.id}" class="inp" rows="2" placeholder="Notes (e.g. called, follow up Mon)" style="resize:vertical">${esc(l.notes)}</textarea>
+            <div class="flex gap-2">
+              <button onclick="saveLeadNote('${l.id}', this)" class="btn-ghost text-xs px-3 py-2 rounded-xl flex-1">Save note</button>
+              <button onclick="deleteLead('${l.id}')" class="text-xs px-3 py-2 rounded-xl" style="background:rgba(239,68,68,.1);color:#fca5a5;border:none;cursor:pointer;">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  async function setLeadStatus(id, status) {
+    const { error } = await sb.from('cohort_leads').update({ status }).eq('id', id);
+    if (error) { if (await handleAuthError(error, () => setLeadStatus(id, status))) return; alert('Could not update status: ' + error.message); return; }
+    const l = leadsCache.find(x => x.id === id); if (l) l.status = status;
+    loadLeads();
+  }
+  async function saveLeadNote(id, btn) {
+    const notes = document.getElementById('note-' + id).value.trim() || null;
+    const { error } = await sb.from('cohort_leads').update({ notes }).eq('id', id);
+    if (error) { if (await handleAuthError(error, () => saveLeadNote(id, btn))) return; alert('Could not save note: ' + error.message); return; }
+    const l = leadsCache.find(x => x.id === id); if (l) l.notes = notes;
+    const orig = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
+  async function deleteLead(id) {
+    if (!confirm('Delete this enquiry? This cannot be undone.')) return;
+    const { error } = await sb.from('cohort_leads').delete().eq('id', id);
+    if (error) { if (await handleAuthError(error, () => deleteLead(id))) return; alert('Could not delete: ' + error.message); return; }
+    loadLeads();
+  }
+  function exportLeads() {
+    const list = filteredLeads();
+    if (!list.length) { alert('No leads to export for the current filters.'); return; }
+    const headers = ['Name','Email','Phone','Role','Company','City','What they want to build','Cohort','Status','Notes','Submitted At'];
+    const rows = list.map(l => [l.name, l.email, l.phone, l.role, l.company, l.city, l.goal, l.cohort,
+      LEAD_STATUSES[l.status] || l.status, l.notes, l.created_at ? new Date(l.created_at).toLocaleString('en-IN') : '']);
+    const csv = [headers, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = `cohort_leads_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
   // ── Payment ──
   async function loadPayment(){
     const{data:pinRow}=await sb.from('private_settings').select('checkin_pin').eq('id','checkin').maybeSingle();
